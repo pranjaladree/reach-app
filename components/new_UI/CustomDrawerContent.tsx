@@ -1,91 +1,3 @@
-// import React from "react";
-// import {
-//   DrawerContentScrollView,
-//   DrawerItemList,
-//   DrawerItem,
-// } from "@react-navigation/drawer";
-// import { View, Text, Image, StyleSheet } from "react-native";
-// import { Ionicons } from "@expo/vector-icons";
-
-// type Props = {
-//   navigation: any;
-// };
-
-// const CustomDrawerContent: React.FC<any> = (props) => {
-//   return (
-//     <DrawerContentScrollView
-//       {...props}
-//       contentContainerStyle={{ flex: 1, paddingTop: 0, paddingHorizontal: 0 }}
-//     >
-//       {/* Profile Section */}
-//       <View style={styles.profileContainer}>
-//         <Image
-//           source={{ uri: "https://i.pravatar.cc/100" }}
-//           style={styles.avatar}
-//         />
-//         <Text style={styles.name}>John Doe</Text>
-//         <Text style={styles.email}>john.doe@example.com</Text>
-//       </View>
-
-//       {/* Drawer Items */}
-//       <View style={styles.drawerItemsWrapper}>
-//         <DrawerItemList {...props} />
-//       </View>
-
-//       {/* Logout Button */}
-//       <View style={styles.logoutContainer}>
-//         <DrawerItem
-//           label="Logout"
-//           icon={({ color, size }) => (
-//             <Ionicons name="log-out-outline" size={size} color={color} />
-//           )}
-//           onPress={() => {
-//             console.log("Logging out...");
-//             props.navigation.reset({ index: 0, routes: [{ name: "index" }] });
-//           }}
-//           style={{ paddingHorizontal: 0 }}
-//         />
-//       </View>
-//     </DrawerContentScrollView>
-//   );
-// };
-
-// export default CustomDrawerContent;
-
-// const styles = StyleSheet.create({
-//   drawerItemsWrapper: {
-//     flex: 1,
-//     paddingTop: 10,
-//     paddingHorizontal: 0,
-//   },
-
-//   profileContainer: {
-//     backgroundColor: "#ffffff",
-//     paddingTop: 60,
-//     paddingBottom: 10,
-//     // padding: 0,
-//     alignItems: "flex-start",
-//   },
-//   avatar: {
-//     width: 70,
-//     height: 70,
-//     borderRadius: 35,
-//     marginBottom: 10,
-//   },
-//   name: {
-//     fontSize: 16,
-//     fontWeight: "600",
-//   },
-//   email: {
-//     fontSize: 13,
-//     color: "#777",
-//   },
-//   logoutContainer: {
-//     borderTopWidth: 1,
-//     borderTopColor: "#eee",
-//     paddingVertical: 10,
-//   },
-// });
 import React from "react";
 import {
   View,
@@ -139,32 +51,18 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       route: "primary-screening",
     },
     {
-      label: "Sync To Server",
-      icon: (color: string) => (
-        <Ionicons name="cloud-upload-outline" size={20} color={color} />
-      ),
-      route: "sync-to-server",
-    },
-    {
-      label: "MR Tag",
+      label: "Detailed Evaluation",
       icon: (color: string) => (
         <Ionicons name="pricetag-outline" size={20} color={color} />
       ),
       route: "mr-tag",
     },
     {
-      label: "Remove School",
+      label: "View QR",
       icon: (color: string) => (
-        <MaterialCommunityIcons name="bank-remove" size={20} color={color} />
+        <Ionicons name="pricetag-outline" size={20} color={color} />
       ),
-      route: "remove-school",
-    },
-    {
-      label: "System Update",
-      icon: (color: string) => (
-        <MaterialCommunityIcons name="update" size={20} color={color} />
-      ),
-      route: "system-update",
+      route: "qr-codes",
     },
     {
       label: "Spectacle Booking",
@@ -184,6 +82,27 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       ),
       route: "gps-data-collection",
     },
+    {
+      label: "Data Sync",
+      icon: (color: string) => (
+        <Ionicons name="cloud-upload-outline" size={20} color={color} />
+      ),
+      route: "sync-to-server",
+    },
+    {
+      label: "Remove School",
+      icon: (color: string) => (
+        <MaterialCommunityIcons name="bank-remove" size={20} color={color} />
+      ),
+      route: "remove-school",
+    },
+    {
+      label: "System Update",
+      icon: (color: string) => (
+        <MaterialCommunityIcons name="update" size={20} color={color} />
+      ),
+      route: "system-update",
+    },
   ];
 
   const activeRouteName = state.routes[state.index].name;
@@ -196,7 +115,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       //   await AsyncStorage.removeItem("user");
       navigation.reset({
         index: 0,
-        routes: [{ name: "login" }], 
+        routes: [{ name: "login" }],
       });
     } catch (error) {
       console.error("Logout error:", error);

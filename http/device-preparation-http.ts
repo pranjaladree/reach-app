@@ -17,7 +17,7 @@ export const getStudentBySchoolId = async (token: string, schoolId: string) => {
     }
   );
   const resData = await res.json();
-  console.log("Response", resData);
+  console.log("Response ******************", resData);
   let arr: StudentModel[] = [];
   resData.devicePreparationStudentList.forEach((item: any) => {
     arr.push(
@@ -46,7 +46,7 @@ export const getStudentBySchoolId = async (token: string, schoolId: string) => {
         schoolName: "",
         isActive: "",
         psStatus: "",
-        isMarkForQC: item.isMarkForQC,
+        isMarkForQC: item.markForQc,
         mrNo: "",
         facilityType: "",
         facilityName: "",

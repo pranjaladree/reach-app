@@ -11,9 +11,11 @@ export const getProfile = async (token: string) => {
     },
   });
   const response = await res.json();
+  console.log("ReS", response);
   if (response) {
     return new ResponseModel({
       data: {
+        id: response.id,
         fullName: response.fullName,
         partnerId: response.partnerId,
         userType: response.userType,

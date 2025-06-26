@@ -1,19 +1,12 @@
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomInput from "@/components/utils/CustomInput";
-import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
-import {
-  GENDER_RADIO_ITEMS,
-  RESULT_RADIO_ITEMS,
-  STATUS_RADIO_ITEMS,
-} from "@/constants/Data";
 import {
   findAllClassesDropdowns,
   getMRTagStudentsOneBySchoolId,
   getSchoolByActivityType,
 } from "@/database/database";
 import { DropdownModel } from "@/models/ui/DropdownModel";
-import { RadioItemModel } from "@/models/ui/RadioItemModel";
 import { setSchools } from "@/store/slices/school-slice";
 import { setStudents } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
@@ -24,7 +17,7 @@ import { View, Text } from "react-native";
 import { Button } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
-const MRTag = () => {
+const QRCode = () => {
   const db = useSQLiteContext();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -62,24 +55,6 @@ const MRTag = () => {
     setSection(val);
   };
 
-  const [gender, setGender] = useState("All");
-
-  const genderChangeHandler = (val: string) => {
-    setGender(val);
-  };
-
-  const [status, setStatus] = useState("All");
-
-  const statusChangeHandler = (val: string) => {
-    setStatus(val);
-  };
-
-  const [result, setResult] = useState("All");
-
-  const resultChangeHandler = (val: string) => {
-    setResult(val);
-  };
-
   const getStudentsHandler = async () => {
     if (selectedSchool.id == "0") {
       return;
@@ -88,7 +63,7 @@ const MRTag = () => {
     console.log("Students", response?.length);
     dispatch(setStudents(response));
     router.push({
-      pathname: "/mr-tag-list",
+      pathname: "/qr-list",
       params: {
         schoolId: selectedSchool.id,
       },
@@ -146,31 +121,13 @@ const MRTag = () => {
         </View>
       </View>
       <View>
-        <CustomRadioGroup
-          label="Gender"
-          items={[
-            new RadioItemModel({ id: 0, value: "All", label: "All" }),
-            ...GENDER_RADIO_ITEMS,
-          ]}
-          selectedOption={gender}
-          onChange={genderChangeHandler}
-        />
+        <Text>Gender</Text>
       </View>
       <View>
-        <CustomRadioGroup
-          label="Status"
-          items={STATUS_RADIO_ITEMS}
-          selectedOption={status}
-          onChange={statusChangeHandler}
-        />
+        <Text>Status</Text>
       </View>
       <View>
-        <CustomRadioGroup
-          label="Result"
-          items={RESULT_RADIO_ITEMS}
-          selectedOption={result}
-          onChange={resultChangeHandler}
-        />
+        <Text>Result</Text>
       </View>
       <Button onPress={getStudentsHandler} mode="contained">
         Search
@@ -179,4 +136,4 @@ const MRTag = () => {
   );
 };
 
-export default MRTag;
+export default QRCode;

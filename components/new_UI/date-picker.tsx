@@ -5,13 +5,13 @@ import { DateType } from "react-native-ui-datepicker";
 
 type Props = {
   selected: DateType;
-  setIsModalOpen: (open: boolean) => void;
+  onOpen: () => void;
 };
 
-export const DateSelector: React.FC<Props> = ({ selected, setIsModalOpen }) => {
+export const DateSelector: React.FC<Props> = ({ selected, onOpen }) => {
   return (
     <View style={styles.container}>
-      <Pressable style={styles.datePicker} onPress={() => setIsModalOpen(true)}>
+      <Pressable style={styles.datePicker} onPress={onOpen}>
         <MaterialIcons name="calendar-today" size={20} color="#555" />
         <Text style={styles.dateText}>
           {dayjs(selected).format("DD-MM-YYYY")}

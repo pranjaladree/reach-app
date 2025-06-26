@@ -8,6 +8,8 @@ interface Props {
   items: RadioItemModel[];
   selectedOption: string;
   onChange: (val: string) => void;
+  isError?: boolean;
+  errorMessage?: string;
 }
 
 const CustomRadioGroup = ({
@@ -15,18 +17,27 @@ const CustomRadioGroup = ({
   items,
   selectedOption,
   onChange,
+  isError,
+  errorMessage,
 }: Props) => {
   return (
-    <RadioButton.Group onValueChange={onChange} value={selectedOption}>
-      <View style={styles.group}>
-        {items.map((item) => (
-          <View key={item.id} style={styles.button}>
-            <RadioButton value={item.value} />
-            <Text>{item.label}</Text>
-          </View>
-        ))}
-      </View>
-    </RadioButton.Group>
+    <>
+      <RadioButton.Group onValueChange={onChange} value={selectedOption}>
+        <View style={styles.group}>
+          {items.map((item) => (
+            <View key={item.id} style={styles.button}>
+              <RadioButton value={item.value} />
+              <Text>{item.label}</Text>
+            </View>
+          ))}
+        </View>
+      </RadioButton.Group>
+      {isError && (
+        <View>
+          <Text style={{ color: "red" }}>{errorMessage}</Text>
+        </View>
+      )}
+    </>
   );
 };
 

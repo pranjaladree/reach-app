@@ -6,13 +6,16 @@ import { useSQLiteContext } from "expo-sqlite";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useDispatch } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import QRCode from "react-native-qrcode-svg";
+import { useEffect, useState } from "react";
 
 interface Props {
   item: any;
   onPress: () => void;
 }
 
-const PSStudentItem = ({ item, onPress }: Props) => {
+const QRItem = ({ item, onPress }: Props) => {
+  console.log("Items", item);
   let itemStyle = styles.notDone;
   if (item.psStatus == "REFER") {
     itemStyle = styles.refer;
@@ -24,12 +27,20 @@ const PSStudentItem = ({ item, onPress }: Props) => {
     itemStyle = styles.normal;
   }
 
+  const [qrData, setQrData] = useState<any>();
+
+  useEffect(() => {
+    setQrData({
+      id: item.studentId,
+    });
+  }, [item]);
+
   return (
     <Pressable onPress={onPress} style={styles.item}>
       <View style={styles.card}>
         <View>
           <Text style={itemStyle}>{item.firstName}</Text>
-          <Text style={itemStyle}>{item.contactNo}</Text>
+          <Text>{item.contactPersonMobileNo}</Text>
         </View>
         <View>
           <Text style={itemStyle}>
@@ -40,18 +51,7 @@ const PSStudentItem = ({ item, onPress }: Props) => {
           </Text>
         </View>
         <View>
-          {!item.psStatus ? (
-            <Ionicons name="close-circle" size={32} style={itemStyle} />
-          ) : (
-            <Ionicons
-              name="checkmark-done-outline"
-              size={32}
-              style={itemStyle}
-            />
-          )}
-          <Text style={itemStyle}>
-            {item.isMarkedForQc && item.psStatus ? "QC" : ""}
-          </Text>
+          <QRCode value={JSON.stringify(qrData)} size={80} />
         </View>
       </View>
     </Pressable>
@@ -65,23 +65,15 @@ const styles = StyleSheet.create({
   },
   notDone: {
     color: "black",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   refer: {
     color: "red",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   advice: {
     color: "blue",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   normal: {
     color: "green",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   card: {
     flex: 1,
@@ -95,4 +87,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PSStudentItem;
+export default QRItem;

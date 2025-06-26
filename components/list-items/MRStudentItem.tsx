@@ -27,18 +27,17 @@ const MRStudentItem = ({ item, onPress }: Props) => {
           {/* <Text>{item.contactPersonMobileNo}</Text> */}
         </View>
         <View>
-          <Text style={item.mrNo == "REFER" ? styles.refer : styles.notDone}>
-            {item.mrNo}
-          </Text>
-          {/* <Text>
-            {item.classTitle} / {item.section}
+          <Text>
+            {item.classId} / {item.section}
           </Text>
           <Text>
             {item.gender} / {item.age}
-          </Text> */}
+          </Text>
         </View>
         <View>
-          <Ionicons name="close-circle" size={32} color="grey" />
+          <Text style={item.mrNo == "REFER" ? styles.refer : styles.notDone}>
+            {item.mrNo}
+          </Text>
         </View>
       </View>
     </Pressable>

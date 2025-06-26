@@ -134,3 +134,17 @@ export const mapScreeningData = (screeningItem: ScreeningModel) => {
   }
   return item;
 };
+
+// Step 1: Convert each string to valid JSON format
+// export const convertStringDiagnosisItems = (items: any[]) => {
+//   const output = items.map((str) => {
+//     // Add double quotes around keys and values using RegEx
+//     const jsonString = str
+//       .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // quote keys
+//       .replace(/:\s*([^",}{\s]+)\s*/g, ': "$1"'); // quote values
+
+//     console.log("JSON", jsonString);
+//     return JSON.parse(jsonString);
+//   });
+//   return output;
+// };

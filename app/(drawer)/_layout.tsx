@@ -77,7 +77,7 @@ export default function Layout() {
       <Drawer
         drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
-          drawerType: isLargeScreen ? "permanent" : "front",
+          // drawerType: isLargeScreen ? "permanent" : "front",
           drawerActiveTintColor: "#2D9CDB",
           drawerInactiveTintColor: "#4F4F4F",
           drawerLabelStyle: {
@@ -150,7 +150,7 @@ export default function Layout() {
           name="mr-tag"
           options={{
             drawerLabel: "MR Tag",
-            title: "MR Tag",
+            title: "Detailed Evaluation",
             drawerIcon: ({ color, size }) => (
               <Ionicons name="pricetag-outline" size={size} color={color} />
             ),
@@ -184,7 +184,7 @@ export default function Layout() {
           name="spectacle-booking"
           options={{
             drawerLabel: "Spectacle Booking",
-            title: "MR Tag",
+            title: "Spectacle Booking",
             drawerIcon: ({ color, size }) => (
               <MaterialCommunityIcons
                 name="ticket-confirmation-outline"
@@ -198,7 +198,7 @@ export default function Layout() {
           name="gps-data-collection"
           options={{
             drawerLabel: "GPS Data Collection",
-            title: "MR Tag",
+            title: "GEO Location",
             drawerIcon: ({ color, size }) => (
               <MaterialCommunityIcons
                 name="crosshairs-gps"

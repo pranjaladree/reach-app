@@ -50,6 +50,9 @@ export class ScreeningModel {
   isBinacularTestRequired: boolean;
   isColorVisionTestRequired: boolean;
   isTleRefer: boolean;
+  isQCDone: boolean;
+  isPsDone: boolean;
+  isEditable: boolean;
 
   constructor({
     id,
@@ -100,6 +103,9 @@ export class ScreeningModel {
     isBinacularTestRequired,
     isColorVisionTestRequired,
     isTleRefer,
+    isQCDone,
+    isPsDone,
+    isEditable,
   }: {
     id: number;
     studentId: string;
@@ -149,6 +155,9 @@ export class ScreeningModel {
     isBinacularTestRequired: boolean;
     isColorVisionTestRequired: boolean;
     isTleRefer: boolean;
+    isQCDone: boolean;
+    isPsDone: boolean;
+    isEditable: boolean;
   }) {
     this.id = id;
     this.studentId = studentId;
@@ -198,5 +207,8 @@ export class ScreeningModel {
     this.isBinacularTestRequired = isBinacularTestRequired;
     this.isColorVisionTestRequired = isColorVisionTestRequired;
     this.isTleRefer = isTleRefer;
+    this.isQCDone = isQCDone;
+    this.isPsDone = isPsDone;
+    this.isEditable = isEditable;
   }
 }

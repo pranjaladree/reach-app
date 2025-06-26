@@ -18,6 +18,7 @@ const ScreeningList = () => {
     (state: RootState) => state.studentSlice.filteredStudents
   );
   const { schoolId } = useLocalSearchParams();
+  console.log("SCHOOL ID", schoolId);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const [studentList, setStudentList] = useState<any[]>([]);
@@ -26,13 +27,15 @@ const ScreeningList = () => {
     setSearchTerm(val);
   };
 
-  const navigationHandler = (item: StudentModel) => {
+  const navigationHandler = (item: any) => {
+    console.log("NAVIGA", item);
     router.replace({
       pathname: "/screening-detail",
       params: {
         studentId: item.id,
         studentName: item.firstName,
         schoolId: schoolId,
+        isMarkedForQc: item.isMarkedForQc?.toString(),
       },
     });
   };
@@ -63,7 +66,7 @@ const ScreeningList = () => {
     <View>
       <View style={{ padding: 10 }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text>Total Student:</Text>
+          <Text>Total Student: {studentList.length}</Text>
           <Text>Done:</Text>
           <Text>Not Done :</Text>
         </View>
@@ -76,7 +79,7 @@ const ScreeningList = () => {
           />
         </View>
       </View>
-      <View style={{ padding: 10 }}>
+      <View style={{ paddingHorizontal: 10, paddingBottom: 200 }}>
         <FlatList
           data={studentList}
           keyExtractor={(item) => item.id.toString()}

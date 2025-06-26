@@ -10,7 +10,7 @@ const DatabaseTest = () => {
   const db = useSQLiteContext();
 
   const dropTablesHandler = () => {
-    // const response = db.runSync(`DROP TABLE students`);
+    // const response = db.runSync(`DROP TABLE spectacleBooking`);
     // console.log("REDF", response);
     dropTables(db);
   };

@@ -23,6 +23,7 @@ import {
 } from "react-native";
 import { Button, Dialog, Portal, TextInput } from "react-native-paper";
 import { nanoid } from "nanoid/non-secure";
+import CustomInput from "@/components/utils/CustomInput";
 
 const AddStudent = () => {
   const db = useSQLiteContext();
@@ -37,14 +38,30 @@ const AddStudent = () => {
   const hideDialog = () => setVisible(false);
 
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
+  const [schoolHasError, setSchoolHasError] = useState(false);
+  const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
   const [firstName, setFirstName] = useState("");
+  const [firstNameHasError, setFirstNameHasError] = useState(false);
+  const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
+
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [selectedClass, setSelectedClass] = useState(BLANK_DROPDOWN_MODEL);
+  const [classHasError, setClassHasError] = useState(false);
+  const [classErrorMessage, setClassErrorMessage] = useState("");
+
   const [section, setSection] = useState("");
   const [gender, setGender] = useState("");
+  const [genderHasError, setGenderHasError] = useState(false);
+  const [genderErrorMessage, setGenderErrorMessage] = useState("");
   const [age, setAge] = useState("");
+  const [ageHasError, setAgeHasError] = useState(false);
+  const [ageErrorMessage, setAgeErrorMessage] = useState("");
+
   const [rollNo, setRollNo] = useState("");
+  const [rollNoHasError, setRollNoHasError] = useState(false);
+  const [rollNoErrorMessage, setRollNoErrorMessage] = useState("");
+
   const [relation, setRelation] = useState(BLANK_DROPDOWN_MODEL);
   const [nextOfKin, setNextOfKin] = useState("");
   const [contactNo, setContactNo] = useState("");
@@ -154,6 +171,36 @@ const AddStudent = () => {
   const fieldValidator = () => {
     // check if duplicate
     let isValid = true;
+    if (selectedSchool.value == "SELECT") {
+      isValid = false;
+      setSchoolHasError(true);
+      setSchoolErrorMessage("Please select school !");
+    }
+    if (firstName == "") {
+      isValid = false;
+      setFirstNameHasError(true);
+      setFirstNameErrorMessage("Please enter first name !");
+    }
+    if (rollNo == "") {
+      isValid = false;
+      setRollNoHasError(true);
+      setRollNoErrorMessage("Please enter roll No !");
+    }
+    if (selectedClass.id == "0") {
+      isValid = false;
+      setClassHasError(true);
+      setClassErrorMessage("Please select a class");
+    }
+    if (gender == "") {
+      isValid = false;
+      setGenderHasError(true);
+      setGenderErrorMessage("Please select a gender !");
+    }
+    if (age == "") {
+      isValid = false;
+      setGenderHasError(true);
+      setGenderErrorMessage("Please select gender");
+    }
     try {
       const response = db.getFirstSync(
         "SELECT  * FROM students WHERE schoolId=? rollNo = ? AND classId = ? AND section = ?;",
@@ -263,31 +310,35 @@ const AddStudent = () => {
                   items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
                   selectedItem={selectedSchool}
                   onChange={selectSchoolHandler}
+                  isError={schoolHasError}
+                  errorMessage={schoolErrorMessage}
                 />
               </View>
             </View>
             <View>
-              <TextInput
+              <CustomInput
+                id="firstName"
                 label="First Name"
                 value={firstName}
                 onChangeText={firstNameChangeHandler}
-                mode="outlined"
+                isError={firstNameHasError}
+                errorMessage={firstNameErrorMessage}
               />
             </View>
             <View>
-              <TextInput
+              <CustomInput
+                id="middle Name"
                 label="Middle Name"
                 value={middleName}
                 onChangeText={middleNameChangeHandler}
-                mode="outlined"
               />
             </View>
             <View>
-              <TextInput
+              <CustomInput
+                id="lastName"
                 label="Last Name"
                 value={lastName}
                 onChangeText={lastNameChangeHandler}
-                mode="outlined"
               />
             </View>
             <View>
@@ -296,14 +347,16 @@ const AddStudent = () => {
                 items={[BLANK_DROPDOWN_MODEL, ...classItems]}
                 selectedItem={selectedClass}
                 onChange={selectClassHandler}
+                isError={classHasError}
+                errorMessage={classErrorMessage}
               />
             </View>
             <View>
-              <TextInput
+              <CustomInput
+                id="section"
                 label="Section"
                 value={section}
                 onChangeText={sectionChangeHandler}
-                mode="outlined"
               />
             </View>
             <View>
@@ -312,22 +365,28 @@ const AddStudent = () => {
                 items={GENDER_RADIO_ITEMS}
                 selectedOption={gender}
                 onChange={genderChangeHandler}
+                isError={genderHasError}
+                errorMessage={genderErrorMessage}
               />
             </View>
             <View>
-              <TextInput
+              <CustomInput
+                id="age"
                 label="Age"
                 value={age}
                 onChangeText={ageChangeHandler}
-                mode="outlined"
+                isError={ageHasError}
+                errorMessage={ageErrorMessage}
               />
             </View>
             <View>
-              <TextInput
+              <CustomInput
+                id="rollNo"
                 label="Roll No"
                 value={rollNo}
                 onChangeText={rollNoChangeHandler}
-                mode="outlined"
+                isError={rollNoHasError}
+                errorMessage={rollNoErrorMessage}
               />
             </View>
             <View>

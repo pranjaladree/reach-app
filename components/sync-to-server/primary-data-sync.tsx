@@ -44,7 +44,6 @@ const PrimaryDataSync = () => {
   const syncPrimaryScreeningHandler = async () => {
     setIsLoading(true);
     const response = await preparePSDataSync(db, selectedSchool.id);
-    // console.log("Data", JSON.stringify(response));
     const syncResponse = await syncPSData(token, response);
     if (syncResponse.isError) {
       setDialogMessage(syncResponse.data);

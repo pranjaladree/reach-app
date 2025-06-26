@@ -44,7 +44,7 @@ const UnifiedStatCard: React.FC<Props> = ({
     },
     {
       iconName: "home-analytics",
-      title: "Schools Prepared for Comprehensive Screening",
+      title: "Schools Prepared for Comprehensive Service Delivery",
       value: cSSchoolCount,
     },
     {
@@ -59,7 +59,7 @@ const UnifiedStatCard: React.FC<Props> = ({
     },
     {
       iconName: "tag-arrow-down-outline",
-      title: "Un-synced MR Tag",
+      title: "Un-synced Detailed Examination",
       value: unsyncedMRTagCount,
     },
   ];

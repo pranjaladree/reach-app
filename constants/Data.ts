@@ -83,3 +83,15 @@ export const EYE_DROPDOWN_ITEMS = [
   new DropdownModel({ id: "2", value: "RE", label: "RE" }),
   new DropdownModel({ id: "3", value: "BOTH", label: "BOTH" }),
 ];
+
+export const STATUS_RADIO_ITEMS = [
+  new RadioItemModel({ id: 0, value: "All", label: "All" }),
+  new RadioItemModel({ id: 1, value: "Done", label: "Done" }),
+  new RadioItemModel({ id: 2, value: "Not Done", label: "Not Done" }),
+];
+
+export const RESULT_RADIO_ITEMS = [
+  new RadioItemModel({ id: 0, value: "All", label: "All" }),
+  new RadioItemModel({ id: 1, value: "Pass", label: "Pass" }),
+  new RadioItemModel({ id: 2, value: "Fail", label: "Fail" }),
+];

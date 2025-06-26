@@ -13,8 +13,6 @@ import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import CustomGridDropdown from "../utils/CustomGridDropdown";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { setVisualAcuity } from "@/store/slices/visual-acuity-slice";
 import {
   BLANK_GRID_DROPDOWN_MODEl,
   BLANK_VISUAL_ACUITY_MODEL,
@@ -470,7 +468,7 @@ const VisualAcuity = ({ mrId }: Props) => {
 
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>Alert</Dialog.Title>
+          <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
             <Text>{diaglogMessage}</Text>
           </Dialog.Content>

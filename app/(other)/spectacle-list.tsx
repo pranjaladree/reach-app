@@ -1,5 +1,6 @@
 import SpecStudentItem from "@/components/list-items/SpecStudentItem";
 import InputBox from "@/components/ui/InputBox";
+import CustomInput from "@/components/utils/CustomInput";
 import {
   getSpecStudentsBySchoolId,
   saveSpecBooking,
@@ -30,12 +31,19 @@ const SpectacleList = () => {
 
   const [diaglogMessage, setDialogMessage] = useState("");
 
-  const [selectedStudentId, setSelectedStudentId] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState<any>();
 
   const [visible, setVisible] = useState(false);
 
-  const showDialog = (id: string) => {
-    setSelectedStudentId(id);
+  const [frameName, setFramename] = useState("");
+
+  const frameNameChangeHandler = (val: string) => {
+    setFramename(val);
+  };
+
+  const showDialog = (item: any) => {
+    setSelectedStudent(item);
+    console.log("ITEM", item);
     setVisible(true);
   };
 
@@ -43,7 +51,7 @@ const SpectacleList = () => {
 
   const saveBookingHandler = async () => {
     setIsLoading(true);
-    const response = await saveSpecBooking(db, selectedStudentId);
+    const response = await saveSpecBooking(db, selectedStudent.id, frameName);
     console.log(response);
     if (response) {
       setVisible(false);
@@ -98,7 +106,7 @@ const SpectacleList = () => {
           renderItem={({ item }) => (
             <SpecStudentItem
               item={item}
-              onPress={showDialog.bind(this, item.id)}
+              onPress={showDialog.bind(this, item)}
             />
           )}
         />
@@ -111,9 +119,17 @@ const SpectacleList = () => {
             setVisible(false);
           }}
         >
-          <Dialog.Title>{selectedStudentId}</Dialog.Title>
+          <Dialog.Title>{selectedStudent?.firstName}</Dialog.Title>
           <Dialog.Content>
             <Text>Book Spectacle</Text>
+            <View>
+              <CustomInput
+                id="frame"
+                label="Frame Model"
+                value={frameName}
+                onChangeText={frameNameChangeHandler}
+              />
+            </View>
           </Dialog.Content>
           <Dialog.Actions>
             <Button

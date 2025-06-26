@@ -1,12 +1,20 @@
 import HeaderTitle from "@/components/new_UI/header-title";
 import CustomDropdown from "@/components/utils/CustomDropdown";
+import CustomInput from "@/components/utils/CustomInput";
+import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
+import {
+  GENDER_RADIO_ITEMS,
+  RESULT_RADIO_ITEMS,
+  STATUS_RADIO_ITEMS,
+} from "@/constants/Data";
 import {
   findAllClasses,
   findAllClassesDropdowns,
   getSchoolsDropdownFromDB,
 } from "@/database/database";
 import { DropdownModel } from "@/models/ui/DropdownModel";
+import { RadioItemModel } from "@/models/ui/RadioItemModel";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -44,6 +52,30 @@ const PrimaryScreening = () => {
         setSelectedClass(foundItem);
       }
     }
+  };
+
+  const [section, setSection] = useState("");
+
+  const sectionChangeHandler = (val: string) => {
+    setSection(val);
+  };
+
+  const [gender, setGender] = useState("All");
+
+  const genderChangeHandler = (val: string) => {
+    setGender(val);
+  };
+
+  const [status, setStatus] = useState("All");
+
+  const statusChangeHandler = (val: string) => {
+    setStatus(val);
+  };
+
+  const [result, setResult] = useState("All");
+
+  const resultChangeHandler = (val: string) => {
+    setResult(val);
   };
 
   const getStudentsHandler = async () => {
@@ -146,8 +178,8 @@ const PrimaryScreening = () => {
           onChange={selectSchoolHandler}
         />
       </View>
-      <View>
-        <View>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexGrow: 1 }}>
           <CustomDropdown
             label="Class"
             items={[BLANK_DROPDOWN_MODEL, ...classItems]}
@@ -155,25 +187,43 @@ const PrimaryScreening = () => {
             onChange={selectClassHandler}
           />
         </View>
-        {/* <View>
-          <CustomDropdown
+        <View style={{ flexGrow: 1 }}>
+          <CustomInput
+            id="section"
             label="Section"
-            items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-            selectedItem={selectedSchool}
-            onChange={selectSchoolHandler}
+            value={section}
+            onChangeText={sectionChangeHandler}
           />
-        </View> */}
+        </View>
       </View>
       <View style={{ paddingHorizontal: 15 }}>
         <View style={styles.card}>
           <View>
-            <Text>Gender</Text>
+            <CustomRadioGroup
+              label="Gender"
+              items={[
+                new RadioItemModel({ id: 0, value: "All", label: "All" }),
+                ...GENDER_RADIO_ITEMS,
+              ]}
+              selectedOption={gender}
+              onChange={genderChangeHandler}
+            />
           </View>
           <View>
-            <Text>Status</Text>
+            <CustomRadioGroup
+              label="Status"
+              items={STATUS_RADIO_ITEMS}
+              selectedOption={status}
+              onChange={statusChangeHandler}
+            />
           </View>
           <View>
-            <Text>Result</Text>
+            <CustomRadioGroup
+              label="Result"
+              items={RESULT_RADIO_ITEMS}
+              selectedOption={result}
+              onChange={resultChangeHandler}
+            />
           </View>
         </View>
         <Button

@@ -16,6 +16,7 @@ const SpecStudentItem = ({ item, onPress }: Props) => {
   const router = useRouter();
   const db = useSQLiteContext();
   const dispatch = useDispatch();
+  console.log(item);
 
   return (
     <Pressable onPress={onPress} style={styles.item}>
@@ -24,18 +25,18 @@ const SpecStudentItem = ({ item, onPress }: Props) => {
           <Text style={item.bookingDate ? styles.refer : styles.notDone}>
             {item.firstName}
           </Text>
-          {/* <Text>{item.contactPersonMobileNo}</Text> */}
+          <Text>{item.contactPersonMobileNo}</Text>
         </View>
         <View>
           <Text style={item.mrNo == "REFER" ? styles.refer : styles.notDone}>
             {item.mrNo}
           </Text>
-          {/* <Text>
-            {item.classTitle} / {item.section}
+          <Text>
+            {item.classId} / {item.section}
           </Text>
           <Text>
             {item.gender} / {item.age}
-          </Text> */}
+          </Text>
         </View>
         <View>
           <Ionicons name="close-circle" size={32} color="grey" />

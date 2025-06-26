@@ -1,3 +1,4 @@
+import { BLANK_USER_MODEL } from "@/constants/BlankModels";
 import { AddModel } from "@/models/other-masters/AddModel";
 import { AxisModel } from "@/models/other-masters/AxisModel";
 import { ClassModel } from "@/models/other-masters/ClassModel";
@@ -29,7 +30,9 @@ import { SchoolModel } from "@/models/school/SchoolModel";
 import { StudentModel } from "@/models/school/StudentModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
+import { UserModel } from "@/models/user/UserModel";
 import { ResponseModel } from "@/models/utils/ResponseModel";
+import { setScreeningItem } from "@/store/slices/student-slice";
 import { SQLiteDatabase } from "expo-sqlite";
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
@@ -309,6 +312,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   screeningDoneBy TEXT,
   screenerType TEXT,
   isEditable TEXT,
+  isQcDone BOOLEAN,
   studentId INTEGER,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
@@ -428,12 +432,29 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   FOREIGN KEY (mrId) REFERENCES mrTags(id));
 
   CREATE TABLE IF NOT EXISTS spectacleBooking (
-  id TEXT PRIMARY KEY NOT NULL,   
+  id TEXT PRIMARY KEY NOT NULL,
+  frameName TEXT,   
   bookingDate TEXT,
   studentId INTEGER,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
   FOREIGN KEY (studentId) REFERENCES students(id));
+
+  CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY NOT NULL,
+  userName TEXT,
+  password TEXT,
+  firstName TEXT,
+  middleName TEXT,
+  lastName TEXT,
+  designation TEXT,
+  isPartnerAgreement BOOLEAN,
+  isUserAgreement BOOLEAN,
+  isPIIAgreement BOOLEAN,
+  isDevicePreparation BOOLEAN,
+  isDataSync BOOLEAN,
+  isQualityCheck BOOLEAN
+  );
 `);
 }
 
@@ -467,6 +488,7 @@ export async function dropTables(db: SQLiteDatabase) {
     DROP TABLE students;
     DROP TABLE screenings;
     DROP TABLE mrTags;
+    DROP TABLE users;
    `);
     console.log("DB DROPS", response);
   } catch (err) {
@@ -494,6 +516,26 @@ export const saveSchool = async (
       schoolItem.isAutorefAvailable,
       schoolItem.activityType,
       schoolItem.isFollowupSchool
+    );
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const saveSchoolLocation = async (
+  db: SQLiteDatabase,
+  schoolId: string,
+  latitude: string,
+  longitude: string
+) => {
+  try {
+    const response = db.runSync(
+      `UPDATE schools SET
+      latitude=?,
+      longitude=?
+      WHERE id=?;`,
+      [latitude, longitude, schoolId]
     );
     return response;
   } catch (err) {
@@ -646,6 +688,7 @@ export const saveNewStudent = async (
 };
 
 export const updateStudent = async (db: SQLiteDatabase, item: StudentModel) => {
+  console.log("Student", item);
   try {
     const response = db.runSync(
       `UPDATE students SET
@@ -725,7 +768,7 @@ export const savePrimaryScreening = async (
   console.log("screening Item", sceeningItem);
   try {
     const response = db.runSync(
-      "INSERT OR REPLACE INTO screenings (id,usingSpectacle,haveSpecNow,specCondition,unableToPerformVisionTest,canReadLogmarLE,canReadLogmarRE,visionAutoRefLE,visionAutoRefRE,acceptanceSPHLE,acceptanceSPHRE,acceptanceCYLLE,acceptanceCYLRE,acceptanceAXISLE,acceptanceAXISRE,IPDBoth,torchlightCheckLE,torchlightCheckRE,torchlightFindings,ocularComplaint,ocularList,npcTest,coverTest,plus2DTestLE,plus2DTestRE,colorVisionLE,colorVisionRE,psStatus,referralReason,appointmentDate,mobileNo,facilityType,facilityId,otherReason,instructionForReferralCenter,studentId,psUpdatedAt,screeningDoneBy,screenerType,isEditable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+      "INSERT OR REPLACE INTO screenings (id,usingSpectacle,haveSpecNow,specCondition,unableToPerformVisionTest,canReadLogmarLE,canReadLogmarRE,visionAutoRefLE,visionAutoRefRE,acceptanceSPHLE,acceptanceSPHRE,acceptanceCYLLE,acceptanceCYLRE,acceptanceAXISLE,acceptanceAXISRE,IPDBoth,torchlightCheckLE,torchlightCheckRE,torchlightFindings,ocularComplaint,ocularList,npcTest,coverTest,plus2DTestLE,plus2DTestRE,colorVisionLE,colorVisionRE,psStatus,referralReason,appointmentDate,mobileNo,facilityType,facilityId,otherReason,instructionForReferralCenter,studentId,psUpdatedAt,screeningDoneBy,screenerType,isQCDone,isEditable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       sceeningItem.id,
       sceeningItem.usingSpectacle,
       sceeningItem.haveSpecNow,
@@ -799,8 +842,21 @@ export const savePrimaryScreening = async (
       new Date().toISOString(),
       "1",
       "PS",
-      true
+      sceeningItem.isQCDone,
+      !sceeningItem.isQCDone
     );
+
+    // If mobileNo update
+    if (sceeningItem.mobileNo != "") {
+      const response2 = db.runSync(
+        `UPDATE students SET
+        contactNo=?
+        WHERE id=?;`,
+        [sceeningItem.mobileNo, sceeningItem.studentId]
+      );
+      return response;
+    }
+
     return response;
   } catch (err) {
     console.log(err);
@@ -832,6 +888,8 @@ export const getScreeningByIdFromDB = async (
       students.studentId AS studentId,
       students.firstName AS firstName,
       students.lastName AS lastName,
+      students.gender as gender,
+      students.age as age,
       screenings.usingSpectacle AS usingSpectacle
       FROM 
         students
@@ -857,6 +915,7 @@ export const preparePSDataSync = async (
     const studentList: any[] = [];
     if (response) {
       response.map((item: any) => {
+        console.log(item.isQcDone == 1);
         let psItem = new PSStudentModel({
           id: item.id,
           sessionHistoryId: item.id,
@@ -887,7 +946,7 @@ export const preparePSDataSync = async (
           acceptanceAxisRe: item.acceptanceAXISRE,
           ipdAutoRef: item.IPDBoth,
           psStatus: item.psStatus,
-          qualityCheckDone: false,
+          qualityCheckDone: item.isQcDone == 1 ? true : false,
           torchLightFindings: item.torchlightFindings,
           psUpdatedAt: item.psUpdatedAt,
           screenerType: "PS",
@@ -908,6 +967,25 @@ export const preparePSDataSync = async (
           };
         }
         if (item.isUpdated) {
+          psItem = {
+            ...psItem,
+            studentData: {
+              firstName: item.firstName,
+              middle_name: item.middleName,
+              last_name: item.lastName,
+              class_id: item.classId, //this should be intger
+              section: item.section,
+              roll_no: item.rollNo,
+              gender: item.gender,
+              age: item.age,
+              contactPersonName: item.nextOfKin,
+              contactPersonNo: item.contactNo,
+              relationshipWithStudent: item.relationshipWithStudent,
+              special_need: item.specialNeed, //id
+              relation: item.relation,
+              nextOfKin: item.nextOfKin,
+            },
+          };
           //Add Student Data
         }
         studentList.push({
@@ -939,6 +1017,12 @@ export const prepareMRDataSync = async (
     const studentList: any[] = [];
     if (response) {
       response.map((item: any) => {
+        //Converting String Diagnosis objects
+        // let diagnosisItems = item?.diagnosises.split(", @");
+
+        // const data = convertStringDiagnosisItems(diagnosisItems);
+        // console.log("Converted", data);
+
         let studentItem = {
           tempStudentId: item.tempId,
           mrNo: item.mrNo,
@@ -1035,6 +1119,11 @@ export const prepareMRDataSync = async (
             //   selectedEye: "Both Eyes",
             // },
           ],
+          spectaleBooking: {
+            status: "BOOKED/VERIFIED",
+            bookingDate: "2025-07-20",
+            frameName: "Model 1",
+          },
         };
         studentList.push({
           ...studentItem,
@@ -1197,6 +1286,7 @@ export const saveMRTag = async (db: SQLiteDatabase, mrTagItem: MRTagModel) => {
       mrTagItem.facilityId,
       mrTagItem.studentId
     );
+    console.log("RES", response);
     return response;
   } catch (err) {
     console.log(err);
@@ -1481,7 +1571,7 @@ export const getPSStudentsBySchoolId = async (
   console.log("************ GETTING STUDENTS ****************");
   try {
     const response = await db.getAllAsync(
-      `SELECT students.id, students.firstName,screenings.psStatus FROM students LEFT JOIN  screenings ON students.id = screenings.studentId  WHERE students.schoolId="${schoolId}"`
+      `SELECT students.id, students.firstName,students.gender,students.age,students.section,students.classId,students.isMarkedForQC,students.contactNo, screenings.psStatus FROM students LEFT JOIN  screenings ON students.id = screenings.studentId  WHERE students.schoolId="${schoolId}"`
     );
     return response;
   } catch (err) {
@@ -1496,7 +1586,7 @@ export const getMRTagStudentsOneBySchoolId = async (
   console.log("************ GETTING STUDENTS MR TAGS ****************");
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,scr.studentId,scr.psStatus, mt.mrNo FROM students s  INNER JOIN  screenings scr ON s.id = scr.studentId  LEFT JOIN mrTags mt ON s.id = mt.studentId  WHERE s.schoolId="${schoolId}" AND scr.psStatus="REFER"`
+      `SELECT s.id, s.firstName,s.gender,s.age,s.section,s.classId,scr.studentId,scr.psStatus, mt.mrNo FROM students s  INNER JOIN  screenings scr ON s.id = scr.studentId  LEFT JOIN mrTags mt ON s.id = mt.studentId  WHERE s.schoolId="${schoolId}" AND scr.psStatus="REFER"`
     );
     return response;
   } catch (err) {
@@ -2583,15 +2673,88 @@ export const findAllTorchlightFindings = async (db: SQLiteDatabase) => {
   }
 };
 
+export const saveUsers = async (db: SQLiteDatabase, items: UserModel[]) => {
+  try {
+    console.log("ITEMS***************", items);
+    const response = await db.withTransactionAsync(async () => {
+      items.forEach((item: UserModel) => {
+        db.runSync(
+          `INSERT OR REPLACE INTO users(id,userName,password,firstName,middleName,lastName,designation,isPartnerAgreement,isUserAgreement,isPIIAgreement,isDevicePreparation,isDataSync,isQualityCheck) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+          item.id,
+          item.userName,
+          item.password,
+          item.firstName,
+          item.middleName,
+          item.lastName,
+          item.designation,
+          item.isPartnerAgreement,
+          item.isUserAgreement,
+          item.isPIIAgreement,
+          item.isDevicePreparation,
+          item.isDataSync,
+          item.isQualityCheck
+        );
+      });
+    });
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const findUsers = async (db: SQLiteDatabase) => {
+  try {
+    const response: any = await db.getAllAsync(`SELECT * FROM users`);
+    console.log("RESSSSS", response);
+  } catch (err) {
+    console.log(err);
+    return BLANK_USER_MODEL;
+  }
+};
+
+// Get Torchlight Findings
+export const findUserById = async (db: SQLiteDatabase, id: string) => {
+  try {
+    const response: any = await db.getFirstAsync(
+      `SELECT * FROM users WHERE id=${id}`
+    );
+    console.log("RESSSSS", response);
+    if (response) {
+      return new UserModel({
+        id: response.id,
+        userName: response.userName,
+        password: response.password,
+        firstName: response.firstName,
+        middleName: response.middleName,
+        lastName: response.lastName,
+        designation: response.designation,
+        isPartnerAgreement: response.isPartnerAgreement,
+        isUserAgreement: response.isUserAgreement,
+        isPIIAgreement: response.isPIIAgreement,
+        isDevicePreparation: response.isDevicePreparation,
+        isDataSync: response.isDataSync,
+        isQualityCheck: response.isQualityCheck,
+      });
+    } else {
+      return BLANK_USER_MODEL;
+    }
+  } catch (err) {
+    console.log(err);
+    return BLANK_USER_MODEL;
+  }
+};
+
 // Save Spec Booking
 export const saveSpecBooking = async (
   db: SQLiteDatabase,
-  studentId: string
+  studentId: string,
+  frameName: string
 ) => {
   try {
     const response = db.runSync(
-      "INSERT OR REPLACE INTO spectacleBooking (id,bookingDate,studentId) VALUES (?,?,?)",
+      "INSERT OR REPLACE INTO spectacleBooking (id,frameName,bookingDate,studentId) VALUES (?,?,?,?)",
       studentId,
+      frameName,
       new Date().toISOString(),
       studentId
     );
@@ -2600,6 +2763,7 @@ export const saveSpecBooking = async (
     console.log(err);
   }
 };
+
 //Find Spec Booking Students
 export const getSpecStudentsBySchoolId = async (
   db: SQLiteDatabase,
@@ -2610,7 +2774,7 @@ export const getSpecStudentsBySchoolId = async (
   );
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,s.studentId,sb.bookingDate FROM students s  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON s.id = sb.studentId  WHERE s.schoolId="${schoolId}" AND rf.spectaclesPrescribed=true`
+      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.section,s.studentId,sb.bookingDate FROM students s  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON s.id = sb.studentId  WHERE s.schoolId="${schoolId}" AND rf.spectaclesPrescribed=true`
     );
     return response;
   } catch (err) {

@@ -1,6 +1,8 @@
 import CustomDropdown from "@/components/utils/CustomDropdown";
+import CustomInput from "@/components/utils/CustomInput";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import {
+  findAllClassesDropdowns,
   getMRTagStudentsOneBySchoolId,
   getSchoolByActivityType,
 } from "@/database/database";
@@ -20,6 +22,7 @@ const SpectacleBooking = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
+  const [classItems, setClassItems] = useState<DropdownModel[]>([]);
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
 
   const selectSchoolHandler = (val?: string) => {
@@ -31,6 +34,25 @@ const SpectacleBooking = () => {
         setSelectedSchool(foundItem);
       }
     }
+  };
+
+  const [selectedClass, setSelectedClass] = useState(BLANK_DROPDOWN_MODEL);
+
+  const selectClassHandler = (val?: string) => {
+    if (val == "SELECT") {
+      setSelectedClass(BLANK_DROPDOWN_MODEL);
+    } else {
+      const foundItem = classItems.find((item) => item.value == val);
+      if (foundItem) {
+        setSelectedClass(foundItem);
+      }
+    }
+  };
+
+  const [section, setSection] = useState("");
+
+  const sectionChangeHandler = (val: string) => {
+    setSection(val);
   };
 
   const getStudentsHandler = async () => {
@@ -58,8 +80,16 @@ const SpectacleBooking = () => {
     }
   };
 
+  const getClassesHandler = async () => {
+    const response = await findAllClassesDropdowns(db);
+    if (response) {
+      setClassItems(response);
+    }
+  };
+
   useEffect(() => {
     getSchoolsHandler();
+    getClassesHandler();
   }, []);
 
   return (
@@ -72,32 +102,23 @@ const SpectacleBooking = () => {
           onChange={selectSchoolHandler}
         />
       </View>
-      <View>
-        <View>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexGrow: 1 }}>
           <CustomDropdown
             label="Class"
-            items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-            selectedItem={selectedSchool}
-            onChange={selectSchoolHandler}
+            items={[BLANK_DROPDOWN_MODEL, ...classItems]}
+            selectedItem={selectedClass}
+            onChange={selectClassHandler}
           />
         </View>
-        <View>
-          <CustomDropdown
+        <View style={{ flexGrow: 1 }}>
+          <CustomInput
+            id="section"
             label="Section"
-            items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-            selectedItem={selectedSchool}
-            onChange={selectSchoolHandler}
+            value={section}
+            onChangeText={sectionChangeHandler}
           />
         </View>
-      </View>
-      <View>
-        <Text>Gender</Text>
-      </View>
-      <View>
-        <Text>Status</Text>
-      </View>
-      <View>
-        <Text>Result</Text>
       </View>
       <Button onPress={getStudentsHandler} mode="contained">
         Search

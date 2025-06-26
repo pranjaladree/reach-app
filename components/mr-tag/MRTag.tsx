@@ -1,17 +1,19 @@
 import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import { Button, Dialog, Portal, TextInput } from "react-native-paper";
 import CustomDatePicker from "../ui/CustomDatePicker";
 import DateTimePicker, {
   DateType,
   useDefaultStyles,
 } from "react-native-ui-datepicker";
 import { useCallback, useEffect, useState } from "react";
-import dayjs from "dayjs";
 import CustomDropdown from "../utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { FACILITY_TYPES_ITEMS } from "@/constants/Data";
 import {
+  findAllHospitals,
+  findAllOtherFacilities,
+  findAllVisionCenters,
   getMasterDropdownFromDB,
   saveMRTag,
   TABLES,
@@ -19,6 +21,9 @@ import {
 import { useSQLiteContext } from "expo-sqlite";
 import { MRTagModel } from "@/models/patient-at-fixed-facilty/MRTagModel";
 import { useFocusEffect } from "expo-router";
+import { DateSelector } from "../new_UI/date-picker";
+import dayjs from "dayjs";
+import CustomInput from "../utils/CustomInput";
 
 interface Props {
   item: MRTagModel;
@@ -28,9 +33,12 @@ interface Props {
 const MRTagItem = ({ item, studentId }: Props) => {
   console.log("Item", item);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const defaultStyles = useDefaultStyles();
+
   const db = useSQLiteContext();
   const [mrNo, setMrNo] = useState("");
+  const [mrNoHasError, setMrNoHasError] = useState(false);
+  const [mrNoErrorMessage, setMrNoErrorMessage] = useState("");
+
   const [hospitalItems, setHospitalItems] = useState<DropdownModel[]>([]);
   console.log("Hospital Items", hospitalItems);
   const [visionCenterItems, setVisionCenterItems] = useState<DropdownModel[]>(
@@ -39,7 +47,6 @@ const MRTagItem = ({ item, studentId }: Props) => {
   const [otherFacilityItems, setOtherFacilityItems] = useState<DropdownModel[]>(
     []
   );
-  const [selected, setSelected] = useState<DateType>();
   const [facilityItems, setFacilityItems] = useState<DropdownModel[]>([]);
   const [facilityLabel, setFacilityLabel] = useState("");
   const [facilityType, setSelectedFaciliType] = useState(BLANK_DROPDOWN_MODEL);
@@ -73,24 +80,30 @@ const MRTagItem = ({ item, studentId }: Props) => {
     }
   };
 
-  const selectDateHandler = ({ date }: any) => {
-    setSelected(date);
-    setIsModalOpen(false);
-  };
-
   const addMRTagHandler = async () => {
     const response = await saveMRTag(
       db,
       new MRTagModel({
         id: studentId,
         mrNo: mrNo,
-        visitDate: dayjs(selected).format("YYYY-MM-DD"),
+        visitDate: dayjs(new Date()).format("YYYY-MM-DD"),
         facilityType: facilityType.value,
         facilityId: facilityName.id,
         studentId: studentId,
       })
     );
+    if (response) {
+      showDialog();
+    }
   };
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [visible, setVisible] = useState(false);
+
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => setVisible(false);
 
   useEffect(() => {
     if (facilityType.value?.toUpperCase() == "VISION CENTER") {
@@ -105,42 +118,32 @@ const MRTagItem = ({ item, studentId }: Props) => {
       setFacilityItems(otherFacilityItems);
       setFacilityLabel("Other Facility");
     }
-  }, [facilityType]);
+  }, [facilityType, visionCenterItems, hospitalItems, otherFacilityItems]);
 
   const getFacilityHandler = async () => {
-    const hospitalResponse = await getMasterDropdownFromDB(
-      db,
-      TABLES.HOSPITAL_TABLE
-    );
+    const hospitalResponse = await findAllHospitals(db);
     if (hospitalResponse) {
       setHospitalItems(hospitalResponse);
     }
 
-    const visionCenterResponse = await getMasterDropdownFromDB(
-      db,
-      TABLES.VISION_CENTER_TABLE
-    );
+    const visionCenterResponse = await findAllVisionCenters(db);
     if (visionCenterResponse) {
       setVisionCenterItems(visionCenterResponse);
     }
 
-    const otherFacilityResponse = await getMasterDropdownFromDB(
-      db,
-      TABLES.OTHER_FACILITY_TABLLE
-    );
+    const otherFacilityResponse = await findAllOtherFacilities(db);
     if (otherFacilityResponse) {
       setOtherFacilityItems(otherFacilityResponse);
     }
   };
 
   const setExistingData = () => {
-    if (item.id != "0") {
-      setMrNo(item.mrNo);
-      setSelected(item.visitDate);
+    if (item?.id != "0") {
+      setMrNo(item?.mrNo);
     }
 
     const foundFacilityType = FACILITY_TYPES_ITEMS.find(
-      (item2) => item2.value == item.facilityType
+      (item2) => item2?.value == item?.facilityType
     );
     if (foundFacilityType) {
       setSelectedFaciliType(foundFacilityType);
@@ -148,10 +151,10 @@ const MRTagItem = ({ item, studentId }: Props) => {
   };
 
   useEffect(() => {
-    if (item.id != "0") {
+    if (item?.id != "0") {
       console.log("Runnning...");
       const foundFacilityName = facilityItems.find(
-        (item2) => item2.id == item.facilityId
+        (item2) => item2.id == item?.facilityId
       );
       if (foundFacilityName) {
         setFacilityName(foundFacilityName);
@@ -166,63 +169,60 @@ const MRTagItem = ({ item, studentId }: Props) => {
       return () => {
         console.log("Screen unfocused");
       };
-    }, [])
+    }, [item])
   );
 
   return (
-    <View>
-      <Text>MR Tag</Text>
-      <View>
-        <TextInput
-          mode="outlined"
-          value={mrNo}
-          onChangeText={mrNoChangeHandler}
-        />
-      </View>
-      <View>
-        <Pressable
-          onPress={() => {
-            setIsModalOpen(true);
-          }}
-        >
-          <View style={styles.date}>
-            <Text>{dayjs(selected).format("DD-MM-YYYY")}</Text>
+    <>
+      <View style={{ marginTop: 10 }}>
+        <Text>MR Tag</Text>
+        <View>
+          <CustomInput
+            id="mrNo"
+            label="MR No"
+            value={mrNo}
+            onChangeText={mrNoChangeHandler}
+          />
+        </View>
+
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ flexGrow: 1, padding: 5 }}>
+            <CustomDropdown
+              label="Facility Type"
+              items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
+              selectedItem={facilityType}
+              onChange={selectActivityTypeHandler}
+            />
           </View>
-        </Pressable>
+          <View style={{ flexGrow: 1, padding: 5 }}>
+            <CustomDropdown
+              label={facilityLabel}
+              items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
+              selectedItem={facilityName}
+              onChange={selectFacilityNameHandler}
+            />
+          </View>
+        </View>
+        <View>
+          <Button onPress={addMRTagHandler} mode="contained">
+            Proceed
+          </Button>
+        </View>
       </View>
-
-      <View>
-        <CustomDropdown
-          label="Facility Type"
-          items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
-          selectedItem={facilityType}
-          onChange={selectActivityTypeHandler}
-        />
-      </View>
-      <View>
-        <CustomDropdown
-          label={facilityLabel}
-          items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
-          selectedItem={facilityName}
-          onChange={selectFacilityNameHandler}
-        />
-      </View>
-      <View>
-        <Button onPress={addMRTagHandler} mode="contained">
-          Go
-        </Button>
-      </View>
-
-      {/* Calendar View */}
-      <Modal visible={isModalOpen}>
-        <DateTimePicker
-          mode="single"
-          date={selected}
-          onChange={selectDateHandler}
-          styles={defaultStyles}
-        />
-      </Modal>
-    </View>
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Title>REACHLite</Dialog.Title>
+          <Dialog.Content>
+            <Text>MR Tag Saved !</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog} loading={isLoading}>
+              Done
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </>
   );
 };
 

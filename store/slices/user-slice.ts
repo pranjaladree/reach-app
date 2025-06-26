@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface UserState {
+  userId: string;
   isAuthenticated: boolean;
   isTempAuthenticated: boolean;
   tempToken: string;
@@ -17,6 +18,7 @@ export interface UserState {
   isAdministrator: boolean;
 }
 const initialState: UserState = {
+  userId: "",
   isAuthenticated: false,
   isTempAuthenticated: false,
   tempToken: "",
@@ -54,6 +56,7 @@ export const userSlice = createSlice({
       state.tempToken = action.payload;
     },
     setLoggedInUser: (state, action) => {
+      state.userId = action.payload.userId;
       state.fullName = action.payload.fullName;
       state.partnerId = action.payload.partnerId;
       state.userType = action.payload.userType;

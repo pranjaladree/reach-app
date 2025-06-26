@@ -1,6 +1,6 @@
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import React from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { Dropdown } from "react-native-paper-dropdown";
 
 interface Props {
@@ -9,6 +9,8 @@ interface Props {
   selectedItem: DropdownModel;
   onChange: (val?: string) => void;
   disabled?: boolean;
+  isError?: boolean;
+  errorMessage?: string;
 }
 
 const CustomDropdown = ({
@@ -17,6 +19,8 @@ const CustomDropdown = ({
   selectedItem,
   onChange,
   disabled,
+  isError,
+  errorMessage,
 }: Props) => {
   console.log("Items", items);
   return (
@@ -29,6 +33,11 @@ const CustomDropdown = ({
         onSelect={onChange}
         disabled={disabled}
       />
+      {isError && (
+        <View>
+          <Text style={{ color: "red" }}>{errorMessage}</Text>
+        </View>
+      )}
     </View>
   );
 };

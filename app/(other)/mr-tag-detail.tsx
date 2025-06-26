@@ -2,14 +2,19 @@ import Advice from "@/components/mr-tag/Advice";
 import MRTagItem from "@/components/mr-tag/MRTag";
 import Refraction from "@/components/mr-tag/Refraction";
 import VisualAcuity from "@/components/mr-tag/VisualAcuity";
+import { DateSelector } from "@/components/new_UI/date-picker";
 import { BLANK_MR_TAG_MODEL } from "@/constants/BlankModels";
 import { findOneMRTag } from "@/database/database";
 import { RootState } from "@/store/store";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Modal } from "react-native";
 import { SegmentedButtons } from "react-native-paper";
+import DateTimePicker, {
+  DateType,
+  useDefaultStyles,
+} from "react-native-ui-datepicker";
 import { useSelector } from "react-redux";
 
 const MRTagDetail = () => {

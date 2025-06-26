@@ -22,7 +22,7 @@ import {
 } from "@/database/database";
 import dayjs from "dayjs";
 import { ScreeningModel } from "@/models/primary-screening/ScreeningModel";
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import CustomInput from "../utils/CustomInput";
 import { DateSelector } from "../new_UI/date-picker";
 import QRCode from "react-native-qrcode-svg";
@@ -31,6 +31,7 @@ const ReasonForm = () => {
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
   );
+  console.log("SCHOOL IN REFER", screeningItem.schoolId);
 
   const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
   const [qrData, setQrData] = useState<any>();
@@ -42,6 +43,9 @@ const ReasonForm = () => {
   const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
+  const [diaglogMessage, setDialogMessage] = useState("");
+  const { isQCPopupEligible, isQCUser } = useLocalSearchParams();
+  console.log("IS QC REFER", isQCPopupEligible, isQCUser);
   const [hospitalItems, setHospitalItems] = useState<DropdownModel[]>([]);
   console.log("Hospital Items", hospitalItems);
   const [visionCenterItems, setVisionCenterItems] = useState<DropdownModel[]>(
@@ -112,12 +116,18 @@ const ReasonForm = () => {
         mobileNo: mobileNo,
         otherReason: other,
         instructionForReferralCenter: instructions,
+        isQCDone: isQCUser == "true",
       })
     );
     console.log("Response", response);
-    if (response) {
-      showDialog();
+    console.log("QC RESPONSE", isQCPopupEligible);
+    console.log(isQCPopupEligible == "true");
+    if (response && isQCPopupEligible == "true") {
+      setDialogMessage("Please send this child for Quality Check");
+    } else {
+      setDialogMessage(`Successfully Checked-out : ${screeningItem.psStatus}`);
     }
+    showDialog();
   };
 
   const navigateHandler = async () => {
@@ -191,7 +201,12 @@ const ReasonForm = () => {
             setIsModalOpen(true);
           }}
         >
-          <DateSelector selected={selected} setIsModalOpen={setIsModalOpen} />
+          <DateSelector
+            selected={selected}
+            onOpen={() => {
+              setIsModalOpen(true);
+            }}
+          />
           {/* <View style={styles.date}>
             <Text>{dayjs(selected).format("DD-MM-YYYY")}</Text>
           </View> */}
@@ -259,7 +274,7 @@ const ReasonForm = () => {
         <Dialog visible={visible} onDismiss={saveScreeningHandler}>
           <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
-            <Text>Successfully Checked-out : {screeningItem.psStatus} </Text>
+            <Text>{diaglogMessage}</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button

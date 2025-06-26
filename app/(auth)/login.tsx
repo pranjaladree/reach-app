@@ -41,6 +41,7 @@ const LoginScreen = () => {
     console.log("PROfile", response);
     dispatch(
       setLoggedInUser({
+        userId: response.data.id,
         fullName: response.data.fullName,
         partnerId: response.data.partnerId,
         userType: response.data.userType,

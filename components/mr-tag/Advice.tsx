@@ -515,7 +515,7 @@ const Advice = ({ mrId }: Props) => {
 
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>Alert</Dialog.Title>
+          <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
             <Text>{diaglogMessage}</Text>
           </Dialog.Content>

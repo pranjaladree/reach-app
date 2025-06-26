@@ -20,7 +20,6 @@ import { setSchools } from "@/store/slices/school-slice";
 import { getStudentBySchoolId } from "@/http/device-preparation-http";
 import { StudentModel } from "@/models/school/StudentModel";
 import { Button } from "react-native-paper";
-import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import { Dialog, Portal, PaperProvider } from "react-native-paper";
 import { DateSelector } from "@/components/new_UI/date-picker";
 
@@ -37,7 +36,6 @@ const DevicePreparation = () => {
   const showDialog = () => setVisible(true);
 
   const hideDialog = () => setVisible(false);
-  console.log("SSSSSSSSSS Shool", schools);
   const schoolItems = useSelector(
     (state: RootState) => state.schoolSlice.schoolItems
   );
@@ -50,7 +48,6 @@ const DevicePreparation = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const selectActivityTypeHandler = (val?: string) => {
-    console.log("Val", val);
     if (val == "") {
       setSelectedActivityType(BLANK_DROPDOWN_MODEL);
     } else {
@@ -64,7 +61,6 @@ const DevicePreparation = () => {
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
 
   const selectSchoolHandler = (val?: string) => {
-    console.log("Val", val);
     if (val == "") {
       setSelectedSchool(BLANK_DROPDOWN_MODEL);
     } else {
@@ -76,6 +72,7 @@ const DevicePreparation = () => {
   };
 
   const selectDateHandler = ({ date }: any) => {
+    console.log(date);
     setSelected(date);
     setIsModalOpen(false);
   };
@@ -131,6 +128,7 @@ const DevicePreparation = () => {
   return (
     <View style={styles.screen}>
       <Text style={styles.headerTitle}>Device Preparation</Text>
+
       <View>
         <CustomDropdown
           label="Activity Type"
@@ -140,18 +138,12 @@ const DevicePreparation = () => {
         />
       </View>
       <View style={styles.row}>
-        <DateSelector selected={selected} setIsModalOpen={setIsModalOpen} />
-        {/* <View style={styles.rowItem}>
-          <Pressable
-            onPress={() => {
-              setIsModalOpen(true);
-            }}
-          >
-            <View style={styles.date}>
-              <Text>{dayjs(selected).format("DD-MM-YYYY")}</Text>
-            </View>
-          </Pressable>
-        </View> */}
+        <DateSelector
+          selected={selected}
+          onOpen={() => {
+            setIsModalOpen(true);
+          }}
+        />
         <View style={styles.rowItem}>
           <Button
             onPress={getSchoolListHandler}
@@ -159,51 +151,63 @@ const DevicePreparation = () => {
             loading={isSchoolLoading}
             style={{ paddingVertical: 5, marginLeft: 10, borderRadius: 30 }}
           >
-            Get Schools
+            Get School
           </Button>
         </View>
       </View>
-      <View style={styles.box}>
-        <CustomDropdown
-          label="School"
-          items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-          selectedItem={selectedSchool}
-          onChange={selectSchoolHandler}
-        />
-      </View>
-      <View style={styles.box}>
-        <Button
-          onPress={devicePreparationHandler}
-          mode="contained"
-          loading={isStudentLoading}
-          style={{ paddingVertical: 5, marginHorizontal: 10, borderRadius: 30 }}
-        >
-          Get Student Data
-        </Button>
-      </View>
-      <View style={{ paddingTop: 20 }}>
-        <Text style={styles.headerTitle}>Data Details</Text>
-        <View style={styles.summary}>
-          <View style={styles.card}>
-            <Text style={styles.count}>{students.length}</Text>
-            <Text style={{ marginTop: 5, color: "#626161", fontSize: 16 , fontWeight: 400 }}>
-              Student Record Found
-            </Text>
-          </View>
 
+      <View>
+        <View style={styles.box}>
+          <CustomDropdown
+            label="School"
+            items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
+            selectedItem={selectedSchool}
+            onChange={selectSchoolHandler}
+          />
+        </View>
+        <View style={styles.box}>
           <Button
-            onPress={saveStudentsHandler}
+            onPress={devicePreparationHandler}
             mode="contained"
-            loading={isSavingLoading}
+            loading={isStudentLoading}
             style={{
               paddingVertical: 5,
+              marginHorizontal: 10,
               borderRadius: 30,
-              marginTop: 20,
-              width: "100%",
             }}
           >
-            Save Records On Device
+            Get Student Data
           </Button>
+        </View>
+        <View style={{ paddingTop: 20 }}>
+          <View style={styles.summary}>
+            <View style={styles.card}>
+              <Text
+                style={{
+                  marginTop: 5,
+                  color: "#626161",
+                  fontSize: 16,
+                  fontWeight: 400,
+                }}
+              >
+                No of Students Record Found: {students.length}
+              </Text>
+            </View>
+
+            <Button
+              onPress={saveStudentsHandler}
+              mode="contained"
+              loading={isSavingLoading}
+              style={{
+                paddingVertical: 5,
+                borderRadius: 30,
+                marginTop: 20,
+                width: "100%",
+              }}
+            >
+              Save Records On Device
+            </Button>
+          </View>
         </View>
       </View>
       {/* Calendar View */}
@@ -230,7 +234,7 @@ const DevicePreparation = () => {
   );
 };
 
- const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     padding: 5,

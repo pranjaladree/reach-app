@@ -47,7 +47,6 @@ const MRTagDataSync = () => {
     setIsLoading(true);
     const response = await prepareMRDataSync(db, selectedSchool.id);
     console.log("MR PREPARED DATA", JSON.stringify(response));
-    console.log("Data", JSON.stringify(response));
     const syncResponse = await syncMRTagData(token, response);
     if (syncResponse.isError) {
       setDialogMessage(syncResponse.data);

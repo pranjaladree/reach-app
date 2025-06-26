@@ -6,6 +6,7 @@ import { SchoolModel } from "@/models/school/SchoolModel";
 import { StudentModel } from "@/models/school/StudentModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
+import { UserModel } from "@/models/user/UserModel";
 
 export const BLANK_DROPDOWN_MODEL = new DropdownModel({
   id: "0",
@@ -123,6 +124,9 @@ export const BLANK_SCREENING_MODEL = new ScreeningModel({
   isBinacularTestRequired: false,
   isColorVisionTestRequired: false,
   isTleRefer: false,
+  isQCDone: false,
+  isPsDone: false,
+  isEditable: false,
 });
 
 export const BLANK_VISUAL_ACUITY_MODEL = new VisualAcuityModel({
@@ -159,4 +163,20 @@ export const BLANK_REACH_CONFIGURATION_MODEL = new ReachConfigurationModel({
   isNpcTest: false,
   isPlus2DTest: false,
   isActive: "Yes",
+});
+
+export const BLANK_USER_MODEL = new UserModel({
+  id: "",
+  userName: "",
+  password: "",
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  designation: "",
+  isPartnerAgreement: false,
+  isUserAgreement: false,
+  isPIIAgreement: false,
+  isDevicePreparation: false,
+  isDataSync: false,
+  isQualityCheck: false,
 });
