@@ -14,7 +14,6 @@ const BinacularTest = () => {
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
   );
-  console.log("ScreeningItem", screeningItem);
 
   const coverTestChangeHandler = (val?: string) => {
     if (val == "0") {
@@ -85,6 +84,7 @@ const BinacularTest = () => {
   };
 
   const plus2DTestREChangeHandler = (val?: string) => {
+    console.log("***********", val);
     if (val == "0") {
       dispatch(
         setScreeningItem({
@@ -93,12 +93,12 @@ const BinacularTest = () => {
         })
       );
     } else {
-      const foundItem = YES_NO_DROPDOWN_ITEMS.find((item) => item.id == val);
+      const foundItem = YES_NO_DROPDOWN_ITEMS.find((item) => item.value == val);
       if (foundItem) {
         dispatch(
           setScreeningItem({
             ...screeningItem,
-            plus2DTestLE: foundItem,
+            plus2DTestRE: foundItem,
           })
         );
       }

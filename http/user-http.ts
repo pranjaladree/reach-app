@@ -13,7 +13,6 @@ export const getAllUsers = async (token: string) => {
       },
     });
     const resData = await res.json();
-    console.log("USERS", resData);
 
     //   Converting Fetched Api data to frontend model object
     let arr: UserModel[] = [];

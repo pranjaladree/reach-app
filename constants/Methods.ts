@@ -61,6 +61,7 @@ export const checkPSStatus = (
       return { status, reason };
     } else {
       // If logmar 0.2 passed
+      console.log("Bina Check", screeningItem.isBinacularTestRequired);
       if (
         screeningItem.ocularComplaint == "YES" &&
         screeningItem.isBinacularTestRequired
@@ -101,7 +102,7 @@ export const checkPSStatus = (
             return { status, reason };
           } else {
             status = "ADVISE";
-            reason = "";
+            reason = "Torchlight Examination Failed";
             return { status, reason };
           }
         } else {

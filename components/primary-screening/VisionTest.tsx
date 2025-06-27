@@ -16,7 +16,6 @@ const VisionTest = () => {
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
   );
-  console.log("Screening Item", screeningItem);
   const dispatch = useDispatch();
 
   const unableToPerformTestChangeHandler = (val: string) => {

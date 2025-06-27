@@ -31,7 +31,6 @@ const ReasonForm = () => {
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
   );
-  console.log("SCHOOL IN REFER", screeningItem.schoolId);
 
   const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
   const [qrData, setQrData] = useState<any>();
@@ -45,9 +44,7 @@ const ReasonForm = () => {
   const hideDialog = () => setVisible(false);
   const [diaglogMessage, setDialogMessage] = useState("");
   const { isQCPopupEligible, isQCUser } = useLocalSearchParams();
-  console.log("IS QC REFER", isQCPopupEligible, isQCUser);
   const [hospitalItems, setHospitalItems] = useState<DropdownModel[]>([]);
-  console.log("Hospital Items", hospitalItems);
   const [visionCenterItems, setVisionCenterItems] = useState<DropdownModel[]>(
     []
   );
@@ -65,7 +62,6 @@ const ReasonForm = () => {
   const [instructions, setInstructions] = useState("");
 
   const selectActivityTypeHandler = (val?: string) => {
-    console.log("Val", val);
     if (val == "") {
       setSelectedFaciliType(BLANK_DROPDOWN_MODEL);
     } else {
@@ -77,7 +73,6 @@ const ReasonForm = () => {
   };
 
   const selectFacilityNameHandler = (val?: string) => {
-    console.log("Val", val);
     if (val == "") {
       setFacilityName(BLANK_DROPDOWN_MODEL);
     } else {

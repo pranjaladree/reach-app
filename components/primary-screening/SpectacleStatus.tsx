@@ -19,7 +19,6 @@ const SpectacleStatus = () => {
           haveSpecNow: "",
           specCondition: "",
           usingSpectacle: val,
-          isVisionTestVisible: false,
         })
       );
     } else {
@@ -27,19 +26,28 @@ const SpectacleStatus = () => {
         setScreeningItem({
           ...screeningItem,
           usingSpectacle: val,
-          isVisionTestVisible: true,
         })
       );
     }
   };
 
   const haveSpecNowChangeHandler = (val: string) => {
-    dispatch(
-      setScreeningItem({
-        ...screeningItem,
-        haveSpecNow: val,
-      })
-    );
+    if (val == "NO") {
+      dispatch(
+        setScreeningItem({
+          ...screeningItem,
+          haveSpecNow: val,
+          specCondition: "",
+        })
+      );
+    } else {
+      dispatch(
+        setScreeningItem({
+          ...screeningItem,
+          haveSpecNow: val,
+        })
+      );
+    }
   };
 
   const spectacleConditionChangeHandler = (val: string) => {

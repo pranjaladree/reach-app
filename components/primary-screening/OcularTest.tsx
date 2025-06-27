@@ -109,6 +109,7 @@ const OcularTest = () => {
       }
     });
     let isBinacular = false;
+    let isTle = false;
 
     if (
       isBinacularRequired &&
@@ -121,10 +122,18 @@ const OcularTest = () => {
       isBinacular = false;
     }
 
+    if (isBinacularRequired) {
+      isTle = false;
+    } else {
+      isTle = true;
+    }
+
     dispatch(
       setScreeningItem({
         ...screeningItem,
+        isBinacularTestRequired: isBinacularRequired,
         isBinucularTestVisible: isBinacular,
+        isTorchlightVisible: isTle,
         ocularList: ocularList,
       })
     );

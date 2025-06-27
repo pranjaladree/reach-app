@@ -3,6 +3,7 @@ import { AddModel } from "@/models/other-masters/AddModel";
 import { AxisModel } from "@/models/other-masters/AxisModel";
 import { ClassModel } from "@/models/other-masters/ClassModel";
 import { CYLModel } from "@/models/other-masters/CYLModel";
+import { DiagnosisModel } from "@/models/other-masters/DiagnosisModel";
 import { DistanceDvaModel } from "@/models/other-masters/DistanceDvaModel";
 import { FrameMaterialModel } from "@/models/other-masters/FrameMaterialModel";
 import { LensMaterialModel } from "@/models/other-masters/LensMaterialModel";
@@ -200,6 +201,14 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   updatedAt DATETIME DEFAULT (datetime('now')));
 
   CREATE TABLE IF NOT EXISTS reasonForRefferals (
+  id INTEGER PRIMARY KEY NOT NULL,
+  title TEXT,
+  description TEXT, 
+  displayOrder INTEGER,
+  createdAt DATETIME DEFAULT (datetime('now')),
+  updatedAt DATETIME DEFAULT (datetime('now')));
+
+  CREATE TABLE IF NOT EXISTS diagnosisMaster (
   id INTEGER PRIMARY KEY NOT NULL,
   title TEXT,
   description TEXT, 
@@ -2193,11 +2202,20 @@ export const saveReachConfigs = async (
 // Get Reach Configs
 export const findReachConfigs = async (db: SQLiteDatabase) => {
   try {
-    const response = await db.getFirstSync(
+    const response: any = await db.getFirstSync(
       `SELECT * FROM reachConfigs WHERE id=1`
     );
-    console.log("Response", response);
+    console.log("Response *************************************", response);
     if (response) {
+      return new ReachConfigurationModel({
+        id: 1,
+        partnerName: "",
+        partnerId: "",
+        isNpcTest: response.isNpcTest == 1 ? true : false,
+        isCoverTest: response.isCoverTest == 1 ? true : false,
+        isPlus2DTest: response.isPlus2DTest == 1 ? true : false,
+        isActive: "",
+      });
     }
   } catch (err) {
     console.log(err);
@@ -2279,6 +2297,53 @@ export const saveLensMaterials = async (
 export const findAllLensMaterials = async (db: SQLiteDatabase) => {
   try {
     const response = await db.getAllAsync(`SELECT * FROM lensMaterials`);
+    const arr: DropdownModel[] = [];
+    if (response) {
+      response.map((item: any) => {
+        arr.push(
+          new DropdownModel({
+            id: item.id,
+            value: item.title,
+            label: item.title,
+            displayOrder: item.displayOrder,
+          })
+        );
+      });
+    }
+    return arr;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+};
+
+// Save Frame Materials
+export const saveDiagnosisMaster = async (
+  db: SQLiteDatabase,
+  items: DiagnosisModel[]
+) => {
+  try {
+    const response = await db.withTransactionAsync(async () => {
+      items.forEach((item: DiagnosisModel) => {
+        db.runSync(
+          `INSERT OR REPLACE INTO diagnosisMaster (id,title,description,displayOrder) VALUES (?,?,?,?)`,
+          item.id,
+          item.title,
+          item.category,
+          item.displayOrder ?? 0
+        );
+      });
+    });
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// Get Frame Materials
+export const findAllDiagnosisMaster = async (db: SQLiteDatabase) => {
+  try {
+    const response = await db.getAllAsync(`SELECT * FROM diagnosisMasterxwxw`);
     const arr: DropdownModel[] = [];
     if (response) {
       response.map((item: any) => {

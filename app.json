@@ -70,9 +70,7 @@
       }
     },
     "owner": "bytemagic",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/2be88e54-6fb9-4e6c-b9b6-f7d7ee29a89b"
     }

@@ -34,6 +34,23 @@ export const studentSlice = createSlice({
 
       // Check Test Visibility
       let item = state.screeningItem;
+
+      // Vision Test Visibility
+      if (item.usingSpectacle == "NO") {
+        item.isVisionTestVisible = true;
+      } else {
+        if (item.haveSpecNow == "NO") {
+          item.isVisionTestVisible = true;
+        } else {
+          if (item.specCondition != "") {
+            item.isVisionTestVisible = true;
+          } else {
+            item.isVisionTestVisible = false;
+          }
+        }
+      }
+
+      //Ocular Visibility
       if (
         item.canReadLogmarLE.value == "YES" &&
         item.canReadLogmarRE.value == "YES"
@@ -42,6 +59,8 @@ export const studentSlice = createSlice({
       } else {
         item.isOcularComplaintVisible = false;
       }
+
+      // Autoref Visibility
 
       if (
         item.plus2DTestLE.value == "NO" &&

@@ -63,7 +63,6 @@ const ScreeningDetails = () => {
   };
 
   const saveScreeningHandler = async () => {
-    console.log("ISQC ************", isQCUser);
     const response = await savePrimaryScreening(
       db,
       new ScreeningModel({
@@ -72,8 +71,6 @@ const ScreeningDetails = () => {
         psStatus: "NORMAL",
       })
     );
-    console.log("Response", response);
-    console.log("QC Popup", isQCPopupEligible);
     if (response && isQCPopupEligible) {
       setDialogMessage("Send this Child for Quality Check");
     } else {

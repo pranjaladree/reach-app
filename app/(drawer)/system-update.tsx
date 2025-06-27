@@ -23,6 +23,14 @@ import {
   saveFrameMaterials,
   saveTorchligtFindings,
   saveUsers,
+  saveLensTypes,
+  saveSpecialityLens,
+  saveModesOfWear,
+  saveLensSurfaceCoatings,
+  saveLensTints,
+  saveSpecialInstructions,
+  saveReasonForReferrals,
+  saveDiagnosisMaster,
 } from "@/database/database";
 import { getVisionCenters } from "@/http/vision-center-http";
 import { getAllHospitals } from "@/http/hospital-http";
@@ -43,6 +51,14 @@ import AppButton from "@/components/new_UI/AppButton";
 import StatusStepper from "@/components/new_UI/statusStaper";
 import { getAllTorchLights } from "@/http/torchlight-http";
 import { getAllUsers } from "@/http/user-http";
+import { getAllLensTypes } from "@/http/lens-type-http";
+import { getAllSpecialityLens } from "@/http/speciality-lens-http";
+import { getAllModeOfwears } from "@/http/mode-of-wear-http";
+import { getAllLensSurfaceCoating } from "@/http/lens-surface-coating-http";
+import { getAllLensTint } from "@/http/lens-tint-http";
+import { getAllSpecialInstructions } from "@/http/special-instructions-http";
+import { getAllReasonForReferrals } from "@/http/reason-for-referral-http";
+import { getAllDiagnosis } from "@/http/diagnosis-http";
 
 type UpdateKey =
   | "Classes"
@@ -60,6 +76,14 @@ type UpdateKey =
   | "CYLs"
   | "LensMaterials"
   | "FrameMaterials"
+  | "LensTypes"
+  | "SpecialityLens"
+  | "ModesOfWears"
+  | "LensSurfaceCoating"
+  | "LensTints"
+  | "SpecialInstructions"
+  | "ReasonForReferrals"
+  | "DiagnosisMaster"
   | "TorchlightFindings"
   | "Users";
 
@@ -89,6 +113,14 @@ const SystemUpdate = () => {
     CYLs: "pending",
     LensMaterials: "pending",
     FrameMaterials: "pending",
+    LensTypes: "pending",
+    SpecialityLens: "pending",
+    ModesOfWears: "pending",
+    LensSurfaceCoating: "pending",
+    LensTints: "pending",
+    SpecialInstructions: "pending",
+    ReasonForReferrals: "pending",
+    DiagnosisMaster: "pending",
     TorchlightFindings: "pending",
     Users: "pending",
   });
@@ -162,6 +194,10 @@ const SystemUpdate = () => {
       updateStatus("ReachConfigs", "loading");
       try {
         const res = await getReachConfiguration(token, partnerId.toString());
+        console.log(
+          "CONFIGS ****************************************",
+          res.data
+        );
         if (!res?.isError) {
           saveReachConfigs(db, res.data);
           updateStatus("ReachConfigs", "success");
@@ -276,6 +312,102 @@ const SystemUpdate = () => {
         } else throw new Error("Frame error");
       } catch {
         updateStatus("FrameMaterials", "failed");
+      }
+    },
+    LensTypes: async () => {
+      updateStatus("LensTypes", "loading");
+      try {
+        const res = await getAllLensTypes(token);
+        if (!res?.isError) {
+          saveLensTypes(db, res.data);
+          updateStatus("LensTypes", "success");
+        } else throw new Error("Frame error");
+      } catch {
+        updateStatus("LensTypes", "failed");
+      }
+    },
+    SpecialityLens: async () => {
+      updateStatus("SpecialityLens", "loading");
+      try {
+        const res = await getAllSpecialityLens(token);
+        if (!res?.isError) {
+          saveSpecialityLens(db, res.data);
+          updateStatus("SpecialityLens", "success");
+        } else throw new Error("Frame error");
+      } catch {
+        updateStatus("SpecialityLens", "failed");
+      }
+    },
+    ModesOfWears: async () => {
+      updateStatus("ModesOfWears", "loading");
+      try {
+        const res = await getAllModeOfwears(token);
+        if (!res?.isError) {
+          saveModesOfWear(db, res.data);
+          updateStatus("ModesOfWears", "success");
+        } else throw new Error("ModesOfWears error");
+      } catch {
+        updateStatus("ModesOfWears", "failed");
+      }
+    },
+    LensSurfaceCoating: async () => {
+      updateStatus("LensSurfaceCoating", "loading");
+      try {
+        const res = await getAllLensSurfaceCoating(token);
+        if (!res?.isError) {
+          saveLensSurfaceCoatings(db, res.data);
+          updateStatus("LensSurfaceCoating", "success");
+        } else throw new Error("LensSurfaceCoating error");
+      } catch {
+        updateStatus("LensSurfaceCoating", "failed");
+      }
+    },
+    LensTints: async () => {
+      updateStatus("LensTints", "loading");
+      try {
+        const res = await getAllLensTint(token);
+        if (!res?.isError) {
+          saveLensTints(db, res.data);
+          updateStatus("LensTints", "success");
+        } else throw new Error("LensTints error");
+      } catch {
+        updateStatus("LensTints", "failed");
+      }
+    },
+    SpecialInstructions: async () => {
+      updateStatus("SpecialInstructions", "loading");
+      try {
+        const res = await getAllSpecialInstructions(token);
+        if (!res?.isError) {
+          saveSpecialInstructions(db, res.data);
+          updateStatus("SpecialInstructions", "success");
+        } else throw new Error("SpecialInstructions error");
+      } catch {
+        updateStatus("SpecialInstructions", "failed");
+      }
+    },
+    ReasonForReferrals: async () => {
+      updateStatus("ReasonForReferrals", "loading");
+      try {
+        const res = await getAllReasonForReferrals(token);
+        if (!res?.isError) {
+          saveReasonForReferrals(db, res.data);
+          updateStatus("ReasonForReferrals", "success");
+        } else throw new Error("ReasonForReferrals error");
+      } catch {
+        updateStatus("ReasonForReferrals", "failed");
+      }
+    },
+    DiagnosisMaster: async () => {
+      updateStatus("DiagnosisMaster", "loading");
+      try {
+        const res = await getAllDiagnosis(token);
+        if (!res?.isError) {
+          saveDiagnosisMaster(db, res.data);
+          updateStatus("DiagnosisMaster", "success");
+        } else throw new Error("DiagnosisMaster error");
+      } catch {
+        updateStatus("DiagnosisMaster", "failed");
       }
     },
     TorchlightFindings: async () => {

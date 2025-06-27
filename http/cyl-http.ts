@@ -13,7 +13,6 @@ export const getAllCyls = async (token: string) => {
       },
     });
     const resData = await res.json();
-    console.log("RESDATA CYL", resData);
 
     //   Converting Fetched Api data to frontend model object
     let arr: CYLModel[] = [];
