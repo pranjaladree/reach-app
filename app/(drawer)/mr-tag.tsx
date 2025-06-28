@@ -1,182 +1,189 @@
-import CustomDropdown from "@/components/utils/CustomDropdown";
-import CustomInput from "@/components/utils/CustomInput";
-import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
-import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
-import {
-  GENDER_RADIO_ITEMS,
-  RESULT_RADIO_ITEMS,
-  STATUS_RADIO_ITEMS,
-} from "@/constants/Data";
-import {
-  findAllClassesDropdowns,
-  getMRTagStudentsOneBySchoolId,
-  getSchoolByActivityType,
-} from "@/database/database";
-import { DropdownModel } from "@/models/ui/DropdownModel";
-import { RadioItemModel } from "@/models/ui/RadioItemModel";
-import { setSchools } from "@/store/slices/school-slice";
-import { setStudents } from "@/store/slices/student-slice";
-import { RootState } from "@/store/store";
-import { useRouter } from "expo-router";
-import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
-import { Button } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
+import StyledDropdown, {
+  DropdownItem,
+} from "@/components/new_UI/StyledDropdown";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Button, RadioButton } from "react-native-paper";
 
-const MRTag = () => {
-  const db = useSQLiteContext();
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
-  const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
-  const [classItems, setClassItems] = useState<DropdownModel[]>([]);
+const classItems: DropdownItem[] = [
+  { label: "Class 1", value: "1" },
+  { label: "Class 2", value: "2" },
+];
 
-  const selectSchoolHandler = (val?: string) => {
-    if (val == "") {
-      setSelectedSchool(BLANK_DROPDOWN_MODEL);
-    } else {
-      const foundItem = schoolItems.find((item) => item.value == val);
-      if (foundItem) {
-        setSelectedSchool(foundItem);
-      }
-    }
+const sectionItems: DropdownItem[] = [
+  { label: "A", value: "A" },
+  { label: "B", value: "B" },
+];
+
+const schoolItems: DropdownItem[] = [
+  { label: "SUNFLOWERSCHOOL", value: "sunflower" },
+];
+
+const DetailsEvolution = () => {
+  const [selectedSchool, setSelectedSchool] = useState(schoolItems[0]);
+  const [selectedClass, setSelectedClass] = useState<DropdownItem>({
+    label: "Class",
+    value: "",
+  });
+  const [selectedSection, setSelectedSection] = useState<DropdownItem>({
+    label: "Section",
+    value: "",
+  });
+
+  const [gender, setGender] = useState("all");
+  const [status, setStatus] = useState("all");
+  const [result, setResult] = useState("all");
+
+  const onSearch = () => {
+    router.push("/(child-route)/(detailsEvalution-list)/details-evalutions-list")
   };
-
-  const [selectedClass, setSelectedClass] = useState(BLANK_DROPDOWN_MODEL);
-
-  const selectClassHandler = (val?: string) => {
-    if (val == "SELECT") {
-      setSelectedClass(BLANK_DROPDOWN_MODEL);
-    } else {
-      const foundItem = classItems.find((item) => item.value == val);
-      if (foundItem) {
-        setSelectedClass(foundItem);
-      }
-    }
-  };
-
-  const [section, setSection] = useState("");
-
-  const sectionChangeHandler = (val: string) => {
-    setSection(val);
-  };
-
-  const [gender, setGender] = useState("All");
-
-  const genderChangeHandler = (val: string) => {
-    setGender(val);
-  };
-
-  const [status, setStatus] = useState("All");
-
-  const statusChangeHandler = (val: string) => {
-    setStatus(val);
-  };
-
-  const [result, setResult] = useState("All");
-
-  const resultChangeHandler = (val: string) => {
-    setResult(val);
-  };
-
-  const getStudentsHandler = async () => {
-    if (selectedSchool.id == "0") {
-      return;
-    }
-    const response = await getMRTagStudentsOneBySchoolId(db, selectedSchool.id);
-    console.log("Students", response?.length);
-    dispatch(setStudents(response));
-    router.push({
-      pathname: "/mr-tag-list",
-      params: {
-        schoolId: selectedSchool.id,
-      },
-    });
-  };
-
-  const getSchoolsHandler = async () => {
-    const response = await getSchoolByActivityType(
-      db,
-      "COMPREHENSIVE_SCREENING"
-    );
-    if (response) {
-      setSchoolItems(response);
-    }
-  };
-
-  const getClassesHandler = async () => {
-    const response = await findAllClassesDropdowns(db);
-    if (response) {
-      setClassItems(response);
-    }
-  };
-
-  useEffect(() => {
-    getSchoolsHandler();
-    getClassesHandler();
-  }, []);
 
   return (
-    <View>
-      <View>
-        <CustomDropdown
-          label="School"
-          items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-          selectedItem={selectedSchool}
-          onChange={selectSchoolHandler}
-        />
-      </View>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ flexGrow: 1 }}>
-          <CustomDropdown
-            label="Class"
-            items={[BLANK_DROPDOWN_MODEL, ...classItems]}
+    <View style={styles.container}>
+      <Text style={styles.label}>School Name</Text>
+      <StyledDropdown
+        items={schoolItems}
+        selectedItem={selectedSchool}
+        onChange={(val) => {
+          const found = schoolItems.find((s) => s.value === val);
+          if (found) setSelectedSchool(found);
+        }}
+      />
+
+      <View style={styles.row}>
+        <View style={styles.rowItem}>
+          <Text style={styles.label}>Class</Text>
+          <StyledDropdown
+            items={[{ label: "Class", value: "" }, ...classItems]}
             selectedItem={selectedClass}
-            onChange={selectClassHandler}
+            onChange={(val) => {
+              const found = classItems.find((s) => s.value === val) || {
+                label: "Class",
+                value: "",
+              };
+              setSelectedClass(found);
+            }}
           />
         </View>
-        <View style={{ flexGrow: 1 }}>
-          <CustomInput
-            id="section"
-            label="Section"
-            value={section}
-            onChangeText={sectionChangeHandler}
+        <View style={styles.rowItem}>
+          <Text style={styles.label}>Section</Text>
+          <StyledDropdown
+            items={[{ label: "Section", value: "" }, ...sectionItems]}
+            selectedItem={selectedSection}
+            onChange={(val) => {
+              const found = sectionItems.find((s) => s.value === val) || {
+                label: "Section",
+                value: "",
+              };
+              setSelectedSection(found);
+            }}
           />
         </View>
       </View>
-      <View>
-        <CustomRadioGroup
-          label="Gender"
-          items={[
-            new RadioItemModel({ id: 0, value: "All", label: "All" }),
-            ...GENDER_RADIO_ITEMS,
-          ]}
-          selectedOption={gender}
-          onChange={genderChangeHandler}
-        />
+
+      {/* Gender */}
+      <Text style={styles.radioLabel}>Gender</Text>
+      <View style={styles.radioGroup}>
+        {["all", "M", "F", "T"].map((val) => (
+          <View key={val} style={styles.radioItem}>
+            <RadioButton
+              value={val}
+              status={gender === val ? "checked" : "unchecked"}
+              onPress={() => setGender(val)}
+              color="#0a63c9"
+            />
+            <Text>{val === "all" ? "All" : val}</Text>
+          </View>
+        ))}
       </View>
-      <View>
-        <CustomRadioGroup
-          label="Status"
-          items={STATUS_RADIO_ITEMS}
-          selectedOption={status}
-          onChange={statusChangeHandler}
-        />
+
+      {/* Status */}
+      <Text style={styles.radioLabel}>Status</Text>
+      <View style={styles.radioGroup}>
+        {["all", "done", "not_done"].map((val) => (
+          <View key={val} style={styles.radioItem}>
+            <RadioButton
+              value={val}
+              status={status === val ? "checked" : "unchecked"}
+              onPress={() => setStatus(val)}
+              color="#0a63c9"
+            />
+            <Text>
+              {val === "all" ? "All" : val === "done" ? "Done" : "Not Done"}
+            </Text>
+          </View>
+        ))}
       </View>
-      <View>
-        <CustomRadioGroup
-          label="Result"
-          items={RESULT_RADIO_ITEMS}
-          selectedOption={result}
-          onChange={resultChangeHandler}
-        />
+
+      {/* Result */}
+      <Text style={styles.radioLabel}>Result</Text>
+      <View style={styles.radioGroup}>
+        {["all", "pass", "fail"].map((val) => (
+          <View key={val} style={styles.radioItem}>
+            <RadioButton
+              value={val}
+              status={result === val ? "checked" : "unchecked"}
+              onPress={() => setResult(val)}
+              color="#0a63c9"
+            />
+            <Text>{val.charAt(0).toUpperCase() + val.slice(1)}</Text>
+          </View>
+        ))}
       </View>
-      <Button onPress={getStudentsHandler} mode="contained">
+
+      <Button mode="contained" style={styles.searchButton} onPress={onSearch}>
         Search
       </Button>
     </View>
   );
 };
 
-export default MRTag;
+export default DetailsEvolution;
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: "#f7f7f7",
+    flex: 1,
+  },
+  label: {
+    marginBottom: 6,
+    fontSize: 14,
+    color: "#000",
+    fontWeight: "500",
+  },
+  row: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  rowItem: {
+    flex: 1,
+  },
+  radioLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginTop: 10,
+    marginBottom: 4,
+    color: "#000",
+  },
+  radioGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 5,
+  },
+  radioItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  searchButton: {
+    marginTop: 16,
+    borderRadius: 6,
+    paddingVertical: 6,
+    backgroundColor: "#0047AB",
+  },
+});

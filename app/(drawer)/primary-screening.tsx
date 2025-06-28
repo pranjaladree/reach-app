@@ -1,244 +1,140 @@
-import HeaderTitle from "@/components/new_UI/header-title";
-import CustomDropdown from "@/components/utils/CustomDropdown";
-import CustomInput from "@/components/utils/CustomInput";
-import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
-import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
-import {
-  GENDER_RADIO_ITEMS,
-  RESULT_RADIO_ITEMS,
-  STATUS_RADIO_ITEMS,
-} from "@/constants/Data";
-import {
-  findAllClasses,
-  findAllClassesDropdowns,
-  getSchoolsDropdownFromDB,
-} from "@/database/database";
-import { DropdownModel } from "@/models/ui/DropdownModel";
-import { RadioItemModel } from "@/models/ui/RadioItemModel";
-import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect, useNavigation, useRouter } from "expo-router";
-import { useSQLiteContext } from "expo-sqlite";
-import { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Button, Menu } from "react-native-paper";
-import { useDispatch } from "react-redux";
+import StyledDropdown, {
+  DropdownItem,
+} from "@/components/new_UI/StyledDropdown";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Button, RadioButton } from "react-native-paper";
+
+const classItems: DropdownItem[] = [
+  { label: "Class 1", value: "1" },
+  { label: "Class 2", value: "2" },
+];
+
+const sectionItems: DropdownItem[] = [
+  { label: "A", value: "A" },
+  { label: "B", value: "B" },
+];
+
+const schoolItems: DropdownItem[] = [
+  { label: "SUNFLOWERSCHOOL", value: "sunflower" },
+];
 
 const PrimaryScreening = () => {
-  const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
-  const [classItems, setClassItems] = useState<DropdownModel[]>([]);
-  const db = useSQLiteContext();
-  const router = useRouter();
-  const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
+  const [selectedSchool, setSelectedSchool] = useState(schoolItems[0]);
+  const [selectedClass, setSelectedClass] = useState<DropdownItem>({
+    label: "Class",
+    value: "",
+  });
+  const [selectedSection, setSelectedSection] = useState<DropdownItem>({
+    label: "Section",
+    value: "",
+  });
 
-  const selectSchoolHandler = (val?: string) => {
-    if (val == "SELECT") {
-      setSelectedSchool(BLANK_DROPDOWN_MODEL);
-    } else {
-      const foundItem = schoolItems.find((item) => item.value == val);
-      if (foundItem) {
-        setSelectedSchool(foundItem);
-      }
-    }
+  const [gender, setGender] = useState("all");
+  const [status, setStatus] = useState("all");
+  const [result, setResult] = useState("all");
+
+  const onSearch = () => {
+    router.push(
+      "/(child-route)/(Primary-Screening-list)/Primary-Screening-list"
+    );
   };
-
-  const [selectedClass, setSelectedClass] = useState(BLANK_DROPDOWN_MODEL);
-
-  const selectClassHandler = (val?: string) => {
-    if (val == "SELECT") {
-      setSelectedClass(BLANK_DROPDOWN_MODEL);
-    } else {
-      const foundItem = classItems.find((item) => item.value == val);
-      if (foundItem) {
-        setSelectedClass(foundItem);
-      }
-    }
-  };
-
-  const [section, setSection] = useState("");
-
-  const sectionChangeHandler = (val: string) => {
-    setSection(val);
-  };
-
-  const [gender, setGender] = useState("All");
-
-  const genderChangeHandler = (val: string) => {
-    setGender(val);
-  };
-
-  const [status, setStatus] = useState("All");
-
-  const statusChangeHandler = (val: string) => {
-    setStatus(val);
-  };
-
-  const [result, setResult] = useState("All");
-
-  const resultChangeHandler = (val: string) => {
-    setResult(val);
-  };
-
-  const getStudentsHandler = async () => {
-    if (selectedSchool.id == "0") {
-      return;
-    }
-    router.push({
-      pathname: "/screening-list",
-      params: {
-        schoolId: selectedSchool.id,
-      },
-    });
-  };
-
-  const getSchoolsHandler = async () => {
-    const response = await getSchoolsDropdownFromDB(db);
-    if (response) {
-      setSchoolItems(response);
-    }
-  };
-
-  const getClassesHandler = async () => {
-    const response = await findAllClassesDropdowns(db);
-    if (response) {
-      setClassItems(response);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      getSchoolsHandler();
-      getClassesHandler();
-      return () => {
-        console.log("Screen unfocused");
-      };
-    }, [])
-  );
-
-  const [visible, setVisible] = useState(false);
-
-  const openMenu = () => setVisible(true);
-
-  const closeMenu = () => setVisible(false);
-
-  const navigation = useNavigation();
-  const [count, setCount] = useState(0);
-
-  const [isAutorefModal, setIsAutoRefModal] = useState(false);
-
-  const openAutorefModalHandler = () => {
-    setIsAutoRefModal(true);
-  };
-
-  const closeAutorefModalHandler = () => {
-    setIsAutoRefModal(false);
-  };
-
-  useEffect(() => {
-    // Use `setOptions` to update the button that we previously specified
-    // Now the button includes an `onPress` handler to update the count
-    navigation.setOptions({
-      headerRight: () => (
-        <Menu
-          visible={visible}
-          onDismiss={closeMenu}
-          anchor={
-            <View style={{ padding: 10 }}>
-              <Ionicons name="settings" size={24} onPress={openMenu} />
-            </View>
-          }
-        >
-          <Menu.Item
-            onPress={() => {
-              closeMenu();
-              router.push("/autoref-configuration");
-            }}
-            title="Autoref Configuration"
-          />
-          <Menu.Item
-            onPress={() => {
-              closeMenu();
-              router.push("/add-student");
-            }}
-            title="Add Student"
-          />
-        </Menu>
-      ),
-    });
-  }, [navigation, visible]);
 
   return (
-    <View style={{ paddingHorizontal: 5, paddingVertical: 10, paddingTop: 20 }}>
-      <HeaderTitle title="Primary Screening" />
+    <View style={styles.container}>
+      <Text style={styles.label}>School Name</Text>
+      <StyledDropdown
+        items={schoolItems}
+        selectedItem={selectedSchool}
+        onChange={(val) => {
+          const found = schoolItems.find((s) => s.value === val);
+          if (found) setSelectedSchool(found);
+        }}
+      />
 
-      <View>
-        <CustomDropdown
-          label="School"
-          items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-          selectedItem={selectedSchool}
-          onChange={selectSchoolHandler}
-        />
-      </View>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ flexGrow: 1 }}>
-          <CustomDropdown
-            label="Class"
-            items={[BLANK_DROPDOWN_MODEL, ...classItems]}
+      <View style={styles.row}>
+        <View style={styles.rowItem}>
+          <StyledDropdown
+            items={[{ label: "Class", value: "" }, ...classItems]}
             selectedItem={selectedClass}
-            onChange={selectClassHandler}
+            onChange={(val) => {
+              const found = classItems.find((s) => s.value === val) || {
+                label: "Class",
+                value: "",
+              };
+              setSelectedClass(found);
+            }}
           />
         </View>
-        <View style={{ flexGrow: 1 }}>
-          <CustomInput
-            id="section"
-            label="Section"
-            value={section}
-            onChangeText={sectionChangeHandler}
+        <View style={styles.rowItem}>
+          <StyledDropdown
+            items={[{ label: "Section", value: "" }, ...sectionItems]}
+            selectedItem={selectedSection}
+            onChange={(val) => {
+              const found = sectionItems.find((s) => s.value === val) || {
+                label: "Section",
+                value: "",
+              };
+              setSelectedSection(found);
+            }}
           />
         </View>
       </View>
-      <View style={{ paddingHorizontal: 15 }}>
-        <View style={styles.card}>
-          <View>
-            <CustomRadioGroup
-              label="Gender"
-              items={[
-                new RadioItemModel({ id: 0, value: "All", label: "All" }),
-                ...GENDER_RADIO_ITEMS,
-              ]}
-              selectedOption={gender}
-              onChange={genderChangeHandler}
+
+      {/* Gender */}
+      <Text style={styles.radioLabel}>Gender</Text>
+      <View style={styles.radioGroup}>
+        {["all", "M", "F", "T"].map((val) => (
+          <View key={val} style={styles.radioItem}>
+            <RadioButton
+              value={val}
+              status={gender === val ? "checked" : "unchecked"}
+              onPress={() => setGender(val)}
+              color="#0a63c9"
             />
+            <Text>{val === "all" ? "All" : val}</Text>
           </View>
-          <View>
-            <CustomRadioGroup
-              label="Status"
-              items={STATUS_RADIO_ITEMS}
-              selectedOption={status}
-              onChange={statusChangeHandler}
-            />
-          </View>
-          <View>
-            <CustomRadioGroup
-              label="Result"
-              items={RESULT_RADIO_ITEMS}
-              selectedOption={result}
-              onChange={resultChangeHandler}
-            />
-          </View>
-        </View>
-        <Button
-          onPress={getStudentsHandler}
-          mode="contained"
-          style={{
-            paddingVertical: 5,
-            borderRadius: 30,
-            marginTop: 20,
-            width: "100%",
-          }}
-        >
-          Search
-        </Button>
+        ))}
       </View>
+
+      {/* Status */}
+      <Text style={styles.radioLabel}>Status</Text>
+      <View style={styles.radioGroup}>
+        {["all", "done", "not_done"].map((val) => (
+          <View key={val} style={styles.radioItem}>
+            <RadioButton
+              value={val}
+              status={status === val ? "checked" : "unchecked"}
+              onPress={() => setStatus(val)}
+              color="#0a63c9"
+            />
+            <Text>
+              {val === "all" ? "All" : val === "done" ? "Done" : "Not Done"}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Result */}
+      <Text style={styles.radioLabel}>Result</Text>
+      <View style={styles.radioGroup}>
+        {["all", "pass", "fail"].map((val) => (
+          <View key={val} style={styles.radioItem}>
+            <RadioButton
+              value={val}
+              status={result === val ? "checked" : "unchecked"}
+              onPress={() => setResult(val)}
+              color="#0a63c9"
+            />
+            <Text>{val.charAt(0).toUpperCase() + val.slice(1)}</Text>
+          </View>
+        ))}
+      </View>
+
+      <Button mode="contained" style={styles.searchButton} onPress={onSearch}>
+        Search
+      </Button>
     </View>
   );
 };
@@ -246,55 +142,48 @@ const PrimaryScreening = () => {
 export default PrimaryScreening;
 
 const styles = StyleSheet.create({
-  headerTitle: {
-    fontSize: 18,
-    padding: 5,
-    paddingHorizontal: 12,
-    fontWeight: "bold",
+  container: {
+    padding: 16,
+    backgroundColor: "#f7f7f7",
+    flex: 1,
   },
-  screen: {
-    padding: 5,
+  label: {
+    marginBottom: 6,
+    fontSize: 14,
+    color: "#000",
+    fontWeight: "500",
   },
   row: {
     flexDirection: "row",
-    width: "100%",
-    alignItems: "center",
-    marginTop: 10,
-    paddingHorizontal: 15,
-    justifyContent: "space-between",
+    gap: 10,
+    marginTop: 8,
+    marginBottom: 12,
   },
   rowItem: {
-    flexBasis: 1,
-    flexGrow: 1,
-    margin: 5,
-    paddingLeft: 10,
+    flex: 1,
   },
-  box: {
+  radioLabel: {
+    fontSize: 14,
+    fontWeight: "500",
     marginTop: 10,
+    marginBottom: 4,
+    color: "#000",
   },
-  date: {
-    borderWidth: 0.2,
-    padding: 10,
-  },
-  summary: {
-    borderWidth: 0.2,
-    padding: 10,
-    justifyContent: "center",
+  radioGroup: {
+    flexDirection: "row",
     alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 12,
   },
-  count: {
-    fontSize: 30,
-    fontWeight: "bold",
+  radioItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 12,
   },
-  card: {
-    gap: 10,
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    width: "100%",
+  searchButton: {
+    marginTop: 16,
+    borderRadius: 6,
+    paddingVertical: 6,
+    backgroundColor: "#0047AB",
   },
 });

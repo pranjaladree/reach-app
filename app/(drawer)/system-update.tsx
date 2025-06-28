@@ -1,64 +1,64 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView } from "react-native";
-import { Button } from "react-native-paper";
-import { useSelector } from "react-redux";
-import { useSQLiteContext } from "expo-sqlite";
 import { RootState } from "@/store/store";
+import { useSQLiteContext } from "expo-sqlite";
+import React, { useState } from "react";
+import { ScrollView, View } from "react-native";
+import { useSelector } from "react-redux";
 
-import {
-  saveAllClasses,
-  saveVisionCenters,
-  saveHospitals,
-  saveOtherFacilities,
-  saveOcularComplaints,
-  saveReachConfigs,
-  saveDvas,
-  saveNvas,
-  savePhs,
-  saveSphs,
-  saveAdds,
-  saveAxis,
-  saveCyls,
-  saveLensMaterials,
-  saveFrameMaterials,
-  saveTorchligtFindings,
-  saveUsers,
-  saveLensTypes,
-  saveSpecialityLens,
-  saveModesOfWear,
-  saveLensSurfaceCoatings,
-  saveLensTints,
-  saveSpecialInstructions,
-  saveReasonForReferrals,
-  saveDiagnosisMaster,
-} from "@/database/database";
-import { getVisionCenters } from "@/http/vision-center-http";
-import { getAllHospitals } from "@/http/hospital-http";
-import { getOtherFacilities } from "@/http/other-facility-http";
-import { getAllOculars } from "@/http/ocular-complaints-http";
-import { getReachConfiguration } from "@/http/reach-configuration-http";
-import { getAllDistanceDvas } from "@/http/distance-dva-http";
-import { getAllNvas } from "@/http/near-nva-http";
-import { getAllPhs } from "@/http/ph-http";
-import { getAllSphs } from "@/http/sph-http";
-import { getAllAdds } from "@/http/add-http";
-import { getAllAxises } from "@/http/axis-http";
-import { getAllCyls } from "@/http/cyl-http";
-import { getAllLensMaterials } from "@/http/lens-material-http";
-import { getAllFrameMaterials } from "@/http/frame-material-http";
-import { getAllClasses } from "@/http/class-http";
 import AppButton from "@/components/new_UI/AppButton";
 import StatusStepper from "@/components/new_UI/statusStaper";
-import { getAllTorchLights } from "@/http/torchlight-http";
-import { getAllUsers } from "@/http/user-http";
-import { getAllLensTypes } from "@/http/lens-type-http";
-import { getAllSpecialityLens } from "@/http/speciality-lens-http";
-import { getAllModeOfwears } from "@/http/mode-of-wear-http";
+import { Colors } from "@/constants/Colors";
+import {
+  saveAdds,
+  saveAllClasses,
+  saveAxis,
+  saveCyls,
+  saveDiagnosisMaster,
+  saveDvas,
+  saveFrameMaterials,
+  saveHospitals,
+  saveLensMaterials,
+  saveLensSurfaceCoatings,
+  saveLensTints,
+  saveLensTypes,
+  saveModesOfWear,
+  saveNvas,
+  saveOcularComplaints,
+  saveOtherFacilities,
+  savePhs,
+  saveReachConfigs,
+  saveReasonForReferrals,
+  saveSpecialInstructions,
+  saveSpecialityLens,
+  saveSphs,
+  saveTorchligtFindings,
+  saveUsers,
+  saveVisionCenters,
+} from "@/database/database";
+import { getAllAdds } from "@/http/add-http";
+import { getAllAxises } from "@/http/axis-http";
+import { getAllClasses } from "@/http/class-http";
+import { getAllCyls } from "@/http/cyl-http";
+import { getAllDiagnosis } from "@/http/diagnosis-http";
+import { getAllDistanceDvas } from "@/http/distance-dva-http";
+import { getAllFrameMaterials } from "@/http/frame-material-http";
+import { getAllHospitals } from "@/http/hospital-http";
+import { getAllLensMaterials } from "@/http/lens-material-http";
 import { getAllLensSurfaceCoating } from "@/http/lens-surface-coating-http";
 import { getAllLensTint } from "@/http/lens-tint-http";
-import { getAllSpecialInstructions } from "@/http/special-instructions-http";
+import { getAllLensTypes } from "@/http/lens-type-http";
+import { getAllModeOfwears } from "@/http/mode-of-wear-http";
+import { getAllNvas } from "@/http/near-nva-http";
+import { getAllOculars } from "@/http/ocular-complaints-http";
+import { getOtherFacilities } from "@/http/other-facility-http";
+import { getAllPhs } from "@/http/ph-http";
+import { getReachConfiguration } from "@/http/reach-configuration-http";
 import { getAllReasonForReferrals } from "@/http/reason-for-referral-http";
-import { getAllDiagnosis } from "@/http/diagnosis-http";
+import { getAllSpecialInstructions } from "@/http/special-instructions-http";
+import { getAllSpecialityLens } from "@/http/speciality-lens-http";
+import { getAllSphs } from "@/http/sph-http";
+import { getAllTorchLights } from "@/http/torchlight-http";
+import { getAllUsers } from "@/http/user-http";
+import { getVisionCenters } from "@/http/vision-center-http";
 
 type UpdateKey =
   | "Classes"
@@ -452,10 +452,12 @@ const SystemUpdate = () => {
         onPress={systemUpdateHandler}
         loading={isLoading}
         disabled={isLoading}
+        style={{
+          borderRadius: 0,
+          backgroundColor: isLoading ? "#ccc" : Colors.primary,
+        }}
       />
-      {/* <Button onPress={systemUpdateHandler} mode="contained" loading={isLoading}>
-        System Update
-      </Button> */}
+
       {visiable && (
         <View style={{ marginTop: 10 }}>
           <StatusStepper status={status} />

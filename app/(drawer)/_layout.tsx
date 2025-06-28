@@ -1,71 +1,15 @@
-// import { GestureHandlerRootView } from "react-native-gesture-handler";
-// import { Drawer } from "expo-router/drawer";
-
-// export default function Layout() {
-//   return (
-//     <GestureHandlerRootView style={{ flex: 1 }}>
-//       <Drawer>
-
-//         <Drawer.Screen
-//           name="index" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Home",
-//             title: "Home",
-//           }}
-//         />
-//         <Drawer.Screen
-
-//           name="device-preparation" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Device Preparation",
-//             title: "Device Preparation",
-//           }}
-//         />
-//         <Drawer.Screen
-//           name="database-test" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Database Test",
-//             title: "Database Test",
-//           }}
-//         />
-//         <Drawer.Screen
-//           name="primary-screening" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Primary Screening",
-//             title: "Primary Screening",
-//           }}
-//         />
-//         <Drawer.Screen
-//           name="sync-to-server" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Sync To Server",
-//             title: "Sync To Server",
-//           }}
-//         />
-//         <Drawer.Screen
-//           name="mr-tag" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "MR Tag",
-//             title: "MR Tag",
-//           }}
-//         />
-//       </Drawer>
-//     </GestureHandlerRootView>
-//   );
-// }
-
-import React from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Drawer } from "expo-router/drawer";
-import {
-  Ionicons,
-  MaterialIcons,
-  FontAwesome5,
-  Feather,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
-import { useWindowDimensions } from "react-native";
 import CustomDrawerContent from "@/components/new_UI/CustomDrawerContent";
+import {
+  Feather,
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+import { Drawer } from "expo-router/drawer";
+import React from "react";
+import { useWindowDimensions } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
 
 export default function Layout() {
@@ -156,11 +100,24 @@ export default function Layout() {
             ),
           }}
         />
+
+        {/* QR code  */}
+        <Drawer.Screen
+          name="qr-codes"
+          options={{
+            drawerLabel: "View QR Codes",
+            title: "View QR Code",
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="qr-code" size={24} color={color} />
+            ),
+          }}
+        />
+
         <Drawer.Screen
           name="remove-school"
           options={{
             drawerLabel: "Remove School",
-            title: "MR Tag",
+            title: "Remove School",
             drawerIcon: ({ color, size }) => (
               <MaterialCommunityIcons
                 name="bank-remove"
@@ -194,6 +151,7 @@ export default function Layout() {
             ),
           }}
         />
+
         <Drawer.Screen
           name="gps-data-collection"
           options={{

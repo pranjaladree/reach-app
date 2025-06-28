@@ -1,12 +1,6 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  useWindowDimensions,
-} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 interface StatItem {
   iconName: keyof typeof MaterialCommunityIcons.glyphMap;
@@ -75,7 +69,7 @@ const UnifiedStatCard: React.FC<Props> = ({
             <MaterialCommunityIcons
               name={item.iconName}
               size={24}
-              color="#4F46E5"
+              color="#1868d1"
               style={styles.icon}
             />
             <Text style={styles.title}>{item.title}</Text>

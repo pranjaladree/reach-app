@@ -1,20 +1,20 @@
-import React from "react";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Pressable,
-  Platform,
-} from "react-native";
-import {
-  Ionicons,
-  MaterialIcons,
-  FontAwesome5,
   Feather,
+  FontAwesome5,
+  Ionicons,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
+import React from "react";
+import {
+  Image,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
@@ -60,7 +60,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     {
       label: "View QR",
       icon: (color: string) => (
-        <Ionicons name="pricetag-outline" size={20} color={color} />
+        <MaterialIcons name="qr-code" size={20} color={color} />
       ),
       route: "qr-codes",
     },
@@ -110,16 +110,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const handleLogout = async () => {
     alert("Logout");
     return;
-    try {
-      //   await AsyncStorage.removeItem("authToken");
-      //   await AsyncStorage.removeItem("user");
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "login" }],
-      });
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
   };
 
   return (

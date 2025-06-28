@@ -23,10 +23,10 @@ const AppButton: React.FC<AppButtonProps> = ({
       onPress={onPress}
       loading={loading}
       disabled={disabled}
-      style={[{ borderRadius: 30, width: "100%" }, style]} // outer button container
+      style={[{ width: "100%" }, style]} // outer button container
       contentStyle={{
         paddingVertical: 5, // internal padding (no press flicker)
-        borderRadius: 30,
+   
       }}
       labelStyle={{
         fontSize: 16,
