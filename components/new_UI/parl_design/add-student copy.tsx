@@ -12,7 +12,7 @@ import {
 import { ClassModel } from "@/models/other-masters/ClassModel";
 import { StudentModel } from "@/models/school/StudentModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
-import { Stack, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { nanoid } from "nanoid/non-secure";
 import { useCallback, useEffect, useState } from "react";
@@ -108,8 +108,6 @@ const AddStudent = () => {
   };
 
   const genderChangeHandler = (val: string) => {
-
-
     setGender(val);
   };
 
@@ -304,12 +302,6 @@ const AddStudent = () => {
       behavior="height"
       keyboardVerticalOffset={0}
     >
-        <Stack.Screen
-        options={{
-          title: "Add Student",
-          headerShown: true,
-        }}
-      />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}

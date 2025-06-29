@@ -1,9 +1,7 @@
-import { getProfile } from "@/http/profile-http";
-import { setLoggedInUser } from "@/store/slices/user-slice";
+import ScreeningTabs from "@/components/new_UI/mrtag";
 import { RootState } from "@/store/store";
 import { Redirect } from "expo-router";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const AuthContext = () => {
   const isAuthenticated = useSelector(
@@ -25,6 +23,8 @@ const AuthContext = () => {
   }
 
   return <Redirect href="/(drawer)" />;
+  
+
 };
 
 export default AuthContext;

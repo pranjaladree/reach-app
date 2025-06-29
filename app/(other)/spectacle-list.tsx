@@ -1,16 +1,20 @@
 import SpecStudentItem from "@/components/list-items/SpecStudentItem";
-import InputBox from "@/components/ui/InputBox";
 import CustomInput from "@/components/utils/CustomInput";
 import {
   getSpecStudentsBySchoolId,
   saveSpecBooking,
 } from "@/database/database";
-import { StudentModel } from "@/models/school/StudentModel";
 import { RootState } from "@/store/store";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { EvilIcons } from "@expo/vector-icons";
+import {
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button, Dialog, Portal } from "react-native-paper";
 import { useSelector } from "react-redux";
 
@@ -85,19 +89,36 @@ const SpectacleList = () => {
 
   return (
     <View>
-      <View>
-        <View>
-          <Text>Total Student:</Text>
-          <Text>Done:</Text>
-          <Text>Not Done :</Text>
+      <View style={{ padding: 16 }}>
+        <Stack.Screen
+          options={{
+            title: "Spectacles Booking",
+            headerShown: true,
+          }}
+        />
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={styles.count}>Total Count : {studentList.length}</Text>
         </View>
-        <View>
+
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <Text style={styles.searchIcon}>
+            <EvilIcons name="search" size={30} color="#878585" />
+          </Text>
+          <TextInput
+            placeholder="Search Student"
+            style={styles.searchInputField}
+            value={searchTerm}
+            onChangeText={searchTermChangeHandler}
+          />
+        </View>
+        {/* <View>
           <InputBox
             value={searchTerm}
             placeholder="Search Student"
             onChangeText={searchTermChangeHandler}
           />
-        </View>
+        </View> */}
       </View>
       <View style={{ padding: 10 }}>
         <FlatList
@@ -147,3 +168,111 @@ const SpectacleList = () => {
 };
 
 export default SpectacleList;
+const styles = StyleSheet.create({
+  count: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  // Search
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginVertical: 13,
+    backgroundColor: "#fff",
+  },
+  searchIcon: {
+    fontSize: 18,
+    marginRight: 8,
+    color: "#888",
+  },
+  searchInputField: {
+    flex: 1,
+    height: 40,
+  },
+
+  // Card Design
+  studentCard: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderWidth: 1.5,
+    padding: 12,
+    marginBottom: 12,
+  },
+  cardRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  col1: {
+    flex: 1,
+    gap: 5,
+  },
+  col2: {
+    flex: 1.2,
+    alignItems: "center",
+    gap: 5,
+  },
+  col3: {
+    flex: 0.8,
+    alignItems: "flex-end",
+  },
+  studentName: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  studentPhone: {
+    fontSize: 13,
+    color: "#555",
+  },
+  classText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#222",
+  },
+  sectionText: {
+    fontSize: 13,
+    color: "#444",
+  },
+  statusIcon: {
+    fontSize: 28,
+  },
+
+  // Modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dialogCard: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 12,
+    width: "90%",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#0047AB",
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    height: 40,
+  },
+  searchButton: {
+    width: "50%",
+    marginTop: 16,
+    borderRadius: 6,
+    height: 50,
+    paddingVertical: 10,
+    backgroundColor: "#0047AB",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 10,
+  },
+});

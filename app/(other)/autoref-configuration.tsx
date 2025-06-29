@@ -1,12 +1,14 @@
-import { View, Text, StyleSheet } from "react-native";
+import AppButton from "@/components/new_UI/AppButton";
 import CustomDropdown from "@/components/utils/CustomDropdown";
-import { Button, Checkbox, Dialog, Portal } from "react-native-paper";
-import { useCallback, useEffect, useState } from "react";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
-import { DropdownModel } from "@/models/ui/DropdownModel";
-import { useSQLiteContext } from "expo-sqlite";
+import { Colors } from "@/constants/Colors";
 import { getSchoolsDropdownFromDB } from "@/database/database";
-import { useFocusEffect } from "expo-router";
+import { DropdownModel } from "@/models/ui/DropdownModel";
+import { Stack, useFocusEffect } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useCallback, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Button, Checkbox, Dialog, Portal } from "react-native-paper";
 
 const AutorefConfiguration = () => {
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
@@ -74,10 +76,16 @@ const AutorefConfiguration = () => {
   );
 
   return (
-    <View>
+    <View style={{paddingVertical: 15}}>
+       <Stack.Screen
+        options={{
+          title: "Autoref Configuration",
+          headerShown: true,
+        }}
+      />
       <View>
         <CustomDropdown
-          label="School M"
+          label="School "
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
           onChange={selectSchoolHandler}
@@ -85,6 +93,7 @@ const AutorefConfiguration = () => {
       </View>
       <View style={styles.row}>
         <Checkbox
+          color={Colors.primary}
           status={isAutorefAvailable ? "checked" : "unchecked"}
           onPress={() => {
             setIsAutorefAvailable(!isAutorefAvailable);
@@ -92,14 +101,12 @@ const AutorefConfiguration = () => {
         />
         <Text>Autoref Available</Text>
       </View>
-      <View>
-        <Button
+      <View style={{ paddingHorizontal: 16 }}>
+        <AppButton
+          title="Save"
           onPress={saveAutorefConfiguration}
-          mode="contained"
           loading={isLoading}
-        >
-          Save
-        </Button>
+        ></AppButton>
       </View>
 
       <Portal>

@@ -3,8 +3,6 @@ import StyledDropdown, {
 } from "@/components/new_UI/StyledDropdown";
 import React, { useState } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -64,142 +62,137 @@ const AddNewStudentScreen = () => {
   const [selectedNeed, setSelectedNeed] = useState<DropdownItem | null>(null);
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
     >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.headerBar}>
-          {/* <Text style={styles.headerText}>Add New Student</Text> */}
+      <View style={styles.headerBar}>
+        {/* <Text style={styles.headerText}>Add New Student</Text> */}
+      </View>
+
+      <StyledDropdown
+        label="School Name"
+        items={schoolOptions}
+        selectedItem={selectedSchool}
+        onChange={(val) => {
+          const item = schoolOptions.find((i) => i.value === val);
+          if (item) setSelectedSchool(item);
+        }}
+      />
+      <View>
+        <Text style={styles.label}>Full Name</Text>
+        <TextInput style={styles.input} placeholder="First Name*" />
+      </View>
+
+      <View style={styles.row}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Middle Name</Text>
+          <TextInput style={styles.input} placeholder="Middle Name" />
         </View>
-
-        <StyledDropdown
-          label="School Name"
-          items={schoolOptions}
-          selectedItem={selectedSchool}
-          onChange={(val) => {
-            const item = schoolOptions.find((i) => i.value === val);
-            if (item) setSelectedSchool(item);
-          }}
-        />
-        <View>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput style={styles.input} placeholder="First Name*" />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Last Name</Text>
+          <TextInput style={styles.input} placeholder="Last Name" />
         </View>
+      </View>
 
-        <View style={styles.row}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.label}>Middle Name</Text>
-            <TextInput style={styles.input} placeholder="Middle Name" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.label}>Last Name</Text>
-            <TextInput style={styles.input} placeholder="Last Name" />
-          </View>
+      <View style={styles.row}>
+        <View style={styles.flex1}>
+          <StyledDropdown
+            label="Class*"
+            items={classOptions}
+            selectedItem={selectedClass || { label: "", value: "" }}
+            onChange={(val) => {
+              const item = classOptions.find((i) => i.value === val);
+              if (item) setSelectedClass(item);
+            }}
+          />
         </View>
-
-        <View style={styles.row}>
-          <View style={styles.flex1}>
-            <StyledDropdown
-              label="Class*"
-              items={classOptions}
-              selectedItem={selectedClass || { label: "", value: "" }}
-              onChange={(val) => {
-                const item = classOptions.find((i) => i.value === val);
-                if (item) setSelectedClass(item);
-              }}
-            />
-          </View>
-          <View style={styles.flex1}>
-            <StyledDropdown
-              label="Section"
-              items={sectionOptions}
-              selectedItem={selectedSection || { label: "", value: "" }}
-              onChange={(val) => {
-                const item = sectionOptions.find((i) => i.value === val);
-                if (item) setSelectedSection(item);
-              }}
-            />
-          </View>
+        <View style={styles.flex1}>
+          <StyledDropdown
+            label="Section"
+            items={sectionOptions}
+            selectedItem={selectedSection || { label: "", value: "" }}
+            onChange={(val) => {
+              const item = sectionOptions.find((i) => i.value === val);
+              if (item) setSelectedSection(item);
+            }}
+          />
         </View>
+      </View>
 
-        <Text style={styles.label}>Gender*</Text>
-        <View style={styles.radioRow}>
-          {genderOptions.map((option) => (
-            <TouchableOpacity
-              key={option.value}
-              style={styles.radioBtn}
-              onPress={() => setSelectedGender(option.value)}
-            >
-              <View style={styles.radioCircle}>
-                {selectedGender === option.value && (
-                  <View style={styles.radioDot} />
-                )}
-              </View>
-              <Text>{option.label}</Text>
-            </TouchableOpacity>
-          ))}
+      <Text style={styles.label}>Gender*</Text>
+      <View style={styles.radioRow}>
+        {genderOptions.map((option) => (
+          <TouchableOpacity
+            key={option.value}
+            style={styles.radioBtn}
+            onPress={() => setSelectedGender(option.value)}
+          >
+            <View style={styles.radioCircle}>
+              {selectedGender === option.value && (
+                <View style={styles.radioDot} />
+              )}
+            </View>
+            <Text>{option.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={styles.row}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Age</Text>
+          <TextInput style={styles.input} placeholder="Age*" />
         </View>
-
-        <View style={styles.row}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.label}>Age</Text>
-            <TextInput style={styles.input} placeholder="Age*" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.label}> Roll No </Text>
-            <TextInput style={styles.input} placeholder="Roll No*" />
-          </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}> Roll No </Text>
+          <TextInput style={styles.input} placeholder="Roll No*" />
         </View>
+      </View>
 
-        <View style={styles.row}>
-          <View style={styles.flex1}>
-            <StyledDropdown
-              label="Title"
-              items={titleOptions}
-              selectedItem={selectedTitle || { label: "", value: "" }}
-              onChange={(val) => {
-                const item = titleOptions.find((i) => i.value === val);
-                if (item) setSelectedTitle(item);
-              }}
-            />
-          </View>
-          <TextInput style={styles.input} placeholder="Next of Kin" />
+      <View style={styles.row}>
+        <View style={styles.flex1}>
+          <StyledDropdown
+            label="Title"
+            items={titleOptions}
+            selectedItem={selectedTitle || { label: "", value: "" }}
+            onChange={(val) => {
+              const item = titleOptions.find((i) => i.value === val);
+              if (item) setSelectedTitle(item);
+            }}
+          />
         </View>
+        <TextInput style={styles.input} placeholder="Next of Kin" />
+      </View>
 
-        <View style={styles.row}>
-          <TextInput style={styles.input} placeholder="Contact Number" />
-          <View style={styles.flex1}>
-            <StyledDropdown
-              label="Relation"
-              items={relationOptions}
-              selectedItem={selectedRelation || { label: "", value: "" }}
-              onChange={(val) => {
-                const item = relationOptions.find((i) => i.value === val);
-                if (item) setSelectedRelation(item);
-              }}
-            />
-          </View>
+      <View style={styles.row}>
+        <TextInput style={styles.input} placeholder="Contact Number" />
+        <View style={styles.flex1}>
+          <StyledDropdown
+            label="Relation"
+            items={relationOptions}
+            selectedItem={selectedRelation || { label: "", value: "" }}
+            onChange={(val) => {
+              const item = relationOptions.find((i) => i.value === val);
+              if (item) setSelectedRelation(item);
+            }}
+          />
         </View>
+      </View>
 
-        <StyledDropdown
-          label="Special Need"
-          items={specialNeedOptions}
-          selectedItem={selectedNeed || { label: "", value: "" }}
-          onChange={(val) => {
-            const item = specialNeedOptions.find((i) => i.value === val);
-            if (item) setSelectedNeed(item);
-          }}
-        />
+      <StyledDropdown
+        label="Special Need"
+        items={specialNeedOptions}
+        selectedItem={selectedNeed || { label: "", value: "" }}
+        onChange={(val) => {
+          const item = specialNeedOptions.find((i) => i.value === val);
+          if (item) setSelectedNeed(item);
+        }}
+      />
 
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveText}>Save</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <TouchableOpacity style={styles.saveButton}>
+        <Text style={styles.saveText}>Save</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 

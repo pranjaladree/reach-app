@@ -1,28 +1,20 @@
-import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
-import { Button, Dialog, Portal, TextInput } from "react-native-paper";
-import CustomDatePicker from "../ui/CustomDatePicker";
-import DateTimePicker, {
-  DateType,
-  useDefaultStyles,
-} from "react-native-ui-datepicker";
-import { useCallback, useEffect, useState } from "react";
-import CustomDropdown from "../utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
-import { DropdownModel } from "@/models/ui/DropdownModel";
 import { FACILITY_TYPES_ITEMS } from "@/constants/Data";
 import {
   findAllHospitals,
   findAllOtherFacilities,
   findAllVisionCenters,
-  getMasterDropdownFromDB,
   saveMRTag,
-  TABLES,
 } from "@/database/database";
-import { useSQLiteContext } from "expo-sqlite";
 import { MRTagModel } from "@/models/patient-at-fixed-facilty/MRTagModel";
-import { useFocusEffect } from "expo-router";
-import { DateSelector } from "../new_UI/date-picker";
+import { DropdownModel } from "@/models/ui/DropdownModel";
 import dayjs from "dayjs";
+import { useFocusEffect } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useCallback, useEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Button, Dialog, Portal } from "react-native-paper";
+import CustomDropdown from "../utils/CustomDropdown";
 import CustomInput from "../utils/CustomInput";
 
 interface Props {
@@ -48,7 +40,7 @@ const MRTagItem = ({ item, studentId }: Props) => {
     []
   );
   const [facilityItems, setFacilityItems] = useState<DropdownModel[]>([]);
-  const [facilityLabel, setFacilityLabel] = useState("");
+  const [facilityLabel, setFacilityLabel] = useState("Type");
   const [facilityType, setSelectedFaciliType] = useState(BLANK_DROPDOWN_MODEL);
   const [facilityName, setFacilityName] = useState(BLANK_DROPDOWN_MODEL);
 
@@ -174,8 +166,8 @@ const MRTagItem = ({ item, studentId }: Props) => {
 
   return (
     <>
-      <View style={{ marginTop: 10 }}>
-        <Text>MR Tag</Text>
+      <View>
+        {/* <Text>MR Tag</Text> */}
         <View>
           <CustomInput
             id="mrNo"
@@ -186,7 +178,7 @@ const MRTagItem = ({ item, studentId }: Props) => {
         </View>
 
         <View style={{ flexDirection: "row" }}>
-          <View style={{ flexGrow: 1, padding: 5 }}>
+          <View style={{ flexGrow: 1 }}>
             <CustomDropdown
               label="Facility Type"
               items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
@@ -194,7 +186,7 @@ const MRTagItem = ({ item, studentId }: Props) => {
               onChange={selectActivityTypeHandler}
             />
           </View>
-          <View style={{ flexGrow: 1, padding: 5 }}>
+          <View style={{ flexGrow: 1 }}>
             <CustomDropdown
               label={facilityLabel}
               items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
@@ -203,10 +195,33 @@ const MRTagItem = ({ item, studentId }: Props) => {
             />
           </View>
         </View>
-        <View>
-          <Button onPress={addMRTagHandler} mode="contained">
+        <View style={{ paddingHorizontal: 15 }}>
+          {/* <Button
+            onPress={addMRTagHandler}
+            mode="contained"
+            style={styles.button}
+          >
             Proceed
-          </Button>
+          </Button> */}
+          <TouchableOpacity
+            onPress={addMRTagHandler}
+            // mode="contained"
+            style={{
+              marginTop: 20,
+              backgroundColor: "#004aad",
+              padding: 8,
+              borderRadius: 6,
+              alignItems: "center",
+              width: "100%",
+              flex: 1,
+              height: 50,
+
+              justifyContent: "center",
+              gap: 10,
+            }}
+          >
+            <Text style={{ color: "white" }}> Proceed</Text>
+          </TouchableOpacity>
         </View>
       </View>
       <Portal>
@@ -227,6 +242,13 @@ const MRTagItem = ({ item, studentId }: Props) => {
 };
 
 const styles = StyleSheet.create({
+  button: {
+    marginTop: 20,
+    backgroundColor: "#004aad",
+    padding: 8,
+    borderRadius: 6,
+    alignItems: "center",
+  },
   screen: {
     padding: 10,
   },

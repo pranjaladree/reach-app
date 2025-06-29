@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import React from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { Button } from "react-native-paper";
@@ -23,10 +24,12 @@ const AppButton: React.FC<AppButtonProps> = ({
       onPress={onPress}
       loading={loading}
       disabled={disabled}
-      style={[{ width: "100%" }, style]} // outer button container
+      style={[
+        { width: "100%", backgroundColor: Colors.primary, borderRadius: 5 },
+        style,
+      ]} // outer button container
       contentStyle={{
         paddingVertical: 5, // internal padding (no press flicker)
-   
       }}
       labelStyle={{
         fontSize: 16,

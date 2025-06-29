@@ -1,6 +1,6 @@
 import { RadioItemModel } from "@/models/ui/RadioItemModel";
 import * as React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { RadioButton, Text } from "react-native-paper";
 
 interface Props {
@@ -22,7 +22,11 @@ const CustomRadioGroup = ({
 }: Props) => {
   return (
     <>
-      <RadioButton.Group onValueChange={onChange} value={selectedOption}>
+      {/* <RadioButton.Group
+        onValueChange={onChange}
+        value={selectedOption}
+        color="#0a63c9"
+      >
         <View style={styles.group}>
           {items.map((item) => (
             <View key={item.id} style={styles.button}>
@@ -31,16 +35,35 @@ const CustomRadioGroup = ({
             </View>
           ))}
         </View>
-      </RadioButton.Group>
+      </RadioButton.Group> */}
+      <Text style={styles.radioLabel}>{label} </Text>
+
+      <View style={styles.radioGroup}>
+        {items.map((val) => (
+          <View key={val.id} style={styles.radioItem}>
+            <RadioButton
+              value={val.value}
+              status={selectedOption === val.value ? "checked" : "unchecked"}
+              onPress={() => onChange(val.value)}
+              color="#0a63c9"
+            />
+            <Text>{val.value === "all" ? "All" : val.value}</Text>
+          </View>
+        ))}
+      </View>
+
       {isError && (
         <View>
           <Text style={{ color: "red" }}>{errorMessage}</Text>
         </View>
       )}
+
+      {/* <Text style={styles.radioLabel}>Gender</Text> */}
     </>
   );
 };
 
+export default CustomRadioGroup;
 const styles = StyleSheet.create({
   group: {
     flexDirection: "row",
@@ -49,6 +72,99 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+
+  // my style
+
+  container: {
+    padding: 16,
+    backgroundColor: "#f7f7f7",
+    flex: 1,
+  },
+  label: {
+    marginBottom: 6,
+    fontSize: 14,
+    color: "#000",
+    fontWeight: "500",
+  },
+  row: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  rowItem: {
+    flex: 1,
+  },
+  radioLabel: {
+    fontSize: 18,
+    paddingHorizontal: 10,
+    fontWeight: "600",
+    marginTop: 10,
+    marginBottom: 4,
+    color: "#000",
+  },
+  radioGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 5,
+  },
+  radioItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  searchButton: {
+    marginTop: 16,
+    borderRadius: 6,
+    paddingVertical: 6,
+    backgroundColor: "#0047AB",
+  },
 });
 
-export default CustomRadioGroup;
+// const styles = StyleSheet.create({
+//   container: {
+//     padding: 16,
+//     backgroundColor: "#f7f7f7",
+//     flex: 1,
+//   },
+//   label: {
+//     marginBottom: 6,
+//     fontSize: 14,
+//     color: "#000",
+//     fontWeight: "500",
+//   },
+//   row: {
+//     flexDirection: "row",
+//     gap: 10,
+//     marginTop: 8,
+//     marginBottom: 12,
+//   },
+//   rowItem: {
+//     flex: 1,
+//   },
+//   radioLabel: {
+//     fontSize: 14,
+//     fontWeight: "500",
+//     marginTop: 10,
+//     marginBottom: 4,
+//     color: "#000",
+//   },
+//   radioGroup: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     flexWrap: "wrap",
+//     marginBottom: 5,
+//   },
+//   radioItem: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     marginRight: 12,
+//   },
+//   searchButton: {
+//     marginTop: 16,
+//     borderRadius: 6,
+//     paddingVertical: 6,
+//     backgroundColor: "#0047AB",
+//   },
+// });

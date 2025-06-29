@@ -6,6 +6,7 @@ import { Modal, Portal } from "react-native-paper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setVisualAcuity } from "@/store/slices/visual-acuity-slice";
+import { Colors } from "@/constants/Colors";
 
 interface Props {
   label: string;
@@ -35,8 +36,8 @@ const CustomGridDropdown = ({
 
   return (
     <View>
-      <View>
-        <Text>{label}</Text>
+      <View style={{ marginBottom: 5 , }}>
+        <Text style={{ color: Colors.primary}}>{label}</Text>
       </View>
       <View style={styles.inputBox}>
         <Pressable
@@ -76,9 +77,11 @@ const CustomGridDropdown = ({
 
 const styles = StyleSheet.create({
   inputBox: {
-    borderWidth: 0.4,
+    borderWidth: 1,
     backgroundColor: "white",
     padding: 10,
+    borderBlockColor: Colors.primary,
+    borderRadius: 5,
   },
 });
 

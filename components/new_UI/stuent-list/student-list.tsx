@@ -38,7 +38,7 @@ export default function StudentList({
   //   const [modalVisible, setModalVisible] = useState(false);
 
   const filteredStudents = students.filter((student) =>
-    student.name.toLowerCase().includes(searchText.toLowerCase())
+    student?.name?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const handleStudentPress = (student: any) => {

@@ -1,4 +1,9 @@
 import {
+  BLANK_DROPDOWN_MODEL,
+  BLANK_GRID_DROPDOWN_MODEl,
+} from "@/constants/BlankModels";
+import { Colors } from "@/constants/Colors";
+import {
   findAllAdds,
   findAllAxis,
   findAllCyls,
@@ -15,17 +20,13 @@ import {
   findRefractionByMrId,
   saveRefraction,
 } from "@/database/database";
+import { RefractionModel } from "@/models/patient-at-fixed-facilty/RefractionModel";
+import { DropdownModel } from "@/models/ui/DropdownModel";
+import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
+import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, KeyboardAvoidingView } from "react-native";
-import CustomGridDropdown from "../utils/CustomGridDropdown";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import {
-  BLANK_DROPDOWN_MODEL,
-  BLANK_GRID_DROPDOWN_MODEl,
-} from "@/constants/BlankModels";
-import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {
   Button,
   Checkbox,
@@ -33,12 +34,10 @@ import {
   Portal,
   TextInput,
 } from "react-native-paper";
-import CustomDropdown from "../utils/CustomDropdown";
-import { ACTIVITY_TYPE_ITEMS } from "@/constants/Data";
-import { DropdownModel } from "@/models/ui/DropdownModel";
 import { Collapsible } from "../Collapsible";
-import { RefractionModel } from "@/models/patient-at-fixed-facilty/RefractionModel";
-import { useFocusEffect } from "expo-router";
+import AppButton from "../new_UI/AppButton";
+import CustomDropdown from "../utils/CustomDropdown";
+import CustomGridDropdown from "../utils/CustomGridDropdown";
 
 //
 interface Props {
@@ -47,6 +46,8 @@ interface Props {
 
 const Refraction = ({ mrId }: Props) => {
   const db = useSQLiteContext();
+
+  const [selectedTab, setSelectedTab] = useState<"od" | "os">("od");
 
   const [sphItems, setSphItems] = useState<GridDropdownModel[]>([]);
   const [cylItems, setCylItems] = useState<GridDropdownModel[]>([]);
@@ -1093,6 +1094,19 @@ const Refraction = ({ mrId }: Props) => {
     }
   }, [nvaItems, refractionItem]);
 
+  const renderTab = (label: string, value: "os" | "od") => (
+    <TouchableOpacity
+      style={[styles.tab, selectedTab === value && styles.activeTab]}
+      onPress={() => setSelectedTab(value)}
+    >
+      <Text
+        style={[styles.tabText, selectedTab === value && styles.activeTabText]}
+      >
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+
   useEffect(() => {
     if (refractionItem) {
       setPupilaryDistanceRE(refractionItem.refractionPapillaryDistSPhRe);
@@ -1203,8 +1217,17 @@ const Refraction = ({ mrId }: Props) => {
 
   return (
     <View style={styles.screen}>
+      <View style={styles.tabContainer}>
+        {renderTab("OD (RE)", "od")}
+        {renderTab("OS (LE)", "os")}
+      </View>
+
       {/* Box 1 */}
-      <Collapsible title="OD ( RE )">
+      {/* <Collapsible title="OD ( RE )">
+
+      </Collapsible> */}
+
+      {selectedTab === "od" && (
         <View style={styles.box}>
           {/* Row 1 */}
           <View>
@@ -1233,6 +1256,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_PGP_Axis_RE}
                 onChange={refraction_PGP_Axis_REHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
             <View style={styles.rowItem}>
@@ -1241,6 +1265,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...addItems]}
                 selectedItem={refraction_PGP_Add_RE}
                 onChange={refraction_PGP_Add_REHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1271,6 +1296,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Dry_Axis_RE}
                 onChange={refraction_Dry_Axis_REHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1301,6 +1327,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Cyclo_Axis_RE}
                 onChange={refraction_Cyclo_Axis_REHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1330,6 +1357,7 @@ const Refraction = ({ mrId }: Props) => {
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Acceptance_Axis_RE}
+                   style={{paddingHorizontal:0 , height:  39}}
                 onChange={refraction_Acceptance_Axis_REHandler}
               />
             </View>
@@ -1405,10 +1433,14 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
         </View>
-      </Collapsible>
+      )}
 
-      <Collapsible title="OS ( LE )">
-        {/* Box 2 */}
+      {/* <Collapsible title="OS ( LE )"> */}
+      {/* Box 2 */}
+
+      {/* </Collapsible> */}
+
+      {selectedTab === "os" && (
         <View style={styles.box}>
           {/* Row 1 */}
           <View>
@@ -1437,6 +1469,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_PGP_Axis_LE}
                 onChange={refraction_PGP_Axis_LEHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
             <View style={styles.rowItem}>
@@ -1445,11 +1478,14 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...addItems]}
                 selectedItem={refraction_PGP_Add_LE}
                 onChange={refraction_PGP_Add_LEHandler}
+                style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
+
+
           {/* Row 2 */}
-          <View>
+          <View style={{marginTop: 10}}>
             <Text>DRY RETINOSCOPY</Text>
           </View>
           <View style={styles.row}>
@@ -1475,6 +1511,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Dry_Axis_LE}
                 onChange={refraction_Dry_Axis_LEHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1505,6 +1542,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Cyclo_Axis_LE}
                 onChange={refraction_Cyclo_Axis_LEHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1535,6 +1573,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Acceptance_Axis_LE}
                 onChange={refraction_Acceptance_Axis_LEHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1601,7 +1640,7 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
         </View>
-      </Collapsible>
+      )}
 
       {/* Box 3 */}
       <Collapsible title="Lens Information">
@@ -1614,6 +1653,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...lensMaterialItems]}
                 selectedItem={lensMaterial}
                 onChange={lensMaterialChanageHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
             <View style={styles.rowItem}>
@@ -1622,6 +1662,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...frameMaterialItems]}
                 selectedItem={frameMaterial}
                 onChange={frameMaterialChanageHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1633,6 +1674,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...lensTypeItems]}
                 selectedItem={lensType}
                 onChange={lensTypeChanageHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
             <View style={styles.rowItem}>
@@ -1641,6 +1683,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...specialityLensItems]}
                 selectedItem={specialityLens}
                 onChange={specialityLensChanageHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1651,6 +1694,7 @@ const Refraction = ({ mrId }: Props) => {
                 label="Mode Of Wear"
                 items={[BLANK_DROPDOWN_MODEL, ...modeOfWearItems]}
                 selectedItem={modeOfWears}
+                   style={{paddingHorizontal:0 , height:  39}}
                 onChange={modeOfWearChanageHandler}
               />
             </View>
@@ -1660,6 +1704,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...lensSurfaceCoatingItems]}
                 selectedItem={lensSurfaceCoating}
                 onChange={lensSurfaceCoatingChanageHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
@@ -1671,6 +1716,7 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...lensTintItems]}
                 selectedItem={lensTint}
                 onChange={lensTintChanageHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
             <View style={styles.rowItem}>
@@ -1679,12 +1725,14 @@ const Refraction = ({ mrId }: Props) => {
                 items={[BLANK_DROPDOWN_MODEL, ...specialInstructionItems]}
                 selectedItem={specialInstruction}
                 onChange={specialInstructionChanageHandler}
+                   style={{paddingHorizontal:0 , height:  39}}
               />
             </View>
           </View>
           {/* Row 5 */}
           <View style={styles.row}>
             <Checkbox
+
               status={isPrescribed ? "checked" : "unchecked"}
               onPress={() => {
                 setIsPrescribed(!isPrescribed);
@@ -1696,9 +1744,10 @@ const Refraction = ({ mrId }: Props) => {
       </Collapsible>
 
       <View style={styles.action}>
-        <Button onPress={saveRefractionHandler} mode="contained">
+        {/* <Button onPress={saveRefractionHandler} mode="contained" style={styles.button}>
           Save
-        </Button>
+        </Button> */}
+        <AppButton title="Save" onPress={saveRefractionHandler} />
       </View>
 
       <Portal>
@@ -1727,7 +1776,8 @@ const styles = StyleSheet.create({
   box: {
     borderWidth: 0.5,
     padding: 10,
-    marginTop: 20,
+    borderColor: Colors.primary,
+    // marginTop: 20,
   },
   row: {
     flexDirection: "row",
@@ -1750,6 +1800,38 @@ const styles = StyleSheet.create({
   action: {
     marginTop: 20,
     marginBottom: 20,
+  },
+  tabContainer: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    // borderRadius: 4,
+    overflow: "hidden",
+    marginTop: 10,
+  },
+  tab: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    padding: 10,
+    alignItems: "center",
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#999",
+  },
+  activeTab: {
+    backgroundColor: "#004aad",
+  },
+  activeTabText: {
+    color: "#fff",
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: "#004aad",
+    padding: 8,
+    borderRadius: 6,
+    alignItems: "center",
   },
 });
 

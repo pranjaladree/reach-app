@@ -1,8 +1,7 @@
-
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
 import { MaterialIcons } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
 
 export type DropdownItem = {
   label: string;
@@ -38,6 +37,8 @@ const StyledDropdown: React.FC<Props> = ({
         itemTextStyle={styles.itemText}
         containerStyle={styles.dropdownContainer}
         iconStyle={styles.iconStyle}
+        keyboardAvoiding
+        autoScroll
         renderRightIcon={() => (
           <MaterialIcons name="arrow-drop-down" size={24} color="#000" />
         )}

@@ -1,33 +1,40 @@
-import { DropdownItem } from "@/components/new_UI/StyledDropdown";
-import MRTagDataSync from "@/components/sync-to-server/mr-tag-data-sync";
-import PrimaryDataSync from "@/components/sync-to-server/primary-data-sync";
-import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
 
-const SyncToServer = () => {
-  const [screen, setScreen] = useState("PRIMARY_SCREENING");
+import { MaterialIcons } from "@expo/vector-icons";
+import StyledDropdown, {
+  DropdownItem,
+} from "@/components/new_UI/StyledDropdown";
+
+// Dummy data
+const schools: DropdownItem[] = [
+  { label: "SUNFLOWERSCHOOL", value: "sunflower" },
+  { label: "GREENSCHOOL", value: "green" },
+];
+
+export default function DataSyncScreen() {
   const [activeTab, setActiveTab] = useState<"primary" | "detailed">("primary");
-  const [selectedSchool, setSelectedSchool] = useState<DropdownItem>();
-  // schools[0]
-  return (
-    <View style={{ padding: 16  }}>
-      {/* <View style={styles.section}>
-        <SegmentedButtons
-          value={screen}
-          onValueChange={setScreen}
-          buttons={[
-            {
-              value: "PRIMARY_SCREENING",
-              label: "Primary Screening Data Sync",
-            },
-            {
-              value: "MR_TAG",
-              label: "MR Tag Data Sync",
-            },
-          ]}
-        />
-      </View> */}
+  const [selectedSchool, setSelectedSchool] = useState<DropdownItem>(
+    schools[0]
+  );
 
+  const handleGetData = () => {
+    console.log("Get Data clicked for", selectedSchool.label);
+  };
+
+  const handleSyncData = () => {
+    console.log("Sync Data clicked");
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Tabs */}
       <View style={styles.tabRow}>
         <TouchableOpacity
           style={[styles.tab, activeTab === "primary" && styles.activeTab]}
@@ -57,57 +64,45 @@ const SyncToServer = () => {
         </TouchableOpacity>
       </View>
 
+      {/* Card Section */}
       <View style={styles.card}>
-        {/* <View style={styles.header}>
-          <Text style={styles.headerTitle}>
-            {screen == "PRIMARY_SCREENING"
-              ? "Primary Screening Data Sync"
-              : "MR Tag Data Sync"}
-          </Text> */}
+        <Text style={styles.label}>Select School</Text>
+        <View style={styles.row}>
+          <View style={{ flex: 1, paddingTop: 15 }}>
+            <StyledDropdown
+              items={schools}
+              selectedItem={selectedSchool}
+              onChange={(val) => {
+                const selected = schools.find((s) => s.value === val);
+                if (selected) setSelectedSchool(selected);
+              }}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.getDataButton}
+            onPress={handleGetData}
+          >
+            <MaterialIcons name="check-circle" size={20} color="#fff" />
+            <Text style={styles.getDataText}>Get Data</Text>
+          </TouchableOpacity>
+        </View>
 
-        {activeTab == "primary" && <PrimaryDataSync />}
-        {activeTab == "detailed" && <MRTagDataSync />}
+        {/* Summary */}
+        <Text style={styles.summaryText}>Total Student: 40</Text>
+        <Text style={styles.summaryText}>
+          No of student undergone Primary screening: 35
+        </Text>
+        <Text style={styles.summaryText}>No of unsync Data: 35</Text>
+
+        {/* Sync Button */}
+        <TouchableOpacity style={styles.syncButton} onPress={handleSyncData}>
+          <MaterialIcons name="cloud-upload" size={18} color="#fff" />
+          <Text style={styles.syncText}>Sync Data</Text>
+        </TouchableOpacity>
       </View>
-      {/* {activeTab == "primary" && <PrimaryDataSync />}
-      {activeTab == "detailed" && <MRTagDataSync />} */}
-    </View>
+    </SafeAreaView>
   );
-};
-
-// const styles = StyleSheet.create({
-//   screen: {
-//     backgroundColor: "white",
-//     padding: 20,
-//     flex: 1,
-//   },
-//   section: {
-//     marginTop: 20,
-//   },
-//   card: {
-//     marginTop: 20,
-//     backgroundColor: "#fff",
-//     paddingVertical: 16,
-//     borderRadius: 12,
-//     elevation: 4,
-//     shadowColor: "#000",
-//     shadowOpacity: 0.1,
-//     shadowRadius: 10,
-//     width: "100%",
-//   },
-//   header: {
-//     marginTop: 10,
-//     paddingBottom: 10,
-//     flexDirection: "row",
-//     justifyContent: "center",
-//   },
-//   headerTitle: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//   },
-// });
-
-export default SyncToServer;
-
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -150,8 +145,7 @@ const styles = StyleSheet.create({
     borderColor: "#004aad",
     // borderRadius: 8,
     backgroundColor: "#fff",
-    // padding: 16,
-    paddingTop: 10,
+    padding: 16,
   },
   label: {
     fontSize: 14,

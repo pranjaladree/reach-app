@@ -1,9 +1,18 @@
-import StyledDropdown from "@/components/new_UI/StyledDropdown";
+import CustomDropdown from "@/components/utils/CustomDropdown";
+import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { Colors } from "@/constants/Colors";
+import {
+  getSchoolsDropdownFromDB,
+  saveSchoolLocation,
+} from "@/database/database";
+import { DropdownModel } from "@/models/ui/DropdownModel";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import * as Location from "expo-location";
+import { useFocusEffect } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import React, { useCallback, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, Dialog, Portal } from "react-native-paper";
 
 const { width } = Dimensions.get("window");
 
@@ -13,7 +22,89 @@ const schoolOptions = [
 ];
 
 export default function GeoLocationScreen() {
-  const [selectedSchool, setSelectedSchool] = useState("sunflower");
+  const db = useSQLiteContext();
+  const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
+  const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
+  const [location, setLocation] = useState<any>();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [visible, setVisible] = useState(false);
+
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => setVisible(false);
+  const [diaglogMessage, setDialogMessage] = useState("");
+
+  async function getCurrentLocation() {
+    console.log(selectedSchool.value);
+    if (selectedSchool.value == "SELECT") {
+      setDialogMessage("Please Select School !");
+      showDialog();
+      return;
+    }
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      // setErrorMsg("Permission to access location was denied");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    console.log(location);
+    setLocation(location);
+  }
+
+  const selectSchoolHandler = (val?: string) => {
+    if (val == "SELECT") {
+      setSelectedSchool(BLANK_DROPDOWN_MODEL);
+    } else {
+      const foundItem = schoolItems.find((item) => item.value == val);
+      if (foundItem) {
+        setSelectedSchool(foundItem);
+      }
+    }
+  };
+
+  const getSchoolsHandler = async () => {
+    const response = await getSchoolsDropdownFromDB(db);
+    if (response) {
+      setSchoolItems(response);
+    }
+  };
+
+  const saveLocationHandler = async () => {
+    if (selectedSchool.value == "SELECT") {
+      setDialogMessage("Please Select School !");
+      showDialog();
+      return;
+    }
+
+    if (!location) {
+      setDialogMessage("No Location Data found !");
+      showDialog();
+      return;
+    }
+
+    const response = await saveSchoolLocation(
+      db,
+      selectedSchool.id,
+      location.coords?.latitude,
+      location.coords?.latitude
+    );
+    if (response) {
+      setDialogMessage("Location Data Saved !");
+      showDialog();
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getSchoolsHandler();
+      return () => {
+        console.log("Screen unfocused");
+      };
+    }, [])
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -31,22 +122,18 @@ export default function GeoLocationScreen() {
           selectedTextStyle={styles.selectedText}
           iconStyle={styles.iconStyle}
         /> */}
-        <StyledDropdown
-          label="Select School"
-          items={schoolOptions}
-          selectedItem={schoolOptions.find(
-            (item) => item.value === selectedSchool
-          )}
-          onChange={(val: any) => setSelectedSchool(val)}
-          style={styles.dropdown}
-          placeholderStyle={styles.dropdownPlaceholder}
-          selectedTextStyle={styles.selectedText}
-          iconStyle={styles.iconStyle}
+        <CustomDropdown
+          label="School"
+          items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
+          selectedItem={selectedSchool}
+          onChange={selectSchoolHandler}
+          style={{ paddingHorizontal: 0 }}
         />
 
         {/* Get Location Button */}
         <Button
           mode="contained"
+          onPress={getCurrentLocation}
           style={[styles.button, { marginBottom: 12 }]}
           icon={() => (
             <MaterialIcons name="location-on" size={20} color="#fff" />
@@ -58,23 +145,43 @@ export default function GeoLocationScreen() {
         {/* Lat/Lng Output */}
         <View style={styles.coordsRow}>
           <Text style={styles.coordText}>
-            <Text style={styles.boldText}>Latitude:</Text> 45.93846
+            <Text style={styles.boldText}>Latitude : </Text>
+            {location ? location.coords?.latitude : ""}
           </Text>
           <Text style={styles.coordText}>
-            <Text style={styles.boldText}>Longitude:</Text> 45.93846
+            <Text style={styles.boldText}>
+              Longitude : {location ? location.coords?.longitude : ""}
+            </Text>
           </Text>
         </View>
-        <Text style={styles.accuracy}>% of accuracy: 96%</Text>
+        {/* <Text style={styles.accuracy}>% of accuracy: 96%</Text> */}
 
         {/* Save Button */}
         <Button
           mode="contained"
           style={[styles.button, { marginTop: 20 }]}
+          onPress={saveLocationHandler}
           icon={() => <Feather name="download" size={20} color="#fff" />}
         >
           Save Geo location on Device
         </Button>
       </View>
+
+
+   <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Title>REACHLite</Dialog.Title>
+          <Dialog.Content>
+            <Text>{diaglogMessage}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog} loading={isLoading}>
+              Done
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
     </ScrollView>
   );
 }

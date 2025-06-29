@@ -1,26 +1,25 @@
 import {
+  BLANK_GRID_DROPDOWN_MODEl,
+  BLANK_VISUAL_ACUITY_MODEL,
+} from "@/constants/BlankModels";
+import { Colors } from "@/constants/Colors";
+import {
   findAllDvas,
   findAllNvas,
   findAllPhs,
   findOneVisualAcuity,
-  getMasterDataFromDB,
   saveVisualAcuity,
-  TABLES,
 } from "@/database/database";
-import { DistanceDvaModel } from "@/models/other-masters/DistanceDvaModel";
+import { VisualAcuityModel } from "@/models/patient-at-fixed-facilty/VisualAcuityModel";
+import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
+import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import CustomGridDropdown from "../utils/CustomGridDropdown";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  BLANK_GRID_DROPDOWN_MODEl,
-  BLANK_VISUAL_ACUITY_MODEL,
-} from "@/constants/BlankModels";
-import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, Dialog, Portal } from "react-native-paper";
-import { VisualAcuityModel } from "@/models/patient-at-fixed-facilty/VisualAcuityModel";
-import { useFocusEffect } from "expo-router";
+import { useDispatch } from "react-redux";
+import AppButton from "../new_UI/AppButton";
+import CustomGridDropdown from "../utils/CustomGridDropdown";
 
 //
 interface Props {
@@ -28,6 +27,7 @@ interface Props {
 }
 
 const VisualAcuity = ({ mrId }: Props) => {
+  const [selectedTab, setSelectedTab] = useState<"with" | "without">("with");
   const db = useSQLiteContext();
   const [distanceDvaItems, setDistanceDvaItems] = useState<GridDropdownModel[]>(
     []
@@ -320,6 +320,19 @@ const VisualAcuity = ({ mrId }: Props) => {
 
   const hideDialog = () => setVisible(false);
 
+  const renderTab = (label: string, value: "with" | "without") => (
+    <TouchableOpacity
+      style={[styles.tab, selectedTab === value && styles.activeTab]}
+      onPress={() => setSelectedTab(value)}
+    >
+      <Text
+        style={[styles.tabText, selectedTab === value && styles.activeTabText]}
+      >
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+
   useFocusEffect(
     useCallback(() => {
       getDistanceDvaHandler();
@@ -334,136 +347,149 @@ const VisualAcuity = ({ mrId }: Props) => {
 
   return (
     <View style={styles.screen}>
+      <View style={styles.tabContainer}>
+        {renderTab("With Spectacle", "with")}
+        {renderTab("Without Spectacle", "without")}
+      </View>
       {/* Box 1 */}
-      <View style={styles.box}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Without Spectacle</Text>
+      {selectedTab === "without" && (
+        <View style={styles.box}>
+          {/* <View style={styles.header}>
+            <Text style={styles.headerTitle}>Without Spectacle</Text>
+          </View> */}
+          {/* Row 1 */}
+          <View style={styles.row}>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="Distance DVA (OD RE)"
+                items={distanceDvaItems}
+                onSelect={distanceDvaWithoutSpecREHandler}
+                selectedItem={distanceDvaWithoutSpecRE.title}
+              />
+            </View>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="Distance DVA (OS LE)"
+                items={distanceDvaItems}
+                onSelect={distanceDvaWithoutSpecLEHandler}
+                selectedItem={distanceDvaWithoutSpecLE.title}
+              />
+            </View>
+          </View>
+          {/* Row 2 */}
+          <View style={styles.row}>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="PH(OD RE)"
+                items={phItems}
+                onSelect={visualExam_WithoutSpecs_PH_REHandler}
+                selectedItem={visualExam_WithoutSpecs_PH_RE.title}
+              />
+            </View>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="PH (OS LE)"
+                items={phItems}
+                onSelect={visualExam_WithoutSpecs_PH_LEHandler}
+                selectedItem={visualExam_WithoutSpecs_PH_LE.title}
+              />
+            </View>
+          </View>
+          {/* Row 3 */}
+          <View style={styles.row}>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="Near NVA (OD RE)"
+                items={nvaItems}
+                onSelect={visualExam_WithoutSpecs_NVA_REHandler}
+                selectedItem={visualExam_WithoutSpecs_NVA_RE.title}
+              />
+            </View>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="Near NVA (OS LE)"
+                items={nvaItems}
+                onSelect={visualExam_WithoutSpecs_NVA_LEHandler}
+                selectedItem={visualExam_WithoutSpecs_NVA_LE.title}
+              />
+            </View>
+          </View>
         </View>
-        {/* Row 1 */}
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="Distance DVA (OD RE)"
-              items={distanceDvaItems}
-              onSelect={distanceDvaWithoutSpecREHandler}
-              selectedItem={distanceDvaWithoutSpecRE.title}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="Distance DVA (OS LE)"
-              items={distanceDvaItems}
-              onSelect={distanceDvaWithoutSpecLEHandler}
-              selectedItem={distanceDvaWithoutSpecLE.title}
-            />
-          </View>
-        </View>
-        {/* Row 2 */}
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="PH(OD RE)"
-              items={phItems}
-              onSelect={visualExam_WithoutSpecs_PH_REHandler}
-              selectedItem={visualExam_WithoutSpecs_PH_RE.title}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="PH (OS LE)"
-              items={phItems}
-              onSelect={visualExam_WithoutSpecs_PH_LEHandler}
-              selectedItem={visualExam_WithoutSpecs_PH_LE.title}
-            />
-          </View>
-        </View>
-        {/* Row 3 */}
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="Near NVA (OD RE)"
-              items={nvaItems}
-              onSelect={visualExam_WithoutSpecs_NVA_REHandler}
-              selectedItem={visualExam_WithoutSpecs_NVA_RE.title}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="Near NVA (OS LE)"
-              items={nvaItems}
-              onSelect={visualExam_WithoutSpecs_NVA_LEHandler}
-              selectedItem={visualExam_WithoutSpecs_NVA_LE.title}
-            />
-          </View>
-        </View>
-      </View>
+      )}
+
       {/* Box 2 */}
-      <View style={styles.box}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>With Spectacle</Text>
+
+      {selectedTab === "with" && (
+        <View style={styles.box}>
+          {/* <View style={styles.header}>
+            <Text style={styles.headerTitle}>With Spectacle</Text>
+          </View> */}
+          {/* Row 1 */}
+          <View style={styles.row}>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="Distance DVA (OD RE)"
+                items={distanceDvaItems}
+                onSelect={selectDistanceDvaWithSpecREHandler}
+                selectedItem={distanceDvaWithSpecRE.title}
+              />
+            </View>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="Distance DVA (OS LE)"
+                items={distanceDvaItems}
+                onSelect={selectDistanceDvaWithSpecLEHandler}
+                selectedItem={distanceDvaWithSpecLE.title}
+              />
+            </View>
+          </View>
+          {/* Row 2 */}
+          <View style={styles.row}>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="PH (OD RE)"
+                items={phItems}
+                onSelect={selectVisualExam_WithSpecs_PH_REHandler}
+                selectedItem={visualExam_WithSpecs_PH_RE.title}
+              />
+            </View>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="PH (OS LE)"
+                items={phItems}
+                onSelect={selectVisualExam_WithSpecs_PH_LEHandler}
+                selectedItem={visualExam_WithSpecs_PH_LE.title}
+              />
+            </View>
+          </View>
+          {/* Row 3 */}
+          <View style={styles.row}>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="Near NVA (OD RE)"
+                items={nvaItems}
+                onSelect={selectVisualExam_WithSpecs_NVA_REHandler}
+                selectedItem={visualExam_WithSpecs_NVA_RE.title}
+              />
+            </View>
+            <View style={styles.rowItem}>
+              <CustomGridDropdown
+                label="Near NVA (OS LE)"
+                items={nvaItems}
+                onSelect={selectVisualExam_WithSpecs_NVA_LEHandler}
+                selectedItem={visualExam_WithSpecs_NVA_LE.title}
+              />
+            </View>
+          </View>
         </View>
-        {/* Row 1 */}
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="Distance DVA (OD RE)"
-              items={distanceDvaItems}
-              onSelect={selectDistanceDvaWithSpecREHandler}
-              selectedItem={distanceDvaWithSpecRE.title}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="Distance DVA (OS LE)"
-              items={distanceDvaItems}
-              onSelect={selectDistanceDvaWithSpecLEHandler}
-              selectedItem={distanceDvaWithSpecLE.title}
-            />
-          </View>
-        </View>
-        {/* Row 2 */}
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="PH (OD RE)"
-              items={phItems}
-              onSelect={selectVisualExam_WithSpecs_PH_REHandler}
-              selectedItem={visualExam_WithSpecs_PH_RE.title}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="PH (OS LE)"
-              items={phItems}
-              onSelect={selectVisualExam_WithSpecs_PH_LEHandler}
-              selectedItem={visualExam_WithSpecs_PH_LE.title}
-            />
-          </View>
-        </View>
-        {/* Row 3 */}
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="Near NVA (OD RE)"
-              items={nvaItems}
-              onSelect={selectVisualExam_WithSpecs_NVA_REHandler}
-              selectedItem={visualExam_WithSpecs_NVA_RE.title}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <CustomGridDropdown
-              label="Near NVA (OS LE)"
-              items={nvaItems}
-              onSelect={selectVisualExam_WithSpecs_NVA_LEHandler}
-              selectedItem={visualExam_WithSpecs_NVA_LE.title}
-            />
-          </View>
-        </View>
-      </View>
+      )}
+
       <View style={styles.action}>
-        <Button onPress={saveVisualAcuityHandler} mode="contained">
+      {/* <Button onPress={saveVisualAcuityHandler} mode="contained" style={styles.button}>
           Save
-        </Button>
+        </Button> */}
+      <AppButton title="Save" onPress={saveVisualAcuityHandler} />
+
       </View>
 
       <Portal>
@@ -484,14 +510,40 @@ const VisualAcuity = ({ mrId }: Props) => {
 };
 
 const styles = StyleSheet.create({
+  tabContainer: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    // borderRadius: 4,
+    overflow: "hidden",
+    marginTop: 10,
+  },
+  tab: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    padding: 10,
+    alignItems: "center",
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#999",
+  },
+  activeTab: {
+    backgroundColor: "#004aad",
+  },
+  activeTabText: {
+    color: "#fff",
+  },
   screen: {
     padding: 10,
     backgroundColor: "white",
   },
   box: {
-    borderWidth: 0.5,
+    borderWidth: 1,
     padding: 10,
-    marginTop: 20,
+    // marginTop: 20,
+    borderColor: Colors.primary,
   },
   row: {
     flexDirection: "row",
@@ -512,6 +564,13 @@ const styles = StyleSheet.create({
   action: {
     marginTop: 20,
     marginBottom: 20,
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: "#004aad",
+    padding: 8,
+    borderRadius: 6,
+    alignItems: "center",
   },
 });
 

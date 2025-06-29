@@ -2,20 +2,20 @@ import Advice from "@/components/mr-tag/Advice";
 import MRTagItem from "@/components/mr-tag/MRTag";
 import Refraction from "@/components/mr-tag/Refraction";
 import VisualAcuity from "@/components/mr-tag/VisualAcuity";
-import { DateSelector } from "@/components/new_UI/date-picker";
 import { BLANK_MR_TAG_MODEL } from "@/constants/BlankModels";
 import { findOneMRTag } from "@/database/database";
-import { RootState } from "@/store/store";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
-import { View, Text, ScrollView, StyleSheet, Modal } from "react-native";
-import { SegmentedButtons } from "react-native-paper";
-import DateTimePicker, {
-  DateType,
-  useDefaultStyles,
-} from "react-native-ui-datepicker";
-import { useSelector } from "react-redux";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+const tabOptions = ["MR TAG", "Visual Acuity", "Refraction", "Advice"];
 
 const MRTagDetail = () => {
   const db = useSQLiteContext();
@@ -23,7 +23,7 @@ const MRTagDetail = () => {
   const [isMrTagDone, setIsMrTagDone] = useState(false);
   const { studentId, studentName } = useLocalSearchParams();
 
-  const [screen, setScreen] = useState("MR_TAG");
+  const [screen, setScreen] = useState("MR TAG");
 
   const getMRTagHandler = async () => {
     const response = await findOneMRTag(db, studentId.toString());
@@ -45,9 +45,24 @@ const MRTagDetail = () => {
     }, [])
   );
 
+  const renderTabContent = () => {
+    switch (screen) {
+      case "MR_TAG":
+        return <MRTagItem studentId={studentId.toString()} item={mrTagItem} />;
+      case "Visual Acuity":
+        return <VisualAcuity mrId={studentId?.toString()} />;
+      case "Refraction":
+        return <Refraction mrId={studentId?.toString()} />;
+      case "Advice":
+        return <Advice mrId={studentId?.toString()} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <ScrollView style={styles.screen}>
-      <View style={{ padding: 10 }}>
+    <>
+      {/* <View style={{ padding: 10 }}>
         <Text>Student ID {studentId}</Text>
         <Text>Student Name {studentName}</Text>
       </View>
@@ -94,8 +109,32 @@ const MRTagDetail = () => {
         <View>
           <Advice mrId={studentId?.toString()} />
         </View>
-      )}
-    </ScrollView>
+      )} */}
+
+      <Text style={styles.header}>Examination Details</Text>
+      <View style={styles.tabContainer}>
+        {tabOptions.map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={[styles.tab, screen === tab && styles.tabActive]}
+            onPress={() => setScreen(tab)}
+          >
+            <Text
+              style={[styles.tabText, screen === tab && styles.tabTextActive]}
+            >
+              {tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
+        <View style={styles.formContainer}>{renderTabContent()}</View>
+      </ScrollView>
+    </>
   );
 };
 
@@ -109,6 +148,49 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: "white",
+  },
+
+  container: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+  },
+  contentContainer: {
+    padding: 16,
+  },
+  header: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#004aad",
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    paddingBottom: 8,
+    marginBottom: 16,
+  },
+  tabContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: "#004aad",
+    borderRightWidth: 0,
+    backgroundColor: "#fff",
+  },
+  tabActive: {
+    backgroundColor: "#004aad",
+  },
+  tabText: {
+    textAlign: "center",
+    color: "#004aad",
+    fontWeight: "600",
+  },
+  tabTextActive: {
+    color: "#fff",
+  },
+  formContainer: {
+    gap: 16,
   },
 });
 

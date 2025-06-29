@@ -1,22 +1,19 @@
-import { View, Text } from "react-native";
-import CustomDropdown from "../utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
-import { useCallback, useState } from "react";
-import { DropdownModel } from "@/models/ui/DropdownModel";
-import { Button } from "react-native-paper";
 import {
   getSchoolByActivityType,
-  getSchoolsDropdownFromDB,
   prepareMRDataSync,
-  preparePSDataSync,
 } from "@/database/database";
-import { useSQLiteContext } from "expo-sqlite";
-import { useFocusEffect } from "@react-navigation/native";
-import { syncMRTagData, syncPSData } from "@/http/data-sync-http";
-import { useSelector } from "react-redux";
+import { syncMRTagData } from "@/http/data-sync-http";
+import { DropdownModel } from "@/models/ui/DropdownModel";
 import { RootState } from "@/store/store";
-import { Dialog, Portal, PaperProvider } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
+import { useSQLiteContext } from "expo-sqlite";
+import { useCallback, useState } from "react";
+import { Text, View } from "react-native";
+import { Button, Dialog, Portal } from "react-native-paper";
+import { useSelector } from "react-redux";
 import AppButton from "../new_UI/AppButton";
+import CustomDropdown from "../utils/CustomDropdown";
 
 const MRTagDataSync = () => {
   const db = useSQLiteContext();
@@ -98,12 +95,14 @@ const MRTagDataSync = () => {
         >
           Sync Data
         </Button> */}
-        <AppButton
-          title="Sync Data"
-          onPress={syncMrTagHandler}
-          loading={isLoading}
-          disabled={isLoading}
-        />
+        <View style={{ paddingHorizontal: 5 }}>
+          <AppButton
+            title="Sync Data"
+            onPress={syncMrTagHandler}
+            loading={isLoading}
+            disabled={isLoading}
+          />
+        </View>
       </View>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>

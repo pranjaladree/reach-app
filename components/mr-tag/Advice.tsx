@@ -1,25 +1,5 @@
-import { DistanceDvaModel } from "@/models/other-masters/DistanceDvaModel";
-import { useSQLiteContext } from "expo-sqlite";
-import { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import CustomGridDropdown from "../utils/CustomGridDropdown";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { setVisualAcuity } from "@/store/slices/visual-acuity-slice";
-import {
-  BLANK_DROPDOWN_MODEL,
-  BLANK_GRID_DROPDOWN_MODEl,
-} from "@/constants/BlankModels";
-import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
-import {
-  Button,
-  Checkbox,
-  Dialog,
-  Portal,
-  TextInput,
-} from "react-native-paper";
-import { SegmentedButtons } from "react-native-paper";
-import CustomDropdown from "../utils/CustomDropdown";
+import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
+import { Colors } from "@/constants/Colors";
 import {
   ACTIVITY_TYPE_ITEMS,
   EYE_DROPDOWN_ITEMS,
@@ -27,21 +7,28 @@ import {
 } from "@/constants/Data";
 import {
   findAdviceByMrId,
-  findAllDvas,
   findAllHospitals,
-  findAllNvas,
   findAllOtherFacilities,
-  findAllPhs,
   findAllVisionCenters,
   findDiagnosisByMRId,
   saveAdvice,
   saveDiagnosis,
 } from "@/database/database";
-import { Collapsible } from "../Collapsible";
 import { AdviceVisitModel } from "@/models/patient-at-fixed-facilty/AdviceVisitModel";
 import { DiagnosisVisitModel } from "@/models/patient-at-fixed-facilty/DiagnosisVisitModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { useFocusEffect } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useCallback, useEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  Portal,
+  TextInput,
+} from "react-native-paper";
+import CustomDropdown from "../utils/CustomDropdown";
 
 interface Props {
   mrId: string;
@@ -49,6 +36,9 @@ interface Props {
 
 const Advice = ({ mrId }: Props) => {
   const db = useSQLiteContext();
+  const [selectedTab, setSelectedTab] = useState<"diagnosis" | "advice">(
+    "diagnosis"
+  );
 
   const [diagnosisItems, setDiagnosisItems] = useState<DropdownModel[]>([
     new DropdownModel({ id: "1", value: "Diagnosis 1", label: "Diagnosis 1" }),
@@ -182,7 +172,7 @@ const Advice = ({ mrId }: Props) => {
     []
   );
   const [facilityItems, setFacilityItems] = useState<DropdownModel[]>([]);
-  const [facilityLabel, setFacilityLabel] = useState("");
+  const [facilityLabel, setFacilityLabel] = useState("Facility Type ");
   const [facilityType, setSelectedFaciliType] = useState(BLANK_DROPDOWN_MODEL);
   const [facilityName, setFacilityName] = useState(BLANK_DROPDOWN_MODEL);
 
@@ -289,6 +279,19 @@ const Advice = ({ mrId }: Props) => {
     }
   };
 
+  const renderTab = (label: string, value: "diagnosis" | "advice") => (
+    <TouchableOpacity
+      style={[styles.tab, selectedTab === value && styles.activeTab]}
+      onPress={() => setSelectedTab(value)}
+    >
+      <Text
+        style={[styles.tabText, selectedTab === value && styles.activeTabText]}
+      >
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+
   useEffect(() => {
     if (adviceItem) {
       setIsSpectaclePrescribed(adviceItem.isSpectaclePrescribed);
@@ -354,164 +357,245 @@ const Advice = ({ mrId }: Props) => {
 
   return (
     <View style={styles.screen}>
-      <Collapsible title="Diagnosis">
-        <View style={{ padding: 10 }}>
-          <View>
-            <CustomDropdown
-              label="Diagnosis Type"
-              items={[BLANK_DROPDOWN_MODEL, ...diagnosisItems]}
-              selectedItem={diagnosisType}
-              onChange={selectDiagnosisTypeHandler}
-            />
+      <View style={styles.tabContainer}>
+        {renderTab("Diagnosis", "diagnosis")}
+        {renderTab("Advice", "advice")}
+      </View>
+
+      {selectedTab === "diagnosis" && (
+        <>
+          <View
+            style={{
+              padding: 10,
+              borderWidth: 1,
+              borderColor: Colors.primary,
+              gap: 10,
+            }}
+          >
+            <View>
+              <CustomDropdown
+                label="Diagnosis Type"
+                items={[BLANK_DROPDOWN_MODEL, ...diagnosisItems]}
+                selectedItem={diagnosisType}
+                onChange={selectDiagnosisTypeHandler}
+              />
+            </View>
+            <View>
+              <CustomDropdown
+                label="Eye"
+                items={[BLANK_DROPDOWN_MODEL, ...EYE_DROPDOWN_ITEMS]}
+                selectedItem={selectedEye}
+                onChange={selectEyeHandler}
+              />
+            </View>
+            <View style={{ marginTop: 20 }}>
+              {/* <Button
+                onPress={saveDiagnosisHandler}
+                mode="contained"
+                style={styles.button}
+              >
+                Save
+              </Button> */}
+              <TouchableOpacity
+                onPress={saveDiagnosisHandler}
+                // mode="contained"
+                style={{
+                  marginTop: 20,
+                  backgroundColor: "#004aad",
+                  padding: 8,
+                  borderRadius: 6,
+                  alignItems: "center",
+                  width: "100%",
+                  flex: 1,
+                  height: 50,
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: "white" }}> Save</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View>
-            <CustomDropdown
-              label="Eye"
-              items={[BLANK_DROPDOWN_MODEL, ...EYE_DROPDOWN_ITEMS]}
-              selectedItem={selectedEye}
-              onChange={selectEyeHandler}
-            />
-          </View>
-          <View>
-            <Button onPress={saveDiagnosisHandler} mode="contained">
-              Save
-            </Button>
-          </View>
-        </View>
-        <View>
-          <View style={styles.box}>
-            {diagnosisList.map((item) => (
-              <View key={item.id} style={styles.row}>
-                <Text>{item.diagnosisType}</Text>
-                <Text>{item.selectedEye}</Text>
+            {diagnosisList.length > 0 && (
+              <View style={styles.box}>
+                {diagnosisList.map((item) => (
+                  <View key={item.id} style={styles.row}>
+                    <Text>{item.diagnosisType}</Text>
+                    <Text>{item.selectedEye}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
+            )}
           </View>
-        </View>
-      </Collapsible>
+        </>
+      )}
+
+      {/* <Collapsible title="Diagnosis"></Collapsible> */}
+
+      {selectedTab === "advice" && (
+        <>
+          <View style={styles.box}>
+            {/* <View style={styles.header}>
+              <Text style={styles.headerTitle}>Advice</Text>
+            </View> */}
+            {/* Row 1 */}
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <Checkbox
+                  color="#004aad"
+                  status={isSpectaclePrescribed ? "checked" : "unchecked"}
+                  onPress={() => {
+                    setIsSpectaclePrescribed(!isSpectaclePrescribed);
+                  }}
+                />
+                <Text>Spectacle Prescribed</Text>
+              </View>
+              <View style={styles.rowItem}>
+                <Checkbox
+                  color="#004aad"
+                  status={isMedicinePrescribed ? "checked" : "unchecked"}
+                  onPress={() => {
+                    setIsMedicinePrescribed(!isMedicinePrescribed);
+                  }}
+                />
+                <Text>Medicine Prescribed</Text>
+              </View>
+            </View>
+
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <Checkbox
+                  color="#004aad"
+                  status={isContinueWithSameGlass ? "checked" : "unchecked"}
+                  onPress={() => {
+                    setIsContinueWithSameGlasses(!isContinueWithSameGlass);
+                  }}
+                />
+                <Text>Continue With Same Glass</Text>
+              </View>
+              <View style={styles.rowItem}>
+                <Checkbox
+                  color="#004aad"
+                  status={isNoTreatmentRequired ? "checked" : "unchecked"}
+                  onPress={() => {
+                    setIsNoTreatmentRequired(!isNoTreatmentRequired);
+                  }}
+                />
+                <Text>No Treatment Required</Text>
+              </View>
+            </View>
+            {/* Row 2 */}
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={styles.rowItem}>
+                <Checkbox
+                  color="#004aad"
+                  status={isPatientRefer ? "checked" : "unchecked"}
+                  onPress={() => {
+                    setIsPatientRefer(!isPatientRefer);
+                  }}
+                />
+                <Text>Patient Refer</Text>
+              </View>
+              <View style={{ width: "50%" }}>
+                <CustomDropdown
+                  label={facilityLabel}
+                  items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
+                  selectedItem={facilityType}
+                  onChange={selectFacilityTypeHandler}
+                  disabled={!isPatientRefer}
+                />
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
+              <View style={{ width: "50%" }}>
+                <CustomDropdown
+                  label="Facility Name"
+                  items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
+                  selectedItem={facilityName}
+                  onChange={selectFacilityNameHandler}
+                  disabled={!isPatientRefer}
+                />
+              </View>
+              <View style={{ width: "50%" }}>
+                <CustomDropdown
+                  label="Referral Reason"
+                  items={[BLANK_DROPDOWN_MODEL, ...referralReasonItems]}
+                  selectedItem={referralReason}
+                  onChange={selectReferralReasonHandler}
+                  disabled={!isPatientRefer}
+                />
+              </View>
+            </View>
+            {/* Row 3 */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
+              <View style={styles.rowItem}>
+                <Checkbox
+                  color="#004aad"
+                  status={isSurgeryRequired ? "checked" : "unchecked"}
+                  onPress={() => {
+                    setIsSurgeryRequired(!isSurgeryRequired);
+                  }}
+                />
+                <Text>Surgery Required</Text>
+              </View>
+              <View style={{ width: "50%" }}>
+                <CustomDropdown
+                  label="Surgery Type"
+                  items={[BLANK_DROPDOWN_MODEL, ...surgeryItems]}
+                  selectedItem={surgery}
+                  onChange={selectSurgeryHandler}
+                />
+              </View>
+            </View>
+            {/* Row 4 */}
+            <View style={styles.rowItem}>
+              <View style={{ flex: 1, paddingHorizontal: 10, marginTop: 10 }}>
+                <TextInput
+                  mode="outlined"
+                  label="Other Comments"
+                  outlineColor="#004aad"
+                  value={otherComments}
+                  onChangeText={otherCommentsChangeHandler}
+                />
+              </View>
+            </View>
+          </View>
+          {/* <View style={styles.action}> */}
+          <TouchableOpacity
+            onPress={saveAdviceHandler}
+            // mode="contained"
+            style={{
+              marginTop: 20,
+              backgroundColor: "#004aad",
+              padding: 8,
+              borderRadius: 6,
+              alignItems: "center",
+              width: "100%",
+              flex: 1,
+              height: 50,
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ color: "white" }}> Save</Text>
+          </TouchableOpacity>
+          {/* </View> */}
+        </>
+      )}
 
       {/* Box 1 */}
-      <Collapsible title="Advice">
-        <View style={styles.box}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Advice</Text>
-          </View>
-          {/* Row 1 */}
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <Checkbox
-                status={isSpectaclePrescribed ? "checked" : "unchecked"}
-                onPress={() => {
-                  setIsSpectaclePrescribed(!isSpectaclePrescribed);
-                }}
-              />
-              <Text>Spectacle Prescribed</Text>
-            </View>
-            <View style={styles.rowItem}>
-              <Checkbox
-                status={isMedicinePrescribed ? "checked" : "unchecked"}
-                onPress={() => {
-                  setIsMedicinePrescribed(!isMedicinePrescribed);
-                }}
-              />
-              <Text>Medcine Prescribed</Text>
-            </View>
-            <View style={styles.rowItem}>
-              <Checkbox
-                status={isContinueWithSameGlass ? "checked" : "unchecked"}
-                onPress={() => {
-                  setIsContinueWithSameGlasses(!isContinueWithSameGlass);
-                }}
-              />
-              <Text>Continue With Same Glass</Text>
-            </View>
-            <View style={styles.rowItem}>
-              <Checkbox
-                status={isNoTreatmentRequired ? "checked" : "unchecked"}
-                onPress={() => {
-                  setIsNoTreatmentRequired(!isNoTreatmentRequired);
-                }}
-              />
-              <Text>No Treatment Required</Text>
-            </View>
-          </View>
-          {/* Row 2 */}
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <Checkbox
-                status={isPatientRefer ? "checked" : "unchecked"}
-                onPress={() => {
-                  setIsPatientRefer(!isPatientRefer);
-                }}
-              />
-              <Text>Patient Refer</Text>
-            </View>
-            <View style={styles.rowItem}>
-              <CustomDropdown
-                label={facilityLabel}
-                items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
-                selectedItem={facilityType}
-                onChange={selectFacilityTypeHandler}
-                disabled={!isPatientRefer}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <CustomDropdown
-                label="Facility Name"
-                items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
-                selectedItem={facilityName}
-                onChange={selectFacilityNameHandler}
-                disabled={!isPatientRefer}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <CustomDropdown
-                label="Referral Reason"
-                items={[BLANK_DROPDOWN_MODEL, ...referralReasonItems]}
-                selectedItem={referralReason}
-                onChange={selectReferralReasonHandler}
-                disabled={!isPatientRefer}
-              />
-            </View>
-          </View>
-          {/* Row 3 */}
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <Checkbox
-                status={isSurgeryRequired ? "checked" : "unchecked"}
-                onPress={() => {
-                  setIsSurgeryRequired(!isSurgeryRequired);
-                }}
-              />
-              <Text>Surgery Required</Text>
-            </View>
-            <View style={styles.rowItem}>
-              <CustomDropdown
-                label="Surgery Type"
-                items={[BLANK_DROPDOWN_MODEL, ...surgeryItems]}
-                selectedItem={surgery}
-                onChange={selectSurgeryHandler}
-              />
-            </View>
-          </View>
-          {/* Row 4 */}
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <TextInput
-                mode="outlined"
-                label="Other Comments"
-                value={otherComments}
-                onChangeText={otherCommentsChangeHandler}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={styles.action}>
-          <Button onPress={saveAdviceHandler} mode="contained">
-            Save
-          </Button>
-        </View>
-      </Collapsible>
+      {/* <Collapsible title="Advice"></Collapsible> */}
 
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -531,6 +615,43 @@ const Advice = ({ mrId }: Props) => {
 };
 
 const styles = StyleSheet.create({
+  button: {
+    marginTop: 20,
+    backgroundColor: "#004aad",
+    padding: 8,
+    borderRadius: 6,
+    alignItems: "center",
+    width: "100%",
+    flex: 1,
+    height: 50,
+    justifyContent: "center",
+  },
+  tabContainer: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    // borderRadius: 4,
+    overflow: "hidden",
+    marginTop: 10,
+  },
+  tab: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    padding: 10,
+    alignItems: "center",
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#999",
+  },
+  activeTab: {
+    backgroundColor: "#004aad",
+  },
+  activeTabText: {
+    color: "#fff",
+  },
+
   screen: {
     padding: 10,
     backgroundColor: "white",
@@ -543,7 +664,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 5,
+    // padding: 5,
+    gap: 5,
   },
   rowItem: {
     flexBasis: 1,
