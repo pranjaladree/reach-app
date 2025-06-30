@@ -1,4 +1,5 @@
 import HeaderTitle from "@/components/new_UI/header-title";
+import StyledDropdown from "@/components/new_UI/StyledDropdown";
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomInput from "@/components/utils/CustomInput";
 import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
@@ -168,10 +169,8 @@ const PrimaryScreening = () => {
 
   return (
     <View style={{ paddingHorizontal: 5, paddingVertical: 10, paddingTop: 20 }}>
-      <HeaderTitle title="Primary Screening" />
-
       <View>
-        <CustomDropdown
+        <StyledDropdown
           label="School"
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
@@ -179,15 +178,15 @@ const PrimaryScreening = () => {
         />
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ flexGrow: 1 }}>
-          <CustomDropdown
+        <View style={{ flexGrow: 1, padding: 5 }}>
+          <StyledDropdown
             label="Class"
             items={[BLANK_DROPDOWN_MODEL, ...classItems]}
             selectedItem={selectedClass}
             onChange={selectClassHandler}
           />
         </View>
-        <View style={{ flexGrow: 1 }}>
+        <View style={{ flexGrow: 1, padding: 5 }}>
           <CustomInput
             id="section"
             label="Section"
@@ -197,48 +196,46 @@ const PrimaryScreening = () => {
         </View>
       </View>
       <View style={{ paddingHorizontal: 15 }}>
-        <View style={styles.card}>
-          <View>
-            <CustomRadioGroup
-              label="Gender"
-              items={[
-                new RadioItemModel({ id: 0, value: "All", label: "All" }),
-                ...GENDER_RADIO_ITEMS,
-              ]}
-              selectedOption={gender}
-              onChange={genderChangeHandler}
-            />
-          </View>
-          <View>
-            <CustomRadioGroup
-              label="Status"
-              items={STATUS_RADIO_ITEMS}
-              selectedOption={status}
-              onChange={statusChangeHandler}
-            />
-          </View>
-          <View>
-            <CustomRadioGroup
-              label="Result"
-              items={RESULT_RADIO_ITEMS}
-              selectedOption={result}
-              onChange={resultChangeHandler}
-            />
-          </View>
+        <View>
+          <CustomRadioGroup
+            label="Gender"
+            items={[
+              new RadioItemModel({ id: 0, value: "All", label: "All" }),
+              ...GENDER_RADIO_ITEMS,
+            ]}
+            selectedOption={gender}
+            onChange={genderChangeHandler}
+          />
         </View>
-        <Button
-          onPress={getStudentsHandler}
-          mode="contained"
-          style={{
-            paddingVertical: 5,
-            borderRadius: 30,
-            marginTop: 20,
-            width: "100%",
-          }}
-        >
-          Search
-        </Button>
+        <View>
+          <CustomRadioGroup
+            label="Status"
+            items={STATUS_RADIO_ITEMS}
+            selectedOption={status}
+            onChange={statusChangeHandler}
+          />
+        </View>
+        <View>
+          <CustomRadioGroup
+            label="Result"
+            items={RESULT_RADIO_ITEMS}
+            selectedOption={result}
+            onChange={resultChangeHandler}
+          />
+        </View>
       </View>
+      <Button
+        onPress={getStudentsHandler}
+        mode="contained"
+        style={{
+          paddingVertical: 5,
+          borderRadius: 30,
+          marginTop: 20,
+          width: "100%",
+        }}
+      >
+        Search
+      </Button>
     </View>
   );
 };
