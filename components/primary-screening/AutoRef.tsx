@@ -16,6 +16,8 @@ import { DropdownModel } from "@/models/ui/DropdownModel";
 import { findAllAxis, findAllCyls, findAllSphs } from "@/database/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
+import StyledDropdown from "../new_UI/StyledDropdown";
+import CustomInput from "../utils/CustomInput";
 
 const AutoRef = () => {
   const dispatch = useDispatch();
@@ -223,9 +225,9 @@ const AutoRef = () => {
           <Text>Autoref Reading</Text>
         </View>
         <View>
-          <View>
-            <View>
-              <CustomDropdown
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ flexBasis: 1, padding: 5, flexGrow: 1 }}>
+              <StyledDropdown
                 items={[
                   BLANK_DROPDOWN_MODEL,
                   ...NORMAL_ABNORMAL_DROPDOWN_ITEMS,
@@ -235,8 +237,8 @@ const AutoRef = () => {
                 onChange={visionWithAutoRefLEChangeHandler}
               />
             </View>
-            <View>
-              <CustomDropdown
+            <View style={{ flexBasis: 1, padding: 5, flexGrow: 1 }}>
+              <StyledDropdown
                 items={[
                   BLANK_DROPDOWN_MODEL,
                   ...NORMAL_ABNORMAL_DROPDOWN_ITEMS,
@@ -256,8 +258,8 @@ const AutoRef = () => {
           <Text>Acceptance OD ( LE )</Text>
         </View>
         <View>
-          <View>
-            <View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexBasis: 1, padding: 5, flexGrow: 1 }}>
               <CustomGridDropdown
                 label="SPH"
                 items={[BLANK_GRID_DROPDOWN_MODEl, ...sphItems]}
@@ -265,7 +267,7 @@ const AutoRef = () => {
                 onSelect={acceptance_SPH_LEChangeHandler}
               />
             </View>
-            <View>
+            <View style={{ flexBasis: 1, padding: 5, flexGrow: 1 }}>
               <CustomGridDropdown
                 label="CYL"
                 items={[BLANK_GRID_DROPDOWN_MODEl, ...cylItems]}
@@ -273,8 +275,8 @@ const AutoRef = () => {
                 onSelect={acceptance_CYL_LEChangeHandler}
               />
             </View>
-            <View>
-              <CustomDropdown
+            <View style={{ flexBasis: 1, padding: 5, flexGrow: 1 }}>
+              <StyledDropdown
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 label="AXIS"
                 selectedItem={screeningItem.acceptanceAXISLE}
@@ -291,8 +293,8 @@ const AutoRef = () => {
           <Text>Acceptance OD ( RE )</Text>
         </View>
         <View>
-          <View>
-            <View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexBasis: 1, padding: 5, flexGrow: 1 }}>
               <CustomGridDropdown
                 label="SPH"
                 items={sphItems}
@@ -300,7 +302,7 @@ const AutoRef = () => {
                 onSelect={acceptance_SPH_REChangeHandler}
               />
             </View>
-            <View>
+            <View style={{ flexBasis: 1, padding: 5, flexGrow: 1 }}>
               <CustomGridDropdown
                 label="CYL"
                 items={cylItems}
@@ -308,8 +310,8 @@ const AutoRef = () => {
                 onSelect={acceptance_CYL_REChangeHandler}
               />
             </View>
-            <View>
-              <CustomDropdown
+            <View style={{ flexBasis: 1, padding: 5, flexGrow: 1 }}>
+              <StyledDropdown
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 label="AXIS"
                 selectedItem={screeningItem.acceptanceAXISRE}
@@ -322,13 +324,14 @@ const AutoRef = () => {
 
       {/* Row 4 */}
       <View>
-        <View>
+        {/* <View>
           <Text>IPD ( Both )</Text>
-        </View>
+        </View> */}
         <View>
           <View>
-            <InputBox
-              placeholder="IPD"
+            <CustomInput
+              id="ipd"
+              label="IPD"
               value={screeningItem.IPDBoth}
               onChangeText={IPD_AutoRefChangeHandler}
             />

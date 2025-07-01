@@ -301,7 +301,7 @@ const AddStudent = () => {
       keyboardVerticalOffset={0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView>
+        <ScrollView style={{ padding: 20 }}>
           <View style={{ paddingBottom: 30 }}>
             <View>
               <View>

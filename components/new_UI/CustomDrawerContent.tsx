@@ -32,17 +32,17 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     {
       label: "Device Preparation",
       icon: (color: string) => (
-        <MaterialIcons name="build" size={20} color={color} />
+        <Ionicons name="cloud-download-outline" size={20} color={color} />
       ),
       route: "device-preparation",
     },
-    {
-      label: "Database Test",
-      icon: (color: string) => (
-        <FontAwesome5 name="database" size={20} color={color} />
-      ),
-      route: "database-test",
-    },
+    // {
+    //   label: "Database Test",
+    //   icon: (color: string) => (
+    //     <FontAwesome5 name="database" size={20} color={color} />
+    //   ),
+    //   route: "database-test",
+    // },
     {
       label: "Primary Screening",
       icon: (color: string) => (
@@ -60,7 +60,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     {
       label: "View QR",
       icon: (color: string) => (
-        <Ionicons name="pricetag-outline" size={20} color={color} />
+        <Ionicons name="qr-code-outline" size={20} color={color} />
       ),
       route: "qr-codes",
     },
@@ -126,12 +126,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     <View style={{ flex: 1 }}>
       {/* Profile Section */}
       <View style={styles.profileContainer}>
-        <Image
+        {/* <Image
           source={{ uri: "https://i.pravatar.cc/100" }}
           style={styles.avatar}
-        />
-        <Text style={styles.name}>John Doe</Text>
-        <Text style={styles.email}>john.doe@example.com</Text>
+        /> */}
+        <Text style={styles.name}></Text>
+        <Text style={styles.email}></Text>
       </View>
 
       {/* Drawer Items */}

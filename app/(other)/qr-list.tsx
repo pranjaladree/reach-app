@@ -79,8 +79,6 @@ const QRList = () => {
         <View>
           <View>
             <Text>Total Student:</Text>
-            <Text>Done:</Text>
-            <Text>Not Done :</Text>
           </View>
           <View>
             <InputBox

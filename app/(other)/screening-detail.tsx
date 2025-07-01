@@ -6,6 +6,7 @@ import OcularTest from "@/components/primary-screening/OcularTest";
 import SpectacleStatus from "@/components/primary-screening/SpectacleStatus";
 import TLE from "@/components/primary-screening/TLE";
 import VisionTest from "@/components/primary-screening/VisionTest";
+import CustomButton from "@/components/utils/CustomButton";
 import {
   BLANK_DROPDOWN_MODEL,
   BLANK_GRID_DROPDOWN_MODEl,
@@ -45,22 +46,21 @@ const ScreeningDetails = () => {
   const [isAutorefAvailable, setIsAutorefAvailable] = useState(false);
   const [isQCPopupEligible, setIsQCPopupEligible] = useState(false);
   const [isQCUser, setIsQCUser] = useState(false);
-  const { studentId, studentName, schoolId, isMarkedForQc } =
-    useLocalSearchParams();
+  const {
+    studentId,
+    studentName,
+    tempId,
+    classTitle,
+    section,
+    age,
+    gender,
+    schoolId,
+    isMarkedForQc,
+  } = useLocalSearchParams();
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
   );
   const [status, setStatus] = useState("");
-
-  const toogleNormalCheckHandler = async () => {
-    dispatch(
-      setScreeningItem({
-        ...screeningItem,
-        isNormal: !screeningItem.isNormal,
-      })
-    );
-    dispatch(setNormalCheck());
-  };
 
   const saveScreeningHandler = async () => {
     const response = await savePrimaryScreening(
@@ -327,51 +327,87 @@ const ScreeningDetails = () => {
     }, [])
   );
 
+  useEffect(() => {
+    if (screeningItem.isNormal) {
+      if (screeningItem.usingSpectacle == "NO") {
+        dispatch(setNormalCheck());
+      } else {
+        if (screeningItem.haveSpecNow != "") {
+          dispatch(setNormalCheck());
+        }
+      }
+    }
+  }, [
+    screeningItem.isNormal,
+    screeningItem.usingSpectacle,
+    screeningItem.haveSpecNow,
+  ]);
+
   return (
     <>
       <ScrollView style={styles.screen}>
-        <View>
-          <Text>Student ID {studentId}</Text>
-          <Text>Student Name {studentName}</Text>
+        <View style={styles.headerBox}>
+          <View>
+            <Text style={styles.title}>{tempId}</Text>
+            <Text style={styles.title}>{studentName}</Text>
+          </View>
+          <View>
+            <Text style={styles.title}>
+              {gender}/{age}
+            </Text>
+            <Text style={styles.title}>
+              {classTitle}/{section}
+            </Text>
+          </View>
         </View>
-        <View style={styles.normal}>
-          <Checkbox
-            status={screeningItem.isNormal ? "checked" : "unchecked"}
-            onPress={toogleNormalCheckHandler}
-          />
-          <Text>Normal</Text>
+
+        <View style={{ padding: 10 }}>
+          <View style={styles.normal}>
+            <Checkbox
+              status={screeningItem.isNormal ? "checked" : "unchecked"}
+              onPress={() => {
+                dispatch(
+                  setScreeningItem({
+                    ...screeningItem,
+                    isNormal: !screeningItem.isNormal,
+                  })
+                );
+              }}
+            />
+            <Text>Normal</Text>
+          </View>
+          <View>
+            <SpectacleStatus />
+          </View>
+          {/* Vision Test */}
+          {screeningItem.isVisionTestVisible && <VisionTest />}
+
+          {/* AutoRef Test */}
+          {screeningItem.unableToPerformVisionTest == "YES" &&
+            isAutorefAvailable && (
+              <>
+                <AutoRef />
+                <TLE />
+              </>
+            )}
+
+          {/* Ocular Complaint Test */}
+          {screeningItem.isOcularComplaintVisible && <OcularTest />}
+
+          {/* Binacular Test */}
+          {screeningItem.isBinucularTestVisible && <BinacularTest />}
+
+          {/* Torchlight Examination */}
+          {screeningItem.isTorchlightVisible && <TLE />}
+
+          {/* Color Vision Test */}
+          {screeningItem.isColorVisionTestVisible && <ColorVisionTest />}
         </View>
-        <View>
-          <SpectacleStatus />
-        </View>
-        {/* Vision Test */}
-        {screeningItem.isVisionTestVisible && <VisionTest />}
-
-        {/* AutoRef Test */}
-        {screeningItem.unableToPerformVisionTest == "YES" &&
-          isAutorefAvailable && (
-            <>
-              <AutoRef />
-              <TLE />
-            </>
-          )}
-
-        {/* Ocular Complaint Test */}
-        {screeningItem.isOcularComplaintVisible && <OcularTest />}
-
-        {/* Binacular Test */}
-        {screeningItem.isBinucularTestVisible && <BinacularTest />}
-
-        {/* Torchlight Examination */}
-        {screeningItem.isTorchlightVisible && <TLE />}
-
-        {/* Color Vision Test */}
-        {screeningItem.isColorVisionTestVisible && <ColorVisionTest />}
         <View style={{ paddingBottom: 200 }}></View>
       </ScrollView>
       <View style={styles.action}>
         <View style={styles.rowItem}>
-          <Button
+          <CustomButton
             onPress={() => {
               router.push({
                 pathname: "/(other)/update-student",
@@ -380,15 +416,14 @@ const ScreeningDetails = () => {
                 },
               });
             }}
-            mode="outlined"
-          >
-            Update Student
-          </Button>
+            title="Update Student"
+          />
         </View>
         <View style={styles.rowItem}>
-          <Button onPress={addScreeningHandler} mode="contained">
+          <CustomButton title="Checkout" onPress={addScreeningHandler} />
+          {/* <Button onPress={addScreeningHandler} mode="contained">
             Checkout
-          </Button>
+          </Button> */}
         </View>
       </View>
       <Portal>
@@ -410,7 +445,12 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: "white",
-    paddingHorizontal: 10,
+  },
+  headerBox: {
+    backgroundColor: "#e3e3e3",
+    padding: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   normal: {
     flexDirection: "row",
@@ -431,6 +471,9 @@ const styles = StyleSheet.create({
     flexBasis: 1,
     flexGrow: 1,
     padding: 10,
+  },
+  title: {
+    fontWeight: "bold",
   },
 });
 

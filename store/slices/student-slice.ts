@@ -7,7 +7,10 @@ import {
   BLANK_DROPDOWN_MODEL,
   BLANK_SCREENING_MODEL,
 } from "@/constants/BlankModels";
-import { NORMAL_ABNORMAL_DROPDOWN_ITEMS } from "@/constants/Data";
+import {
+  NORMAL_ABNORMAL_DROPDOWN_ITEMS,
+  YES_NO_DROPDOWN_ITEMS,
+} from "@/constants/Data";
 
 export interface StudentState {
   students: StudentModel[];
@@ -34,7 +37,6 @@ export const studentSlice = createSlice({
 
       // Check Test Visibility
       let item = state.screeningItem;
-
       // Vision Test Visibility
       if (item.usingSpectacle == "NO") {
         item.isVisionTestVisible = true;
@@ -48,6 +50,10 @@ export const studentSlice = createSlice({
             item.isVisionTestVisible = false;
           }
         }
+      }
+
+      if (item.unableToPerformVisionTest == "YES") {
+        item.isNormal = false;
       }
 
       //Ocular Visibility
@@ -81,10 +87,14 @@ export const studentSlice = createSlice({
     setNormalCheck: (state) => {
       const item = state.screeningItem;
       item.unableToPerformVisionTest = "NO";
-      item.canReadLogmarLE = NORMAL_ABNORMAL_DROPDOWN_ITEMS[0];
-      item.canReadLogmarRE = NORMAL_ABNORMAL_DROPDOWN_ITEMS[0];
+      item.canReadLogmarLE = YES_NO_DROPDOWN_ITEMS[0];
+      item.canReadLogmarRE = YES_NO_DROPDOWN_ITEMS[0];
       item.isOcularComplaintVisible = true;
+      if (item.haveSpecNow == "YES") {
+        item.specCondition = "GOOD";
+      }
       item.ocularComplaint = "NO";
+      item.isVisionTestVisible = true;
       item.isTorchlightVisible = true;
       item.torchlightCheckLE = NORMAL_ABNORMAL_DROPDOWN_ITEMS[0];
       item.torchlightCheckRE = NORMAL_ABNORMAL_DROPDOWN_ITEMS[0];

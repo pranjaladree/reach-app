@@ -32,6 +32,7 @@ const CustomDropdown = ({
         value={selectedItem.value}
         onSelect={onChange}
         disabled={disabled}
+        mode="outlined"
       />
       {isError && (
         <View>

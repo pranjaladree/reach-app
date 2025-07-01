@@ -26,6 +26,8 @@ import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import CustomInput from "../utils/CustomInput";
 import { DateSelector } from "../new_UI/date-picker";
 import QRCode from "react-native-qrcode-svg";
+import StyledDropdown from "../new_UI/StyledDropdown";
+import CustomButton from "../utils/CustomButton";
 
 const ReasonForm = () => {
   const screeningItem = useSelector(
@@ -54,7 +56,9 @@ const ReasonForm = () => {
   const [selected, setSelected] = useState<DateType>();
   const [facilityItems, setFacilityItems] = useState<DropdownModel[]>([]);
   const [facilityLabel, setFacilityLabel] = useState("");
-  const [facilityType, setSelectedFaciliType] = useState(BLANK_DROPDOWN_MODEL);
+  const [facilityType, setSelectedFaciliType] = useState(
+    FACILITY_TYPES_ITEMS[1]
+  );
   const [facilityName, setFacilityName] = useState(BLANK_DROPDOWN_MODEL);
 
   const [mobileNo, setMobileNo] = useState("");
@@ -138,6 +142,8 @@ const ReasonForm = () => {
     if (facilityType.value?.toUpperCase() == "VISION CENTER") {
       setFacilityItems(visionCenterItems);
       setFacilityLabel("Vision Center");
+
+      //Default School VC
     }
     if (facilityType.value?.toUpperCase() == "HOSPITAL") {
       setFacilityItems(hospitalItems);
@@ -183,33 +189,59 @@ const ReasonForm = () => {
   return (
     <View style={styles.screen}>
       <View>
-        <CustomInput
+        <TextInput
           id="reason"
           label="Reason For Referral / Advice"
           value={screeningItem.referralReason}
           onChangeText={() => {}}
+          mode="outlined"
         />
       </View>
-      <View>
+      <View
+        style={{
+          marginTop: 20,
+          flexDirection: "row",
+          padding: 10,
+          alignItems: "center",
+        }}
+      >
+        <View>
+          <Text>Appointment Date </Text>
+        </View>
+        <View
+          style={{
+            borderRadius: 5,
+            borderWidth: 1,
+            padding: 10,
+            width: 200,
+            marginLeft: 20,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Pressable
+            onPress={() => {
+              setIsModalOpen(true);
+            }}
+          >
+            <Text>{dayjs(selected).format("DD-MM-YYYY")}</Text>
+          </Pressable>
+        </View>
+      </View>
+      {/* <View style={{ marginTop: 10 }}>
         <Pressable
           onPress={() => {
             setIsModalOpen(true);
           }}
         >
-          <DateSelector
-            selected={selected}
-            onOpen={() => {
-              setIsModalOpen(true);
-            }}
-          />
-          {/* <View style={styles.date}>
+          <View style={styles.date}>
             <Text>{dayjs(selected).format("DD-MM-YYYY")}</Text>
-          </View> */}
+          </View>
         </Pressable>
-      </View>
+      </View> */}
 
       <View>
-        <CustomDropdown
+        <StyledDropdown
           label="Facility Type"
           items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
           selectedItem={facilityType}
@@ -217,7 +249,7 @@ const ReasonForm = () => {
         />
       </View>
       <View>
-        <CustomDropdown
+        <StyledDropdown
           label={facilityLabel}
           items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
           selectedItem={facilityName}
@@ -233,7 +265,7 @@ const ReasonForm = () => {
           maxLength={10}
         />
       </View>
-      <View>
+      <View style={{ marginTop: 10 }}>
         <TextInput
           label="Other"
           value={other}
@@ -241,18 +273,20 @@ const ReasonForm = () => {
           mode="outlined"
         />
       </View>
-      <View>
+      <View style={{ marginTop: 10 }}>
         <TextInput
           label="Instruction for Referred Center"
           value={instructions}
           onChangeText={instructionsChangeHandler}
           mode="outlined"
+          numberOfLines={4}
         />
       </View>
-      <View>
-        <Button onPress={saveScreeningHandler} mode="contained">
+      <View style={{ marginTop: 20 }}>
+        <CustomButton title="Submit" onPress={saveScreeningHandler} />
+        {/* <Button onPress={saveScreeningHandler} mode="contained">
           Submit
-        </Button>
+        </Button> */}
       </View>
 
       {/* Calendar View */}

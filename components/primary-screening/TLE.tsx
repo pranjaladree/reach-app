@@ -14,6 +14,7 @@ import { findAllTorchlightFindings } from "@/database/database";
 import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import TorchlightList from "./modals/TorchlightList";
+import StyledDropdown from "../new_UI/StyledDropdown";
 
 const TLE = () => {
   const db = useSQLiteContext();
@@ -121,6 +122,7 @@ const TLE = () => {
 
   const getTorchlightFindings = async () => {
     const response: any = await findAllTorchlightFindings(db);
+    console.log("TLEEE *******", response);
     if (response) {
       dispatch(setAllTorchLights(response));
     }
@@ -155,7 +157,7 @@ const TLE = () => {
         <View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="OD ( LE )"
                 items={[
                   BLANK_DROPDOWN_MODEL,
@@ -166,7 +168,7 @@ const TLE = () => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="OD ( RE )"
                 items={[
                   BLANK_DROPDOWN_MODEL,
@@ -223,6 +225,7 @@ const styles = StyleSheet.create({
   rowItem: {
     flexBasis: 1,
     flexGrow: 1,
+    padding: 5,
   },
 });
 

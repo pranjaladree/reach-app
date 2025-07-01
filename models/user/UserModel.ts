@@ -5,6 +5,7 @@ export class UserModel {
   firstName: string;
   middleName: string;
   lastName: string;
+  designation: string;
   isPartnerAgreement: boolean;
   isUserAgreement: boolean;
   isPIIAgreement: boolean;
@@ -19,6 +20,7 @@ export class UserModel {
     firstName,
     middleName,
     lastName,
+    designation,
     isPartnerAgreement,
     isUserAgreement,
     isPIIAgreement,
@@ -32,6 +34,7 @@ export class UserModel {
     firstName: string;
     middleName: string;
     lastName: string;
+    designation: string;
     isPartnerAgreement: boolean;
     isUserAgreement: boolean;
     isPIIAgreement: boolean;
@@ -45,6 +48,7 @@ export class UserModel {
     this.firstName = firstName;
     this.middleName = middleName;
     this.lastName = lastName;
+    this.designation = designation;
     this.isPartnerAgreement = isPartnerAgreement;
     this.isUserAgreement = isUserAgreement;
     this.isPIIAgreement = isPIIAgreement;

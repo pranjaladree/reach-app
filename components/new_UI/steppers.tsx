@@ -56,9 +56,7 @@ const Stepper: React.FC<Props> = ({ steps }) => {
             {/* Step details */}
             <View style={styles.rightColumn}>
               <Text style={styles.stepNumber}>STEP {step.stepNumber}</Text>
-              <Text style={[styles.title, getTextStyle(step.status)]}>
-                {step.title}
-              </Text>
+              <Text style={[styles.title]}>{step.title}</Text>
             </View>
           </View>
         );

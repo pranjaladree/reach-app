@@ -42,6 +42,9 @@ import { AdviceVisitModel } from "@/models/patient-at-fixed-facilty/AdviceVisitM
 import { DiagnosisVisitModel } from "@/models/patient-at-fixed-facilty/DiagnosisVisitModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { useFocusEffect } from "expo-router";
+import StyledDropdown from "../new_UI/StyledDropdown";
+import CustomButton from "../utils/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   mrId: string;
@@ -133,12 +136,19 @@ const Advice = ({ mrId }: Props) => {
   const hideDialog = () => setVisible(false);
 
   const saveDiagnosisHandler = async () => {
+    const diagnosisItems = [
+      {
+        diagnosisType: diagnosisType.value,
+        diagnosis_RE_LE: selectedEye.value,
+      },
+    ];
+
+    console.log("ITEN *************************", diagnosisItems);
     const response = await saveDiagnosis(
       db,
       new DiagnosisVisitModel({
         id: mrId,
-        diagnosisType: diagnosisType.value,
-        diagnosis_RE_LE: selectedEye.value,
+        diagnosisItems: JSON.stringify(diagnosisItems),
         mrId: mrId,
       })
     );
@@ -271,11 +281,18 @@ const Advice = ({ mrId }: Props) => {
   };
 
   const [diagnosisList, setDiagnosisList] = useState<any[]>([]);
+
   const getExistingDiagnosisHandler = async () => {
-    const response = await findDiagnosisByMRId(db, mrId);
-    console.log("Response DIA", response);
+    console.log("GETTING Diagnosis ******************");
+    const response: any = await findDiagnosisByMRId(db, mrId);
+    console.log("Response DIA ********************", response);
+    try {
+      console.log(JSON.parse(response.diagnosisItems));
+    } catch (err) {
+      console.log(err);
+    }
     if (response) {
-      setDiagnosisList(response);
+      setDiagnosisList(JSON.parse(response));
     }
   };
 
@@ -357,7 +374,7 @@ const Advice = ({ mrId }: Props) => {
       <Collapsible title="Diagnosis">
         <View style={{ padding: 10 }}>
           <View>
-            <CustomDropdown
+            <StyledDropdown
               label="Diagnosis Type"
               items={[BLANK_DROPDOWN_MODEL, ...diagnosisItems]}
               selectedItem={diagnosisType}
@@ -365,7 +382,7 @@ const Advice = ({ mrId }: Props) => {
             />
           </View>
           <View>
-            <CustomDropdown
+            <StyledDropdown
               label="Eye"
               items={[BLANK_DROPDOWN_MODEL, ...EYE_DROPDOWN_ITEMS]}
               selectedItem={selectedEye}
@@ -373,9 +390,20 @@ const Advice = ({ mrId }: Props) => {
             />
           </View>
           <View>
-            <Button onPress={saveDiagnosisHandler} mode="contained">
+            <CustomButton
+              title="Save"
+              onPress={saveDiagnosisHandler}
+              icon={
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={20}
+                  color="white"
+                />
+              }
+            />
+            {/* <Button onPress={saveDiagnosisHandler} mode="contained">
               Save
-            </Button>
+            </Button> */}
           </View>
         </View>
         <View>
@@ -507,9 +535,20 @@ const Advice = ({ mrId }: Props) => {
           </View>
         </View>
         <View style={styles.action}>
-          <Button onPress={saveAdviceHandler} mode="contained">
+          <CustomButton
+            title="Save"
+            onPress={saveAdviceHandler}
+            icon={
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color="white"
+              />
+            }
+          />
+          {/* <Button onPress={saveAdviceHandler} mode="contained">
             Save
-          </Button>
+          </Button> */}
         </View>
       </Collapsible>
 

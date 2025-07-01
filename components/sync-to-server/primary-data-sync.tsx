@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import CustomDropdown from "../utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { useCallback, useState } from "react";
@@ -15,6 +15,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Dialog, Portal, PaperProvider } from "react-native-paper";
 import AppButton from "../new_UI/AppButton";
+import CustomButton from "../utils/CustomButton";
+import StyledDropdown from "../new_UI/StyledDropdown";
+import { Ionicons } from "@expo/vector-icons";
 
 const PrimaryDataSync = () => {
   const db = useSQLiteContext();
@@ -62,6 +65,8 @@ const PrimaryDataSync = () => {
     }
   };
 
+  const getStatisticsHandler = async () => {};
+
   useFocusEffect(
     useCallback(() => {
       getSchools();
@@ -70,16 +75,45 @@ const PrimaryDataSync = () => {
   );
 
   return (
-    <View>
-      <View>
-        <CustomDropdown
-          label="School"
-          items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-          selectedItem={selectedSchool}
-          onChange={selectSchoolHandler}
-        />
+    <View style={{ padding: 10 }}>
+      <View style={styles.row}>
+        <View style={{ flexBasis: 2, flexGrow: 2, padding: 5 }}>
+          <StyledDropdown
+            label="Select School"
+            items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
+            selectedItem={selectedSchool}
+            onChange={selectSchoolHandler}
+          />
+        </View>
+        <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
+          <CustomButton
+            title="Get Data"
+            onPress={getStatisticsHandler}
+            icon={
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color="white"
+              />
+            }
+          />
+        </View>
+      </View>
+      <View style={styles.infobox}>
+        <Text style={styles.infoLine}>Total Students :</Text>
+        <Text style={styles.infoLine}>
+          No of Students undergone Primary Screening :
+        </Text>
+        <Text style={styles.infoLine}>No of unsynced data: </Text>
       </View>
       <View style={{ marginTop: 10, padding: 10 }}>
+        <CustomButton
+          title="Sync Data"
+          onPress={syncPrimaryScreeningHandler}
+          icon={
+            <Ionicons name="cloud-upload-outline" size={20} color="white" />
+          }
+        />
         {/* <Button
           mode="contained"
           onPress={syncPrimaryScreeningHandler}
@@ -93,12 +127,12 @@ const PrimaryDataSync = () => {
         >
           Sync Data
         </Button> */}
-        <AppButton
+        {/* <AppButton
           title="Sync Data"
           onPress={syncPrimaryScreeningHandler}
           loading={isLoading}
           disabled={isLoading}
-        />
+        /> */}
       </View>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -116,5 +150,18 @@ const PrimaryDataSync = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  infobox: {
+    padding: 10,
+  },
+  infoLine: {
+    padding: 5,
+  },
+});
 
 export default PrimaryDataSync;

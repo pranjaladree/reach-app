@@ -1,6 +1,7 @@
 import MRStudentItem from "@/components/list-items/MRStudentItem";
 import StudentItem from "@/components/list-items/StudentItem";
 import InputBox from "@/components/ui/InputBox";
+import CustomInput from "@/components/utils/CustomInput";
 import { getMRTagStudentsOneBySchoolId } from "@/database/database";
 import { StudentModel } from "@/models/school/StudentModel";
 import { RootState } from "@/store/store";
@@ -60,21 +61,32 @@ const MRTagList = () => {
 
   return (
     <View>
-      <View>
-        <View>
-          <Text>Total Student:</Text>
+      <View
+        style={{
+          padding: 10,
+          position: "absolute",
+          zIndex: 100,
+          backgroundColor: "white",
+          width: "100%",
+        }}
+      >
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text>Total Student: {studentList.length}</Text>
           <Text>Done:</Text>
           <Text>Not Done :</Text>
         </View>
-        <View>
-          <InputBox
+        <View style={{ marginTop: 10 }}>
+          <CustomInput
+            id="search"
+            label="Seach Student"
             value={searchTerm}
-            placeholder="Search Student"
             onChangeText={searchTermChangeHandler}
           />
         </View>
       </View>
-      <View style={{ padding: 10 }}>
+      <View
+        style={{ paddingHorizontal: 10, paddingTop: 150, paddingBottom: 100 }}
+      >
         <FlatList
           data={studentList}
           keyExtractor={(item) => item.id.toString()}

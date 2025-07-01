@@ -1,14 +1,92 @@
+// import MRTagDataSync from "@/components/sync-to-server/mr-tag-data-sync";
+// import PrimaryDataSync from "@/components/sync-to-server/primary-data-sync";
+// import { useState } from "react";
+// import { View, Text, StyleSheet } from "react-native";
+// import { SegmentedButtons } from "react-native-paper";
+
+// const SyncToServer = () => {
+//   const [screen, setScreen] = useState("PRIMARY_SCREENING");
+//   return (
+//     <View style={styles.screen}>
+//       <View style={styles.section}>
+//         <SegmentedButtons
+//           value={screen}
+//           onValueChange={setScreen}
+//           buttons={[
+//             {
+//               value: "PRIMARY_SCREENING",
+//               label: "Primary Screening Data Sync",
+//             },
+//             {
+//               value: "MR_TAG",
+//               label: "MR Tag Data Sync",
+//             },
+//           ]}
+//         />
+//       </View>
+//       <View style={styles.card}>
+//         <View style={styles.header}>
+//           <Text style={styles.headerTitle}>
+//             {screen == "PRIMARY_SCREENING"
+//               ? "Primary Screening Data Sync"
+//               : "MR Tag Data Sync"}
+//           </Text>
+//         </View>
+//         {screen == "PRIMARY_SCREENING" && <PrimaryDataSync />}
+//         {screen == "MR_TAG" && <MRTagDataSync />}
+//       </View>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   screen: {
+//     backgroundColor: "white",
+//     padding: 20,
+//     flex: 1,
+//   },
+//   section: {
+//     marginTop: 20,
+//   },
+//   card: {
+//     marginTop: 20,
+//     backgroundColor: "#fff",
+//     paddingVertical: 16,
+//     borderRadius: 12,
+//     elevation: 4,
+//     shadowColor: "#000",
+//     shadowOpacity: 0.1,
+//     shadowRadius: 10,
+//     width: "100%",
+//   },
+//   header: {
+//     marginTop: 10,
+//     paddingBottom: 10,
+//     flexDirection: "row",
+//     justifyContent: "center",
+//   },
+//   headerTitle: {
+//     fontSize: 24,
+//     fontWeight: "bold",
+//   },
+// });
+
+// export default SyncToServer;
+
+import { DropdownItem } from "@/components/new_UI/StyledDropdown";
 import MRTagDataSync from "@/components/sync-to-server/mr-tag-data-sync";
 import PrimaryDataSync from "@/components/sync-to-server/primary-data-sync";
 import { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { SegmentedButtons } from "react-native-paper";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const SyncToServer = () => {
   const [screen, setScreen] = useState("PRIMARY_SCREENING");
+  const [activeTab, setActiveTab] = useState<"primary" | "detailed">("primary");
+  const [selectedSchool, setSelectedSchool] = useState<DropdownItem>();
+  // schools[0]
   return (
-    <View style={styles.screen}>
-      <View style={styles.section}>
+    <View style={{ padding: 16 }}>
+      {/* <View style={styles.section}>
         <SegmentedButtons
           value={screen}
           onValueChange={setScreen}
@@ -23,52 +101,178 @@ const SyncToServer = () => {
             },
           ]}
         />
+      </View> */}
+
+      <View style={styles.tabRow}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === "primary" && styles.activeTab]}
+          onPress={() => setActiveTab("primary")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "primary" && styles.activeTabText,
+            ]}
+          >
+            Primary screening Data sync
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === "detailed" && styles.activeTab]}
+          onPress={() => setActiveTab("detailed")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "detailed" && styles.activeTabText,
+            ]}
+          >
+            Detailed Evaluation Data Sync
+          </Text>
+        </TouchableOpacity>
       </View>
+
       <View style={styles.card}>
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <Text style={styles.headerTitle}>
             {screen == "PRIMARY_SCREENING"
               ? "Primary Screening Data Sync"
               : "MR Tag Data Sync"}
-          </Text>
-        </View>
-        {screen == "PRIMARY_SCREENING" && <PrimaryDataSync />}
-        {screen == "MR_TAG" && <MRTagDataSync />}
+          </Text> */}
+
+        {activeTab == "primary" && <PrimaryDataSync />}
+        {activeTab == "detailed" && <MRTagDataSync />}
       </View>
+      {/* {activeTab == "primary" && <PrimaryDataSync />}
+      {activeTab == "detailed" && <MRTagDataSync />} */}
     </View>
   );
 };
 
+// const styles = StyleSheet.create({
+//   screen: {
+//     backgroundColor: "white",
+//     padding: 20,
+//     flex: 1,
+//   },
+//   section: {
+//     marginTop: 20,
+//   },
+//   card: {
+//     marginTop: 20,
+//     backgroundColor: "#fff",
+//     paddingVertical: 16,
+//     borderRadius: 12,
+//     elevation: 4,
+//     shadowColor: "#000",
+//     shadowOpacity: 0.1,
+//     shadowRadius: 10,
+//     width: "100%",
+//   },
+//   header: {
+//     marginTop: 10,
+//     paddingBottom: 10,
+//     flexDirection: "row",
+//     justifyContent: "center",
+//   },
+//   headerTitle: {
+//     fontSize: 24,
+//     fontWeight: "bold",
+//   },
+// });
+
+export default SyncToServer;
+
 const styles = StyleSheet.create({
-  screen: {
-    backgroundColor: "white",
-    padding: 20,
+  container: {
     flex: 1,
+    backgroundColor: "#f4f5f9",
+    padding: 16,
   },
-  section: {
-    marginTop: 20,
+  tabRow: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: "#004aad",
+    // borderRadius: 6,
+    overflow: "hidden",
+    // marginBottom: 12,
   },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    backgroundColor: "#eaeaea",
+    // alignItems: "center",
+    paddingHorizontal: 12,
+    justifyContent: "center",
+  },
+  tabText: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#aaa",
+    fontWeight: "bold",
+  },
+  activeTab: {
+    backgroundColor: "#004aad",
+    borderBottomWidth: 2,
+    borderBottomColor: "#004aad",
+  },
+  activeTabText: {
+    color: "#ffffff",
+  },
+
   card: {
-    marginTop: 20,
+    borderWidth: 1,
+    borderColor: "#004aad",
+    // borderRadius: 8,
     backgroundColor: "#fff",
-    paddingVertical: 16,
-    borderRadius: 12,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    width: "100%",
+    // padding: 16,
+    paddingTop: 10,
   },
-  header: {
+  label: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 0,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    // borderBlockColor: "#004aad",
+    // borderWidth: 1,
+  },
+  getDataButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#004aad",
+    paddingHorizontal: 12,
+    // paddingVertical: 10,
+    height: 47,
+    borderRadius: 6,
+  },
+  getDataText: {
+    color: "#fff",
+    marginLeft: 6,
+    fontWeight: "bold",
+  },
+  summaryText: {
     marginTop: 10,
-    paddingBottom: 10,
+    fontSize: 14,
+    color: "#004aad",
+    fontWeight: "700",
+  },
+  syncButton: {
+    marginTop: 20,
+    backgroundColor: "#004aad",
+    paddingVertical: 12,
+    borderRadius: 6,
+    alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
   },
-  headerTitle: {
-    fontSize: 24,
+  syncText: {
+    color: "#fff",
+    marginLeft: 8,
     fontWeight: "bold",
   },
 });
-
-export default SyncToServer;

@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { TextInput } from "react-native-paper";
 import { Button } from "react-native-paper";
 import { getProfile } from "@/http/profile-http";
+import CustomButton from "@/components/utils/CustomButton";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ const LoginScreen = () => {
       },
       body: JSON.stringify(requestBody),
     });
+    console.log(res);
     const resData = await res.json();
     console.log(resData);
     console.log("Status", res.status);
@@ -143,9 +145,10 @@ const LoginScreen = () => {
             />
           </View>
           <View style={styles.actions}>
-            <Button mode="contained" onPress={loginHandler}>
+            <CustomButton title="Login" onPress={loginHandler} />
+            {/* <Button mode="contained" onPress={loginHandler}>
               LOGIN
-            </Button>
+            </Button> */}
           </View>
         </View>
       </View>

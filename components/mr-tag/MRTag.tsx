@@ -24,6 +24,9 @@ import { useFocusEffect } from "expo-router";
 import { DateSelector } from "../new_UI/date-picker";
 import dayjs from "dayjs";
 import CustomInput from "../utils/CustomInput";
+import StyledDropdown from "../new_UI/StyledDropdown";
+import CustomButton from "../utils/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   item: MRTagModel;
@@ -175,7 +178,6 @@ const MRTagItem = ({ item, studentId }: Props) => {
   return (
     <>
       <View style={{ marginTop: 10 }}>
-        <Text>MR Tag</Text>
         <View>
           <CustomInput
             id="mrNo"
@@ -187,7 +189,7 @@ const MRTagItem = ({ item, studentId }: Props) => {
 
         <View style={{ flexDirection: "row" }}>
           <View style={{ flexGrow: 1, padding: 5 }}>
-            <CustomDropdown
+            <StyledDropdown
               label="Facility Type"
               items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
               selectedItem={facilityType}
@@ -195,7 +197,7 @@ const MRTagItem = ({ item, studentId }: Props) => {
             />
           </View>
           <View style={{ flexGrow: 1, padding: 5 }}>
-            <CustomDropdown
+            <StyledDropdown
               label={facilityLabel}
               items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
               selectedItem={facilityName}
@@ -204,9 +206,20 @@ const MRTagItem = ({ item, studentId }: Props) => {
           </View>
         </View>
         <View>
-          <Button onPress={addMRTagHandler} mode="contained">
+          <CustomButton
+            title="Proceed"
+            onPress={addMRTagHandler}
+            icon={
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color="white"
+              />
+            }
+          />
+          {/* <Button onPress={addMRTagHandler} mode="contained">
             Proceed
-          </Button>
+          </Button> */}
         </View>
       </View>
       <Portal>

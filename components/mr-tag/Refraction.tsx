@@ -39,7 +39,14 @@ import { DropdownModel } from "@/models/ui/DropdownModel";
 import { Collapsible } from "../Collapsible";
 import { RefractionModel } from "@/models/patient-at-fixed-facilty/RefractionModel";
 import { useFocusEffect } from "expo-router";
+import CustomTabs from "../utils/CustomTabs";
+import CustomButton from "../utils/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+import StyledDropdown from "../new_UI/StyledDropdown";
+import CustomInput from "../utils/CustomInput";
 
+const TAB_ITEMS = ["OD (RE)", "OS (LE)"];
 //
 interface Props {
   mrId: string;
@@ -47,7 +54,10 @@ interface Props {
 
 const Refraction = ({ mrId }: Props) => {
   const db = useSQLiteContext();
-
+  const [activeTab, setActiveTab] = useState(TAB_ITEMS[0]);
+  const tabChangeHandler = (item: string) => {
+    setActiveTab(item);
+  };
   const [sphItems, setSphItems] = useState<GridDropdownModel[]>([]);
   const [cylItems, setCylItems] = useState<GridDropdownModel[]>([]);
   const [axisItems, setAxisItems] = useState<DropdownModel[]>([]);
@@ -1203,12 +1213,18 @@ const Refraction = ({ mrId }: Props) => {
 
   return (
     <View style={styles.screen}>
+      {/* Tabs */}
+      <CustomTabs
+        items={TAB_ITEMS}
+        activeTab={activeTab}
+        onPress={tabChangeHandler}
+      />
       {/* Box 1 */}
-      <Collapsible title="OD ( RE )">
+      {activeTab == TAB_ITEMS[0] && (
         <View style={styles.box}>
           {/* Row 1 */}
-          <View>
-            <Text>PGP</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>PGP</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1228,7 +1244,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_PGP_Axis_RE}
@@ -1236,7 +1252,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="ADD"
                 items={[BLANK_DROPDOWN_MODEL, ...addItems]}
                 selectedItem={refraction_PGP_Add_RE}
@@ -1245,8 +1261,8 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
           {/* Row 2 */}
-          <View>
-            <Text>DRY RETINOSCOPY</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>DRY RETINOSCOPY</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1266,7 +1282,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Dry_Axis_RE}
@@ -1275,8 +1291,8 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
           {/* Row 3 */}
-          <View>
-            <Text>CYCLO RETINOSCOPY</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>CYCLO RETINOSCOPY</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1296,7 +1312,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Cyclo_Axis_RE}
@@ -1305,8 +1321,8 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
           {/* Row 4 */}
-          <View>
-            <Text>ACCEPTANCE</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>ACCEPTANCE</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1326,7 +1342,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Acceptance_Axis_RE}
@@ -1335,8 +1351,8 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
           {/* Row 5 */}
-          <View>
-            <Text>BCVA</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>BCVA</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1350,8 +1366,8 @@ const Refraction = ({ mrId }: Props) => {
           </View>
 
           {/* Row 6 */}
-          <View>
-            <Text>ADD</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>ADD</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1377,11 +1393,11 @@ const Refraction = ({ mrId }: Props) => {
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
-              <TextInput
+              <CustomInput
+                id="Pupilary Distance ( RE )"
                 label="Pupilary Distance ( RE )"
                 value={pupilaryDistanceRE}
                 onChangeText={pupilaryDistanceREChangeHandler}
-                mode="outlined"
               />
             </View>
             <View style={styles.rowItem}>
@@ -1405,14 +1421,14 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
         </View>
-      </Collapsible>
+      )}
 
-      <Collapsible title="OS ( LE )">
-        {/* Box 2 */}
+      {/* Box 2 */}
+      {activeTab == TAB_ITEMS[1] && (
         <View style={styles.box}>
           {/* Row 1 */}
-          <View>
-            <Text>PGP</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>PGP</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1432,7 +1448,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_PGP_Axis_LE}
@@ -1440,7 +1456,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="ADD"
                 items={[BLANK_DROPDOWN_MODEL, ...addItems]}
                 selectedItem={refraction_PGP_Add_LE}
@@ -1449,8 +1465,8 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
           {/* Row 2 */}
-          <View>
-            <Text>DRY RETINOSCOPY</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>DRY RETINOSCOPY</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1470,7 +1486,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Dry_Axis_LE}
@@ -1479,8 +1495,8 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
           {/* Row 3 */}
-          <View>
-            <Text>CYCLO RETINOSCOPY</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>CYCLO RETINOSCOPY</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1500,7 +1516,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Cyclo_Axis_LE}
@@ -1509,8 +1525,8 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
           {/* Row 4 */}
-          <View>
-            <Text>ACCEPTANCE</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>ACCEPTANCE</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1530,7 +1546,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="AXIS"
                 items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
                 selectedItem={refraction_Acceptance_Axis_LE}
@@ -1539,8 +1555,8 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
           {/* Row 5 */}
-          <View>
-            <Text>BCVA</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>BCVA</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1554,8 +1570,8 @@ const Refraction = ({ mrId }: Props) => {
           </View>
 
           {/* Row 6 */}
-          <View>
-            <Text>ADD</Text>
+          <View style={styles.headerItem}>
+            <Text style={styles.headerItemTitle}>ADD</Text>
           </View>
           <View style={styles.row}>
             <View style={styles.rowItem}>
@@ -1601,7 +1617,7 @@ const Refraction = ({ mrId }: Props) => {
             </View>
           </View>
         </View>
-      </Collapsible>
+      )}
 
       {/* Box 3 */}
       <Collapsible title="Lens Information">
@@ -1609,7 +1625,7 @@ const Refraction = ({ mrId }: Props) => {
           {/* Row 1 */}
           <View style={styles.row}>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="Lens Material"
                 items={[BLANK_DROPDOWN_MODEL, ...lensMaterialItems]}
                 selectedItem={lensMaterial}
@@ -1617,7 +1633,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="Frame Material"
                 items={[BLANK_DROPDOWN_MODEL, ...frameMaterialItems]}
                 selectedItem={frameMaterial}
@@ -1628,7 +1644,7 @@ const Refraction = ({ mrId }: Props) => {
           {/* Row 2 */}
           <View style={styles.row}>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="Lens Type"
                 items={[BLANK_DROPDOWN_MODEL, ...lensTypeItems]}
                 selectedItem={lensType}
@@ -1636,7 +1652,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="Speciality Lens"
                 items={[BLANK_DROPDOWN_MODEL, ...specialityLensItems]}
                 selectedItem={specialityLens}
@@ -1647,7 +1663,7 @@ const Refraction = ({ mrId }: Props) => {
           {/* Row 3 */}
           <View style={styles.row}>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="Mode Of Wear"
                 items={[BLANK_DROPDOWN_MODEL, ...modeOfWearItems]}
                 selectedItem={modeOfWears}
@@ -1655,7 +1671,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="Lens Surface Coating"
                 items={[BLANK_DROPDOWN_MODEL, ...lensSurfaceCoatingItems]}
                 selectedItem={lensSurfaceCoating}
@@ -1666,7 +1682,7 @@ const Refraction = ({ mrId }: Props) => {
           {/* Row 4 */}
           <View style={styles.row}>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="Lens Tint"
                 items={[BLANK_DROPDOWN_MODEL, ...lensTintItems]}
                 selectedItem={lensTint}
@@ -1674,7 +1690,7 @@ const Refraction = ({ mrId }: Props) => {
               />
             </View>
             <View style={styles.rowItem}>
-              <CustomDropdown
+              <StyledDropdown
                 label="Special Instructions"
                 items={[BLANK_DROPDOWN_MODEL, ...specialInstructionItems]}
                 selectedItem={specialInstruction}
@@ -1696,9 +1712,13 @@ const Refraction = ({ mrId }: Props) => {
       </Collapsible>
 
       <View style={styles.action}>
-        <Button onPress={saveRefractionHandler} mode="contained">
-          Save
-        </Button>
+        <CustomButton
+          title="Save"
+          onPress={saveRefractionHandler}
+          icon={
+            <Ionicons name="checkmark-circle-outline" size={20} color="white" />
+          }
+        />
       </View>
 
       <Portal>
@@ -1750,6 +1770,14 @@ const styles = StyleSheet.create({
   action: {
     marginTop: 20,
     marginBottom: 20,
+  },
+  headerItem: {
+    backgroundColor: "#e3e3e3",
+    padding: 10,
+  },
+  headerItemTitle: {
+    fontWeight: "bold",
+    color: Colors.primary,
   },
 });
 

@@ -33,7 +33,14 @@ const ScreeningList = () => {
       pathname: "/screening-detail",
       params: {
         studentId: item.id,
-        studentName: item.firstName,
+        tempId: item.tempId,
+        studentName: `${item.firstName}  ${
+          item.middleName ? item.middleName : ""
+        }  ${item.lastName ? item.lastName : ""}`,
+        classTitle: item.classId,
+        section: item.section,
+        gender: item.gender,
+        age: item.age,
         schoolId: schoolId,
         isMarkedForQc: item.isMarkedForQc?.toString(),
       },
@@ -47,6 +54,7 @@ const ScreeningList = () => {
         db,
         schoolId?.toString()
       );
+      console.log("STUDENT INFO ************", response);
       if (response) {
         setStudentList(response);
       }
@@ -64,7 +72,15 @@ const ScreeningList = () => {
 
   return (
     <View>
-      <View style={{ padding: 10 }}>
+      <View
+        style={{
+          padding: 10,
+          position: "absolute",
+          zIndex: 100,
+          backgroundColor: "white",
+          width: "100%",
+        }}
+      >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text>Total Student: {studentList.length}</Text>
           <Text>Done:</Text>
@@ -73,13 +89,15 @@ const ScreeningList = () => {
         <View style={{ marginTop: 10 }}>
           <CustomInput
             id="search"
-            label="Search Student"
+            label="Seach Student"
             value={searchTerm}
             onChangeText={searchTermChangeHandler}
           />
         </View>
       </View>
-      <View style={{ paddingHorizontal: 10, paddingBottom: 200 }}>
+      <View
+        style={{ paddingHorizontal: 10, paddingTop: 150, paddingBottom: 100 }}
+      >
         <FlatList
           data={studentList}
           keyExtractor={(item) => item.id.toString()}

@@ -433,8 +433,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
 
   CREATE TABLE IF NOT EXISTS diagnosis (
   id INTEGER PRIMARY KEY AUTOINCREMENT,   
-  diagnosisType TEXT,
-  selectedEye TEXT,
+  diagnosisItems TEXT,
   mrId INTEGER,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
@@ -444,10 +443,10 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   id TEXT PRIMARY KEY NOT NULL,
   frameName TEXT,   
   bookingDate TEXT,
-  studentId INTEGER,
+  mrId INTEGER,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (studentId) REFERENCES students(id));
+  FOREIGN KEY (mrId) REFERENCES mrTags(id));
 
   CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY NOT NULL,
@@ -1020,17 +1019,25 @@ export const prepareMRDataSync = async (
 ) => {
   try {
     const response = await db.getAllAsync(
-      `SELECT * FROM mrTags JOIN students ON mrTags.studentId = students.id LEFT JOIN visualAcuity ON visualAcuity.mrId = mrTags.id LEFT JOIN refraction ON refraction.mrId=mrTags.id LEFT JOIN advice ON advice.mrId = mrTags.id  WHERE students.schoolId="${schoolId}"`
+      `SELECT * FROM mrTags JOIN students ON mrTags.studentId = students.id LEFT JOIN visualAcuity ON visualAcuity.mrId = mrTags.id LEFT JOIN refraction ON refraction.mrId=mrTags.id LEFT JOIN advice ON advice.mrId = mrTags.id LEFT JOIN diagnosis ON diagnosis.mrId = mrTags.id  WHERE students.schoolId="${schoolId}"`
     );
     console.log("MR TAG DATA", response);
     const studentList: any[] = [];
     if (response) {
       response.map((item: any) => {
-        //Converting String Diagnosis objects
-        // let diagnosisItems = item?.diagnosises.split(", @");
+        let diagnosisItems;
+        if (item.diagnosisItems) {
+          diagnosisItems = JSON.parse(item.diagnosisItems);
+        }
 
-        // const data = convertStringDiagnosisItems(diagnosisItems);
-        // console.log("Converted", data);
+        let spectacleBooking;
+        if (item.bookingDate) {
+          spectacleBooking = {
+            status: "BOOKED/NOTVERIFIED",
+            bookingDate: item.bookingDate,
+            frameName: item.frameName,
+          };
+        }
 
         let studentItem = {
           tempStudentId: item.tempId,
@@ -1114,25 +1121,8 @@ export const prepareMRDataSync = async (
             otherComment: item.otherComments,
             remarks: "Follow medication schedule strictly",
           },
-          diagnosis: [
-            // {
-            //   diagnosisType: "Corneal Opacity",
-            //   selectedEye: "Right Eye",
-            // },
-            // {
-            //   diagnosisType: "Strabismus",
-            //   selectedEye: "Right Eye",
-            // },
-            // {
-            //   diagnosisType: "Refractive Error",
-            //   selectedEye: "Both Eyes",
-            // },
-          ],
-          spectaleBooking: {
-            status: "BOOKED/VERIFIED",
-            bookingDate: "2025-07-20",
-            frameName: "Model 1",
-          },
+          diagnosis: diagnosisItems,
+          spectaleBooking: spectacleBooking,
         };
         studentList.push({
           ...studentItem,
@@ -1514,9 +1504,8 @@ export const saveDiagnosis = async (
 ) => {
   try {
     const response = db.runSync(
-      "INSERT OR REPLACE INTO diagnosis(diagnosisType,selectedEye,mrId) VALUES (?,?,?)",
-      item.diagnosisType,
-      item.diagnosis_RE_LE,
+      "INSERT OR REPLACE INTO diagnosis(diagnosisItems,mrId) VALUES (?,?)",
+      item.diagnosisItems,
       item.mrId
     );
     return response;
@@ -1528,8 +1517,9 @@ export const saveDiagnosis = async (
 export const findDiagnosisByMRId = async (db: SQLiteDatabase, mrId: string) => {
   try {
     const response = db.getAllAsync(
-      `SELECT * FROM diagnosis WHERE mrId=${mrId} `
+      `SELECT diagnosisItems FROM diagnosis WHERE mrId=${mrId} `
     );
+    console.log("RESSSSS***********");
     return response;
   } catch (err) {
     console.log(err);
@@ -1580,7 +1570,7 @@ export const getPSStudentsBySchoolId = async (
   console.log("************ GETTING STUDENTS ****************");
   try {
     const response = await db.getAllAsync(
-      `SELECT students.id, students.firstName,students.gender,students.age,students.section,students.classId,students.isMarkedForQC,students.contactNo, screenings.psStatus FROM students LEFT JOIN  screenings ON students.id = screenings.studentId  WHERE students.schoolId="${schoolId}"`
+      `SELECT students.id, students.firstName,students.tempId,students.middleName,students.lastName,students.gender,students.age,students.section,students.classId,students.isMarkedForQC,students.contactNo, screenings.psStatus FROM students LEFT JOIN  screenings ON students.id = screenings.studentId  WHERE students.schoolId="${schoolId}"`
     );
     return response;
   } catch (err) {

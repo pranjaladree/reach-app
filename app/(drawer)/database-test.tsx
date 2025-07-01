@@ -10,9 +10,9 @@ const DatabaseTest = () => {
   const db = useSQLiteContext();
 
   const dropTablesHandler = () => {
-    // const response = db.runSync(`DROP TABLE spectacleBooking`);
-    // console.log("REDF", response);
-    dropTables(db);
+    const response = db.runSync(`DROP TABLE diagnosis`);
+    console.log("REDF", response);
+    // dropTables(db);
   };
   const getStudentData = async () => {
     const response = await getScreeningByIdFromDB(db, 523);

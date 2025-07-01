@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import CustomDropdown from "../utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { useCallback, useState } from "react";
@@ -17,6 +17,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Dialog, Portal, PaperProvider } from "react-native-paper";
 import AppButton from "../new_UI/AppButton";
+import StyledDropdown from "../new_UI/StyledDropdown";
+import CustomButton from "../utils/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
 
 const MRTagDataSync = () => {
   const db = useSQLiteContext();
@@ -68,6 +71,8 @@ const MRTagDataSync = () => {
     }
   };
 
+  const getStatisticsHandler = async () => {};
+
   useFocusEffect(
     useCallback(() => {
       getSchools();
@@ -76,33 +81,44 @@ const MRTagDataSync = () => {
   );
 
   return (
-    <View>
-      <View>
-        <CustomDropdown
-          label="School"
-          items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-          selectedItem={selectedSchool}
-          onChange={selectSchoolHandler}
-        />
+    <View style={{ padding: 10 }}>
+      <View style={styles.row}>
+        <View style={{ flexBasis: 2, flexGrow: 2, padding: 5 }}>
+          <StyledDropdown
+            label="School"
+            items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
+            selectedItem={selectedSchool}
+            onChange={selectSchoolHandler}
+          />
+        </View>
+        <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
+          <CustomButton
+            title="Get Data"
+            onPress={getStatisticsHandler}
+            icon={
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color="white"
+              />
+            }
+          />
+        </View>
       </View>
-      <View style={{ marginTop: 10, padding: 10 }}>
-        {/* <Button
-          mode="contained"
-          onPress={syncMrTagHandler}
-          loading={isLoading}
-          style={{
-            paddingVertical: 5,
-            borderRadius: 30,
-            width: "100%",
-          }}
-        >
-          Sync Data
-        </Button> */}
-        <AppButton
+      <View style={styles.infobox}>
+        <Text style={styles.infoLine}>Total Students :</Text>
+        <Text style={styles.infoLine}>
+          No of Students undergone Detailed Evaluation :
+        </Text>
+        <Text style={styles.infoLine}>No of unsynced data: </Text>
+      </View>
+      <View style={{ padding: 10, marginTop: 10 }}>
+        <CustomButton
           title="Sync Data"
           onPress={syncMrTagHandler}
-          loading={isLoading}
-          disabled={isLoading}
+          icon={
+            <Ionicons name="cloud-upload-outline" size={20} color="white" />
+          }
         />
       </View>
       <Portal>
@@ -121,5 +137,18 @@ const MRTagDataSync = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  infobox: {
+    padding: 10,
+  },
+  infoLine: {
+    padding: 5,
+  },
+});
 
 export default MRTagDataSync;

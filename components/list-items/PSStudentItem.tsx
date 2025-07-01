@@ -6,6 +6,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useDispatch } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Colors } from "@/constants/Colors";
 
 interface Props {
   item: any;
@@ -28,7 +29,9 @@ const PSStudentItem = ({ item, onPress }: Props) => {
     <Pressable onPress={onPress} style={styles.item}>
       <View style={styles.card}>
         <View>
-          <Text style={itemStyle}>{item.firstName}</Text>
+          <Text style={[itemStyle, styles.name]}>{`${item.firstName}  ${
+            item.middleName ? item.middleName : ""
+          }  ${item.lastName ? item.lastName : ""}`}</Text>
           <Text style={itemStyle}>{item.contactNo}</Text>
         </View>
         <View>
@@ -41,11 +44,11 @@ const PSStudentItem = ({ item, onPress }: Props) => {
         </View>
         <View>
           {!item.psStatus ? (
-            <Ionicons name="close-circle" size={32} style={itemStyle} />
+            <Ionicons name="close-circle" size={40} style={itemStyle} />
           ) : (
             <Ionicons
               name="checkmark-done-outline"
-              size={32}
+              size={40}
               style={itemStyle}
             />
           )}
@@ -62,6 +65,9 @@ const styles = StyleSheet.create({
   item: {
     width: "100%",
     flexDirection: "row",
+  },
+  name: {
+    textTransform: "uppercase",
   },
   notDone: {
     color: "black",
@@ -91,6 +97,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderRadius: 5,
     elevation: 5,
+    borderWidth: 1,
+    borderColor: Colors.primary,
     justifyContent: "space-between",
   },
 });

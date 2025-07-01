@@ -10,6 +10,7 @@ interface Props {
   onChange: (val: string) => void;
   isError?: boolean;
   errorMessage?: string;
+  showLabel?: boolean;
 }
 
 const CustomRadioGroup = ({
@@ -19,6 +20,7 @@ const CustomRadioGroup = ({
   onChange,
   isError,
   errorMessage,
+  showLabel,
 }: Props) => {
   return (
     <>
@@ -36,7 +38,7 @@ const CustomRadioGroup = ({
           ))}
         </View>
       </RadioButton.Group> */}
-      <Text style={styles.radioLabel}>{label} </Text>
+      {showLabel && <Text style={styles.radioLabel}>{label} </Text>}
 
       <View style={styles.radioGroup}>
         {items.map((val) => (

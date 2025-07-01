@@ -1,3 +1,5 @@
+import StyledDropdown from "@/components/new_UI/StyledDropdown";
+import CustomButton from "@/components/utils/CustomButton";
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomInput from "@/components/utils/CustomInput";
 import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
@@ -118,9 +120,9 @@ const MRTag = () => {
   }, []);
 
   return (
-    <View>
+    <View style={{ padding: 20 }}>
       <View>
-        <CustomDropdown
+        <StyledDropdown
           label="School"
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
@@ -129,7 +131,7 @@ const MRTag = () => {
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={{ flexGrow: 1 }}>
-          <CustomDropdown
+          <StyledDropdown
             label="Class"
             items={[BLANK_DROPDOWN_MODEL, ...classItems]}
             selectedItem={selectedClass}
@@ -172,9 +174,12 @@ const MRTag = () => {
           onChange={resultChangeHandler}
         />
       </View>
-      <Button onPress={getStudentsHandler} mode="contained">
+      <View style={{ padding: 10 }}>
+        <CustomButton title="Search" onPress={getStudentsHandler} />
+      </View>
+      {/* <Button onPress={getStudentsHandler} mode="contained">
         Search
-      </Button>
+      </Button> */}
     </View>
   );
 };

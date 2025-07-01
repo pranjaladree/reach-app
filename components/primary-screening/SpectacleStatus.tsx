@@ -51,12 +51,22 @@ const SpectacleStatus = () => {
   };
 
   const spectacleConditionChangeHandler = (val: string) => {
-    dispatch(
-      setScreeningItem({
-        ...screeningItem,
-        specCondition: val,
-      })
-    );
+    if (val == "GOOD") {
+      dispatch(
+        setScreeningItem({
+          ...screeningItem,
+          specCondition: val,
+        })
+      );
+    } else {
+      dispatch(
+        setScreeningItem({
+          ...screeningItem,
+          specCondition: val,
+          isNormal: false,
+        })
+      );
+    }
   };
   return (
     <View>

@@ -169,11 +169,8 @@ const OcularTest = () => {
       <View style={styles.divider}></View>
       <View>
         <View>
-          <Text>Ocular Complaint</Text>
-        </View>
-        <View>
           <CustomRadioGroup
-            label="Have Spectacle"
+            label="Ocular Complaint"
             items={YES_NO_RADIO_ITEMS}
             selectedOption={screeningItem.ocularComplaint}
             onChange={ocularComplaintChangeHandler}

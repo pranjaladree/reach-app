@@ -9,6 +9,7 @@ import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 // import { NativeModules } from "react-native";
 import { Button } from "react-native-paper";
 import { useEffect } from "react";
+import StyledDropdown from "../new_UI/StyledDropdown";
 
 // const { IntentLauncher } = NativeModules;
 
@@ -183,7 +184,7 @@ const VisionTest = () => {
             <View>
               <View style={styles.row}>
                 <View style={styles.rowItem}>
-                  <CustomDropdown
+                  <StyledDropdown
                     label="OS ( LE )"
                     items={[BLANK_DROPDOWN_MODEL, ...YES_NO_DROPDOWN_ITEMS]}
                     selectedItem={screeningItem.canReadLogmarLE}
@@ -191,7 +192,7 @@ const VisionTest = () => {
                   />
                 </View>
                 <View style={styles.rowItem}>
-                  <CustomDropdown
+                  <StyledDropdown
                     label="OD ( RE )"
                     items={[BLANK_DROPDOWN_MODEL, ...YES_NO_DROPDOWN_ITEMS]}
                     selectedItem={screeningItem.canReadLogmarRE}
@@ -227,6 +228,7 @@ const styles = StyleSheet.create({
   rowItem: {
     flexBasis: 1,
     flexGrow: 1,
+    padding: 5,
   },
 });
 

@@ -8,9 +8,12 @@ import { DropdownModel } from "@/models/ui/DropdownModel";
 import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Button, Dialog, Portal } from "react-native-paper";
 import * as Location from "expo-location";
+import { Colors } from "@/constants/Colors";
+import StyledDropdown from "@/components/new_UI/StyledDropdown";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
 
 const GPSDataCollection = () => {
   const db = useSQLiteContext();
@@ -98,22 +101,41 @@ const GPSDataCollection = () => {
   );
 
   return (
-    <View style={{ padding: 10 }}>
-      <Text>GPS Data Collection</Text>
+    <View style={{ padding: 20 }}>
       <View>
-        <CustomDropdown
+        <StyledDropdown
           label="School"
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
           onChange={selectSchoolHandler}
         />
       </View>
-      <View>
+      {/* <View>
         <Button onPress={getCurrentLocation} mode="contained">
           Get Geo Location
         </Button>
+      </View> */}
+      {/* Get Location Button */}
+      <Button
+        mode="contained"
+        onPress={getCurrentLocation}
+        style={[styles.button, { marginBottom: 12 }]}
+        icon={() => <MaterialIcons name="location-on" size={20} color="#fff" />}
+      >
+        Get Geo Location
+      </Button>
+      <View style={styles.coordsRow}>
+        <Text style={styles.coordText}>
+          <Text style={styles.boldText}>Latitude : </Text>
+          {location ? location.coords?.latitude : ""}
+        </Text>
+        <Text style={styles.coordText}>
+          <Text style={styles.boldText}>
+            Longitude : {location ? location.coords?.longitude : ""}
+          </Text>
+        </Text>
       </View>
-      <View
+      {/* <View
         style={{
           marginTop: 20,
         }}
@@ -124,12 +146,20 @@ const GPSDataCollection = () => {
         <Text style={{ fontWeight: "bold" }}>
           Longitude : {location ? location.coords?.longitude : ""}
         </Text>
-      </View>
-      <View style={{ marginTop: 20 }}>
+      </View> */}
+      {/* <View style={{ marginTop: 20 }}>
         <Button onPress={saveLocationHandler} mode="contained">
           Save Geo Location
         </Button>
-      </View>
+      </View> */}
+      <Button
+        mode="contained"
+        style={[styles.button, { marginTop: 20 }]}
+        onPress={saveLocationHandler}
+        icon={() => <Feather name="download" size={20} color="#fff" />}
+      >
+        Save Geo location on Device
+      </Button>
 
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -147,5 +177,75 @@ const GPSDataCollection = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: "#f2f2f2",
+    flexGrow: 1,
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderColor: "#004aad",
+    borderWidth: 1,
+    padding: 16,
+    borderRadius: 6,
+  },
+  label: {
+    marginBottom: 8,
+    fontWeight: "500",
+    fontSize: 14,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: "#004aad",
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    marginBottom: 16,
+    justifyContent: "center",
+  },
+  dropdownPlaceholder: {
+    color: "#999",
+    fontSize: 14,
+  },
+  selectedText: {
+    fontSize: 14,
+    color: "#000",
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  button: {
+    backgroundColor: "#004aad",
+    height: 48,
+    justifyContent: "center",
+    borderRadius: 4,
+    marginTop: 10,
+  },
+  coordsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+  },
+  coordText: {
+    fontSize: 16,
+    color: Colors.primary,
+    fontWeight: "bold",
+  },
+  boldText: {
+    fontWeight: "bold",
+    color: Colors.primary,
+    fontSize: 16,
+  },
+  accuracy: {
+    marginTop: 8,
+    fontStyle: "italic",
+
+    color: Colors.primary,
+    fontSize: 16,
+  },
+});
 
 export default GPSDataCollection;

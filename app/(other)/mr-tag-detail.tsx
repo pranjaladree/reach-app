@@ -3,6 +3,7 @@ import MRTagItem from "@/components/mr-tag/MRTag";
 import Refraction from "@/components/mr-tag/Refraction";
 import VisualAcuity from "@/components/mr-tag/VisualAcuity";
 import { DateSelector } from "@/components/new_UI/date-picker";
+import CustomTabs from "@/components/utils/CustomTabs";
 import { BLANK_MR_TAG_MODEL } from "@/constants/BlankModels";
 import { findOneMRTag } from "@/database/database";
 import { RootState } from "@/store/store";
@@ -17,7 +18,14 @@ import DateTimePicker, {
 } from "react-native-ui-datepicker";
 import { useSelector } from "react-redux";
 
+const TAB_ITEMS = ["MR Tag", "Visual Acuity", "Refraction", "Advise"];
+
 const MRTagDetail = () => {
+  const [activeTab, setActiveTab] = useState(TAB_ITEMS[0]);
+  const tabChangeHandler = (item: string) => {
+    setActiveTab(item);
+  };
+
   const db = useSQLiteContext();
   const [mrTagItem, setMrTagItem] = useState(BLANK_MR_TAG_MODEL);
   const [isMrTagDone, setIsMrTagDone] = useState(false);
@@ -51,46 +59,32 @@ const MRTagDetail = () => {
         <Text>Student ID {studentId}</Text>
         <Text>Student Name {studentName}</Text>
       </View>
-      <Text>Screening Details</Text>
       <View>
-        <SegmentedButtons
-          value={screen}
-          onValueChange={setScreen}
-          buttons={[
-            {
-              value: "MR_TAG",
-              label: "MR TAG",
-            },
-            {
-              value: "VISUAL_ACUITY",
-              label: "Visual Acuity",
-              disabled: !isMrTagDone,
-            },
-            {
-              value: "REFRACTION",
-              label: "Refraction",
-              disabled: !isMrTagDone,
-            },
-            { value: "ADVICE", label: "Advice", disabled: !isMrTagDone },
-          ]}
+        <Text>Examination Details</Text>
+      </View>
+      <View style={{ padding: 10 }}>
+        <CustomTabs
+          items={TAB_ITEMS}
+          activeTab={activeTab}
+          onPress={tabChangeHandler}
         />
       </View>
-      {screen == "MR_TAG" && (
+      {activeTab == TAB_ITEMS[0] && (
         <View>
           <MRTagItem studentId={studentId.toString()} item={mrTagItem} />
         </View>
       )}
-      {screen == "VISUAL_ACUITY" && (
+      {activeTab == TAB_ITEMS[1] && (
         <View>
           <VisualAcuity mrId={studentId?.toString()} />
         </View>
       )}
-      {screen == "REFRACTION" && (
+      {activeTab == TAB_ITEMS[2] && (
         <View>
           <Refraction mrId={studentId?.toString()} />
         </View>
       )}
-      {screen == "ADVICE" && (
+      {activeTab == TAB_ITEMS[3] && (
         <View>
           <Advice mrId={studentId?.toString()} />
         </View>

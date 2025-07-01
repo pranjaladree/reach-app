@@ -13,6 +13,7 @@ import { Button } from "react-native-paper";
 
 export default function ReadStudent() {
   const [permission, requestPermission] = useCameraPermissions();
+  const [scanningData, setScanningData] = useState<any>();
 
   const [visible, setVisible] = useState(false);
   const db = useSQLiteContext();
@@ -26,6 +27,7 @@ export default function ReadStudent() {
     if (scanningResult.raw) {
       showDialog();
       console.log(scanningResult.raw);
+      setScanningData(scanningResult.raw);
       setIsScanned(true);
     }
   };
@@ -64,7 +66,7 @@ export default function ReadStudent() {
           }}
         >
           <View style={{ borderWidth: 1, padding: 20, minWidth: 200 }}>
-            <Text>Student ID : 1</Text>
+            <Text>Student ID : {scanningData.tempId}</Text>
           </View>
           <View style={{ width: 200, marginTop: 20 }}>
             <Button mode="contained">Save</Button>

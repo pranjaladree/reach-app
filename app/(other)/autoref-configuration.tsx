@@ -7,6 +7,8 @@ import { DropdownModel } from "@/models/ui/DropdownModel";
 import { useSQLiteContext } from "expo-sqlite";
 import { getSchoolsDropdownFromDB } from "@/database/database";
 import { useFocusEffect } from "expo-router";
+import StyledDropdown from "@/components/new_UI/StyledDropdown";
+import CustomButton from "@/components/utils/CustomButton";
 
 const AutorefConfiguration = () => {
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
@@ -74,10 +76,10 @@ const AutorefConfiguration = () => {
   );
 
   return (
-    <View>
+    <View style={{ padding: 10 }}>
       <View>
-        <CustomDropdown
-          label="School M"
+        <StyledDropdown
+          label="School"
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
           onChange={selectSchoolHandler}
@@ -93,13 +95,14 @@ const AutorefConfiguration = () => {
         <Text>Autoref Available</Text>
       </View>
       <View>
-        <Button
+        <CustomButton title="Save" onPress={saveAutorefConfiguration} />
+        {/* <Button
           onPress={saveAutorefConfiguration}
           mode="contained"
           loading={isLoading}
         >
           Save
-        </Button>
+        </Button> */}
       </View>
 
       <Portal>

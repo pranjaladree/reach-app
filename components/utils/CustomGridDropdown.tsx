@@ -6,6 +6,7 @@ import { Modal, Portal } from "react-native-paper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setVisualAcuity } from "@/store/slices/visual-acuity-slice";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   label: string;
@@ -44,7 +45,14 @@ const CustomGridDropdown = ({
             setIsModalOpen(true);
           }}
         >
-          <Text>{selectedItem}</Text>
+          <View style={styles.row}>
+            <View>
+              <Text style={{ fontWeight: "bold" }}>{selectedItem}</Text>
+            </View>
+            <View>
+              <Ionicons name="chevron-down-outline" />
+            </View>
+          </View>
         </Pressable>
       </View>
       <Portal>
@@ -77,8 +85,14 @@ const CustomGridDropdown = ({
 const styles = StyleSheet.create({
   inputBox: {
     borderWidth: 0.4,
+    borderColor: "#004aad",
     backgroundColor: "white",
     padding: 10,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });
 

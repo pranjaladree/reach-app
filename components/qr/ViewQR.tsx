@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useCallback, useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { Button } from "react-native-paper";
 import QRCode from "react-native-qrcode-svg";
@@ -8,13 +10,36 @@ interface Props {
 }
 
 const ViewQR = ({ item }: Props) => {
+  const db = useSQLiteContext();
+  const [studentData, setStudentData] = useState<any>();
   const [qrData, setQrData] = useState<any>();
 
   useEffect(() => {
     setQrData({
-      id: item.studentId,
+      id: studentData?.studentId,
+      tempId: studentData?.tempId,
+      firstName: studentData?.firstName,
     });
-  }, [item]);
+  }, [studentData]);
+
+  const getStudentDataHandler = async () => {
+    const response: any = await db.getFirstAsync(
+      `SELECT * FROM students WHERE id=${item.studentId}`
+    );
+    console.log("RESPONSE", response);
+    if (response) {
+      setStudentData(response);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getStudentDataHandler();
+      return () => {
+        console.log("Screen unfocused");
+      };
+    }, [item])
+  );
 
   return (
     <View style={{ backgroundColor: "white" }}>

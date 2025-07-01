@@ -1,5 +1,7 @@
+import AppButton from "@/components/new_UI/AppButton";
 import HeaderTitle from "@/components/new_UI/header-title";
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
+import CustomButton from "@/components/utils/CustomButton";
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomInput from "@/components/utils/CustomInput";
 import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
@@ -224,7 +226,10 @@ const PrimaryScreening = () => {
           />
         </View>
       </View>
-      <Button
+      <View style={{ padding: 10 }}>
+        <CustomButton title="Search" onPress={getStudentsHandler} />
+      </View>
+      {/* <Button
         onPress={getStudentsHandler}
         mode="contained"
         style={{
@@ -235,7 +240,7 @@ const PrimaryScreening = () => {
         }}
       >
         Search
-      </Button>
+      </Button> */}
     </View>
   );
 };
