@@ -85,13 +85,13 @@ export const EYE_DROPDOWN_ITEMS = [
 ];
 
 export const STATUS_RADIO_ITEMS = [
-  new RadioItemModel({ id: 0, value: "All", label: "All" }),
-  new RadioItemModel({ id: 1, value: "Done", label: "Done" }),
-  new RadioItemModel({ id: 2, value: "Not Done", label: "Not Done" }),
+  new RadioItemModel({ id: 0, value: "ALL", label: "ALL" }),
+  new RadioItemModel({ id: 1, value: "DONE", label: "DONE" }),
+  new RadioItemModel({ id: 2, value: "NOT DONE", label: "NOT DONE" }),
 ];
 
 export const RESULT_RADIO_ITEMS = [
-  new RadioItemModel({ id: 0, value: "All", label: "All" }),
-  new RadioItemModel({ id: 1, value: "Pass", label: "Pass" }),
-  new RadioItemModel({ id: 2, value: "Fail", label: "Fail" }),
+  new RadioItemModel({ id: 0, value: "ALL", label: "ALL" }),
+  new RadioItemModel({ id: 1, value: "PASS", label: "PASS" }),
+  new RadioItemModel({ id: 2, value: "FAIL", label: "FAIL" }),
 ];

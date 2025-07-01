@@ -14,8 +14,8 @@ import { useSelector } from "react-redux";
 
 const ScreeningList = () => {
   const db = useSQLiteContext();
-  const filteredStudents = useSelector(
-    (state: RootState) => state.studentSlice.filteredStudents
+  const appliedFilters = useSelector(
+    (state: RootState) => state.studentSlice.appliedFilters
   );
   const { schoolId } = useLocalSearchParams();
   console.log("SCHOOL ID", schoolId);
@@ -25,6 +25,18 @@ const ScreeningList = () => {
 
   const searchTermChangeHandler = (val: string) => {
     setSearchTerm(val);
+
+    //Search in Each Key Stroke
+
+    const filterArr: any = studentList.filter((item) => {
+      console.log("&&&&&&&&&&&&&&&&&", item);
+      if (item.firstName.includes(val)) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    setSearchTerm(filterArr);
   };
 
   const navigationHandler = (item: any) => {
@@ -52,7 +64,8 @@ const ScreeningList = () => {
     if (schoolId) {
       const response: any = await getPSStudentsBySchoolId(
         db,
-        schoolId?.toString()
+        schoolId?.toString(),
+        appliedFilters
       );
       console.log("STUDENT INFO ************", response);
       if (response) {

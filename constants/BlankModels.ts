@@ -5,6 +5,7 @@ import { ScreeningModel } from "@/models/primary-screening/ScreeningModel";
 import { SchoolModel } from "@/models/school/SchoolModel";
 import { StudentModel } from "@/models/school/StudentModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
+import { FilterModel } from "@/models/ui/FilterModel";
 import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
 import { UserModel } from "@/models/user/UserModel";
 
@@ -179,4 +180,12 @@ export const BLANK_USER_MODEL = new UserModel({
   isDevicePreparation: false,
   isDataSync: false,
   isQualityCheck: false,
+});
+
+export const BLANK_FILTER_MODEL = new FilterModel({
+  classId: "",
+  section: "",
+  gender: "",
+  status: "",
+  result: "",
 });

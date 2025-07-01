@@ -3,7 +3,9 @@ import QRItem from "@/components/list-items/QRItem";
 import StudentItem from "@/components/list-items/StudentItem";
 import ViewQR from "@/components/qr/ViewQR";
 import InputBox from "@/components/ui/InputBox";
-import { getMRTagStudentsOneBySchoolId } from "@/database/database";
+import CustomInput from "@/components/utils/CustomInput";
+import { BLANK_FILTER_MODEL } from "@/constants/BlankModels";
+import { getMRTagStudentsBySchoolId } from "@/database/database";
 import { StudentModel } from "@/models/school/StudentModel";
 import { RootState } from "@/store/store";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -16,6 +18,9 @@ import { useSelector } from "react-redux";
 const QRList = () => {
   const router = useRouter();
   const db = useSQLiteContext();
+  const appliedFilters = useSelector(
+    (state: RootState) => state.studentSlice.appliedFilters
+  );
   const { schoolId } = useLocalSearchParams();
   const [studentList, setStudentList] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,9 +58,10 @@ const QRList = () => {
   const getStudents = async () => {
     console.log("GETTING Students....");
     if (schoolId) {
-      const response: any = await getMRTagStudentsOneBySchoolId(
+      const response: any = await getMRTagStudentsBySchoolId(
         db,
-        schoolId?.toString()
+        schoolId?.toString(),
+        appliedFilters
       );
       console.log("RESPONS", response);
       if (response) {
@@ -81,9 +87,9 @@ const QRList = () => {
             <Text>Total Student:</Text>
           </View>
           <View>
-            <InputBox
+            <CustomInput
               value={searchTerm}
-              placeholder="Search Student"
+              label="Search Student"
               onChangeText={searchTermChangeHandler}
             />
           </View>

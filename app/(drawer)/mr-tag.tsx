@@ -3,7 +3,10 @@ import CustomButton from "@/components/utils/CustomButton";
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomInput from "@/components/utils/CustomInput";
 import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
-import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
+import {
+  BLANK_DROPDOWN_MODEL,
+  BLANK_FILTER_MODEL,
+} from "@/constants/BlankModels";
 import {
   GENDER_RADIO_ITEMS,
   RESULT_RADIO_ITEMS,
@@ -11,13 +14,14 @@ import {
 } from "@/constants/Data";
 import {
   findAllClassesDropdowns,
-  getMRTagStudentsOneBySchoolId,
+  getMRTagStudentsBySchoolId,
   getSchoolByActivityType,
 } from "@/database/database";
 import { DropdownModel } from "@/models/ui/DropdownModel";
+import { FilterModel } from "@/models/ui/FilterModel";
 import { RadioItemModel } from "@/models/ui/RadioItemModel";
 import { setSchools } from "@/store/slices/school-slice";
-import { setStudents } from "@/store/slices/student-slice";
+import { setFilter, setStudents } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
 import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -86,7 +90,12 @@ const MRTag = () => {
     if (selectedSchool.id == "0") {
       return;
     }
-    const response = await getMRTagStudentsOneBySchoolId(db, selectedSchool.id);
+    applyFilterHandler();
+    const response = await getMRTagStudentsBySchoolId(
+      db,
+      selectedSchool.id,
+      BLANK_FILTER_MODEL
+    );
     console.log("Students", response?.length);
     dispatch(setStudents(response));
     router.push({
@@ -112,6 +121,20 @@ const MRTag = () => {
     if (response) {
       setClassItems(response);
     }
+  };
+
+  const applyFilterHandler = () => {
+    dispatch(
+      setFilter(
+        new FilterModel({
+          classId: selectedClass.id != "0" ? selectedClass.id : "",
+          section: section,
+          gender: gender == "ALL" ? "" : gender,
+          status: status == "ALL" ? "" : status,
+          result: result == "ALL" ? "" : result,
+        })
+      )
+    );
   };
 
   useEffect(() => {
@@ -151,7 +174,7 @@ const MRTag = () => {
         <CustomRadioGroup
           label="Gender"
           items={[
-            new RadioItemModel({ id: 0, value: "All", label: "All" }),
+            new RadioItemModel({ id: 0, value: "ALL", label: "ALL" }),
             ...GENDER_RADIO_ITEMS,
           ]}
           selectedOption={gender}

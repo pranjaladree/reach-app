@@ -17,7 +17,9 @@ import {
   getSchoolsDropdownFromDB,
 } from "@/database/database";
 import { DropdownModel } from "@/models/ui/DropdownModel";
+import { FilterModel } from "@/models/ui/FilterModel";
 import { RadioItemModel } from "@/models/ui/RadioItemModel";
+import { setFilter } from "@/store/slices/student-slice";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -31,6 +33,7 @@ const PrimaryScreening = () => {
   const [classItems, setClassItems] = useState<DropdownModel[]>([]);
   const db = useSQLiteContext();
   const router = useRouter();
+  const dispatch = useDispatch();
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
 
   const selectSchoolHandler = (val?: string) => {
@@ -85,6 +88,7 @@ const PrimaryScreening = () => {
     if (selectedSchool.id == "0") {
       return;
     }
+    setFilterHandler();
     router.push({
       pathname: "/screening-list",
       params: {
@@ -134,6 +138,20 @@ const PrimaryScreening = () => {
 
   const closeAutorefModalHandler = () => {
     setIsAutoRefModal(false);
+  };
+
+  const setFilterHandler = () => {
+    dispatch(
+      setFilter(
+        new FilterModel({
+          classId: selectedClass.id != "0" ? selectedClass.id : "",
+          section: section,
+          gender: gender == "All" ? "" : gender,
+          status: status == "ALL" ? "" : status,
+          result: result == "ALL" ? "" : result,
+        })
+      )
+    );
   };
 
   useEffect(() => {

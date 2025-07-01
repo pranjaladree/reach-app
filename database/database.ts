@@ -30,6 +30,7 @@ import { ScreeningModel } from "@/models/primary-screening/ScreeningModel";
 import { SchoolModel } from "@/models/school/SchoolModel";
 import { StudentModel } from "@/models/school/StudentModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
+import { FilterModel } from "@/models/ui/FilterModel";
 import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
 import { UserModel } from "@/models/user/UserModel";
 import { ResponseModel } from "@/models/utils/ResponseModel";
@@ -1565,12 +1566,38 @@ export const getSchoolByActivityType = async (
 
 export const getPSStudentsBySchoolId = async (
   db: SQLiteDatabase,
-  schoolId: string
+  schoolId: string,
+  appliedFilters: FilterModel
 ) => {
   console.log("************ GETTING STUDENTS ****************");
+  console.log("APPLIED", appliedFilters);
+  let whereCondition = `students.schoolId="${schoolId}"`;
+  if (appliedFilters.classId != "") {
+    whereCondition += ` AND students.classId=${appliedFilters.classId}`;
+  }
+  if (appliedFilters.gender != "") {
+    whereCondition += ` AND students.gender="${appliedFilters.gender}" COLLATE NOCASE`;
+  }
+  if (appliedFilters.section != "") {
+    whereCondition += ` AND students.section="${appliedFilters.section}" COLLATE NOCASE`;
+  }
+  if (appliedFilters.status == "DONE") {
+    whereCondition += ` AND screenings.psStatus != ""`;
+  }
+  if (appliedFilters.status == "NOT DONE") {
+    whereCondition += ` AND screenings.psStatus IS NULL`;
+  }
+  if (appliedFilters.result == "PASS") {
+    whereCondition += ` AND screenings.psStatus == "NORMAL`;
+  }
+  if (appliedFilters.result == "FAIL") {
+    whereCondition += ` AND screenings.psStatus == "REFER" OR screenings.psStatus="ADVISE"`;
+  }
+
+  console.log("WHERE", whereCondition);
   try {
     const response = await db.getAllAsync(
-      `SELECT students.id, students.firstName,students.tempId,students.middleName,students.lastName,students.gender,students.age,students.section,students.classId,students.isMarkedForQC,students.contactNo, screenings.psStatus FROM students LEFT JOIN  screenings ON students.id = screenings.studentId  WHERE students.schoolId="${schoolId}"`
+      `SELECT students.id, students.firstName,students.tempId,students.middleName,students.lastName,students.gender,students.age,students.section,students.classId,students.isMarkedForQC,students.contactNo, screenings.psStatus FROM students LEFT JOIN  screenings ON students.id = screenings.studentId  WHERE ${whereCondition}`
     );
     return response;
   } catch (err) {
@@ -1578,14 +1605,42 @@ export const getPSStudentsBySchoolId = async (
   }
 };
 
-export const getMRTagStudentsOneBySchoolId = async (
+export const getMRTagStudentsBySchoolId = async (
   db: SQLiteDatabase,
-  schoolId: string
+  schoolId: string,
+  appliedFilters: FilterModel
 ) => {
+  console.log("Apppled Filter", appliedFilters);
+
+  let whereCondition = `s.schoolId="${schoolId}" AND scr.psStatus="REFER"`;
+
+  if (appliedFilters.classId != "") {
+    whereCondition += ` AND s.classId=${appliedFilters.classId}`;
+  }
+  if (appliedFilters.gender != "") {
+    whereCondition += ` AND s.gender="${appliedFilters.gender}" COLLATE NOCASE`;
+  }
+  if (appliedFilters.section != "") {
+    whereCondition += ` AND s.section="${appliedFilters.section}" COLLATE NOCASE`;
+  }
+  if (appliedFilters.status == "DONE") {
+    whereCondition += ` AND mt.mrNo != ""`;
+  }
+  if (appliedFilters.status == "NOT DONE") {
+    whereCondition += ` AND screenings.mrNo IS NULL`;
+  }
+
+  console.log("WHERE", whereCondition);
+  // if (appliedFilters.result == "PASS") {
+  //   whereCondition += ` AND screenings.psStatus == "NORMAL`;
+  // }
+  // if (appliedFilters.result == "FAIL") {
+  //   whereCondition += ` AND screenings.psStatus == "REFER" OR screenings.psStatus="ADVISE"`;
+  // }
   console.log("************ GETTING STUDENTS MR TAGS ****************");
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,s.gender,s.age,s.section,s.classId,scr.studentId,scr.psStatus, mt.mrNo FROM students s  INNER JOIN  screenings scr ON s.id = scr.studentId  LEFT JOIN mrTags mt ON s.id = mt.studentId  WHERE s.schoolId="${schoolId}" AND scr.psStatus="REFER"`
+      `SELECT s.id, s.firstName,s.gender,s.age,s.section,s.classId,scr.studentId,scr.psStatus, mt.mrNo FROM students s  INNER JOIN  screenings scr ON s.id = scr.studentId  LEFT JOIN mrTags mt ON s.id = mt.studentId  WHERE ${whereCondition}`
     );
     return response;
   } catch (err) {
@@ -2822,14 +2877,26 @@ export const saveSpecBooking = async (
 //Find Spec Booking Students
 export const getSpecStudentsBySchoolId = async (
   db: SQLiteDatabase,
-  schoolId: string
+  schoolId: string,
+  appliedFilters: FilterModel
 ) => {
+  console.log("APPLIED", appliedFilters);
+  let whereCondition = `s.schoolId="${schoolId}" AND rf.spectaclesPrescribed=true`;
+
+  if (appliedFilters.classId != "") {
+    whereCondition += ` AND students.classId=${appliedFilters.classId}`;
+  }
+  if (appliedFilters.section != "") {
+    whereCondition += ` AND students.section="${appliedFilters.section}" COLLATE NOCASE`;
+  }
+
+  console.log("WHERE", whereCondition);
   console.log(
     "************ GETTING STUDENTS SPECTACLE BOOKING ****************"
   );
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.section,s.studentId,sb.bookingDate FROM students s  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON s.id = sb.studentId  WHERE s.schoolId="${schoolId}" AND rf.spectaclesPrescribed=true`
+      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.section,s.studentId,sb.bookingDate FROM students s  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON s.id = sb.studentId  WHERE ${whereCondition}`
     );
     return response;
   } catch (err) {

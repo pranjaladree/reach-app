@@ -5,14 +5,17 @@ import { StudentModel } from "@/models/school/StudentModel";
 import { ScreeningModel } from "@/models/primary-screening/ScreeningModel";
 import {
   BLANK_DROPDOWN_MODEL,
+  BLANK_FILTER_MODEL,
   BLANK_SCREENING_MODEL,
 } from "@/constants/BlankModels";
 import {
   NORMAL_ABNORMAL_DROPDOWN_ITEMS,
   YES_NO_DROPDOWN_ITEMS,
 } from "@/constants/Data";
+import { FilterModel } from "@/models/ui/FilterModel";
 
 export interface StudentState {
+  appliedFilters: FilterModel;
   students: StudentModel[];
   filteredStudents: StudentModel[];
   screeningItem: ScreeningModel;
@@ -20,6 +23,7 @@ export interface StudentState {
 
 const initialState: StudentState = {
   students: [],
+  appliedFilters: BLANK_FILTER_MODEL,
   filteredStudents: [],
   screeningItem: BLANK_SCREENING_MODEL,
 };
@@ -31,6 +35,9 @@ export const studentSlice = createSlice({
     setStudents: (state, action) => {
       state.students = action.payload;
       state.filteredStudents = action.payload;
+    },
+    setFilter: (state, action) => {
+      state.appliedFilters = action.payload;
     },
     setScreeningItem: (state, action) => {
       state.screeningItem = action.payload;
@@ -112,6 +119,7 @@ export const studentSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   setStudents,
+  setFilter,
   setScreeningItem,
   setNormalCheck,
   setNormalUncheck,

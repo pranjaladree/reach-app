@@ -12,10 +12,14 @@ import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
 import { View, Text, FlatList } from "react-native";
 import { Button, Dialog, Portal } from "react-native-paper";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const SpectacleList = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const appliedFilters = useSelector(
+    (state: RootState) => state.studentSlice.appliedFilters
+  );
   const db = useSQLiteContext();
   const { schoolId } = useLocalSearchParams();
   const [studentList, setStudentList] = useState<any[]>([]);
@@ -65,7 +69,8 @@ const SpectacleList = () => {
     if (schoolId) {
       const response: any = await getSpecStudentsBySchoolId(
         db,
-        schoolId?.toString()
+        schoolId?.toString(),
+        appliedFilters
       );
       console.log("RESPONS", response);
       if (response) {
@@ -85,16 +90,23 @@ const SpectacleList = () => {
 
   return (
     <View>
-      <View>
-        <View>
-          <Text>Total Student:</Text>
-          <Text>Done:</Text>
-          <Text>Not Done :</Text>
+      <View
+        style={{
+          padding: 10,
+          position: "absolute",
+          zIndex: 100,
+          backgroundColor: "white",
+          width: "100%",
+        }}
+      >
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text>Total Student: {studentList.length}</Text>
         </View>
-        <View>
-          <InputBox
+        <View style={{ marginTop: 10 }}>
+          <CustomInput
+            id="search"
+            label="Seach Student"
             value={searchTerm}
-            placeholder="Search Student"
             onChangeText={searchTermChangeHandler}
           />
         </View>

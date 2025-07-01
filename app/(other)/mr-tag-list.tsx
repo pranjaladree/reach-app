@@ -2,7 +2,7 @@ import MRStudentItem from "@/components/list-items/MRStudentItem";
 import StudentItem from "@/components/list-items/StudentItem";
 import InputBox from "@/components/ui/InputBox";
 import CustomInput from "@/components/utils/CustomInput";
-import { getMRTagStudentsOneBySchoolId } from "@/database/database";
+import { getMRTagStudentsBySchoolId } from "@/database/database";
 import { StudentModel } from "@/models/school/StudentModel";
 import { RootState } from "@/store/store";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -14,6 +14,9 @@ import { useSelector } from "react-redux";
 const MRTagList = () => {
   const router = useRouter();
   const db = useSQLiteContext();
+  const appliedFilters = useSelector(
+    (state: RootState) => state.studentSlice.appliedFilters
+  );
   const { schoolId } = useLocalSearchParams();
   const [studentList, setStudentList] = useState<any[]>([]);
   const filteredStudents = useSelector(
@@ -39,9 +42,10 @@ const MRTagList = () => {
   const getStudents = async () => {
     console.log("GETTING Students....");
     if (schoolId) {
-      const response: any = await getMRTagStudentsOneBySchoolId(
+      const response: any = await getMRTagStudentsBySchoolId(
         db,
-        schoolId?.toString()
+        schoolId?.toString(),
+        appliedFilters
       );
       console.log("RESPONS", response);
       if (response) {

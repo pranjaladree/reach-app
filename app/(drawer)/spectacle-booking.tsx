@@ -2,15 +2,19 @@ import StyledDropdown from "@/components/new_UI/StyledDropdown";
 import CustomButton from "@/components/utils/CustomButton";
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomInput from "@/components/utils/CustomInput";
-import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
+import {
+  BLANK_DROPDOWN_MODEL,
+  BLANK_FILTER_MODEL,
+} from "@/constants/BlankModels";
 import {
   findAllClassesDropdowns,
-  getMRTagStudentsOneBySchoolId,
+  getMRTagStudentsBySchoolId,
   getSchoolByActivityType,
 } from "@/database/database";
 import { DropdownModel } from "@/models/ui/DropdownModel";
+import { FilterModel } from "@/models/ui/FilterModel";
 import { setSchools } from "@/store/slices/school-slice";
-import { setStudents } from "@/store/slices/student-slice";
+import { setFilter, setStudents } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
 import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -61,7 +65,12 @@ const SpectacleBooking = () => {
     if (selectedSchool.id == "0") {
       return;
     }
-    const response = await getMRTagStudentsOneBySchoolId(db, selectedSchool.id);
+    const response = await getMRTagStudentsBySchoolId(
+      db,
+      selectedSchool.id,
+      BLANK_FILTER_MODEL
+    );
+    setFilterHandler();
     console.log("Students", response?.length);
     dispatch(setStudents(response));
     router.push({
@@ -87,6 +96,20 @@ const SpectacleBooking = () => {
     if (response) {
       setClassItems(response);
     }
+  };
+
+  const setFilterHandler = () => {
+    dispatch(
+      setFilter(
+        new FilterModel({
+          classId: selectedClass.id != "0" ? selectedClass.id : "",
+          section: section,
+          gender: "",
+          status: "",
+          result: "",
+        })
+      )
+    );
   };
 
   useEffect(() => {
