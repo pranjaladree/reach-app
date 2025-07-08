@@ -80,7 +80,21 @@ export const checkPSStatus = (
             //CHECK TLE
           } else {
             status = "REFER";
-            reason = "Binacular Test Failed !";
+            let failedTest = `( `;
+            if (screeningItem.coverTest.value == "ABNORMAL") {
+              failedTest += "Cover Test ,";
+            }
+            if (screeningItem.npcTest.value == "ABNORMAL") {
+              failedTest += "NPC ,";
+            }
+            if (
+              screeningItem.plus2DTestLE.value == "YES" ||
+              screeningItem.plus2DTestRE.value == "YES"
+            ) {
+              failedTest += "+2D Test";
+            }
+            failedTest += " )";
+            reason = `Binacular Test Failed ${failedTest}`;
             return { status, reason };
           }
         } else {

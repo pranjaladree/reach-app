@@ -23,14 +23,30 @@ const SpectacleList = () => {
   const db = useSQLiteContext();
   const { schoolId } = useLocalSearchParams();
   const [studentList, setStudentList] = useState<any[]>([]);
-  const filteredStudents = useSelector(
-    (state: RootState) => state.studentSlice.filteredStudents
-  );
-  console.log("Filter Students", filteredStudents.length);
+  const [filteredList, setFilteredList] = useState<any[]>([]);
+  console.log("Student Lis", studentList);
+  // const filteredStudents = useSelector(
+  //   (state: RootState) => state.studentSlice.filteredStudents
+  // );
+  // console.log("Filter Students", filteredStudents.length);
   const [searchTerm, setSearchTerm] = useState("");
 
   const searchTermChangeHandler = (val: string) => {
     setSearchTerm(val);
+
+    //Search in Each Key Stroke
+    const filterArr: any = studentList.filter((item) => {
+      if (
+        item.firstName?.toUpperCase().includes(val?.toUpperCase()) ||
+        item.middleName?.toUpperCase().includes(val?.toUpperCase()) ||
+        item.lastName?.toUpperCase().includes(val?.toUpperCase())
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    setFilteredList(filterArr);
   };
 
   const [diaglogMessage, setDialogMessage] = useState("");
@@ -75,6 +91,7 @@ const SpectacleList = () => {
       console.log("RESPONS", response);
       if (response) {
         setStudentList(response);
+        setFilteredList(response);
       }
     }
   };
@@ -111,9 +128,11 @@ const SpectacleList = () => {
           />
         </View>
       </View>
-      <View style={{ padding: 10 }}>
+      <View
+        style={{ paddingHorizontal: 10, paddingTop: 150, paddingBottom: 100 }}
+      >
         <FlatList
-          data={studentList}
+          data={filteredList}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <SpecStudentItem

@@ -8,6 +8,8 @@ import {
 } from "@/constants/BlankModels";
 import {
   findAllClassesDropdowns,
+  findUniqueClasses,
+  findUniqueSections,
   getMRTagStudentsBySchoolId,
   getSchoolByActivityType,
 } from "@/database/database";
@@ -16,9 +18,9 @@ import { FilterModel } from "@/models/ui/FilterModel";
 import { setSchools } from "@/store/slices/school-slice";
 import { setFilter, setStudents } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { Button } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,6 +32,7 @@ const QRCode = () => {
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
   const [classItems, setClassItems] = useState<DropdownModel[]>([]);
+  const [sectionItems, setSectionItems] = useState<DropdownModel[]>([]);
 
   const selectSchoolHandler = (val?: string) => {
     if (val == "") {
@@ -55,11 +58,24 @@ const QRCode = () => {
     }
   };
 
-  const [section, setSection] = useState("");
+  const [selectedSection, setSelectedSection] = useState(BLANK_DROPDOWN_MODEL);
 
-  const sectionChangeHandler = (val: string) => {
-    setSection(val);
+  const selectSectionHandler = (val?: string) => {
+    if (val == "SELECT") {
+      setSelectedSection(BLANK_DROPDOWN_MODEL);
+    } else {
+      const foundItem = sectionItems.find((item) => item.value == val);
+      if (foundItem) {
+        setSelectedSection(foundItem);
+      }
+    }
   };
+
+  // const [section, setSection] = useState("");
+
+  // const sectionChangeHandler = (val: string) => {
+  //   setSection(val);
+  // };
 
   const getStudentsHandler = async () => {
     if (selectedSchool.id == "0") {
@@ -91,9 +107,22 @@ const QRCode = () => {
     }
   };
 
-  const getClassesHandler = async () => {
-    const response = await findAllClassesDropdowns(db);
+  const getUniqueSectionsHandler = async () => {
+    const response = await findUniqueSections(
+      db,
+      selectedSchool.id?.toString(),
+      selectedClass.id
+    );
     if (response) {
+      console.log("SECTIONS", response);
+      setSectionItems(response);
+    }
+  };
+
+  const getUniqueClassesHandler = async () => {
+    const response = await findUniqueClasses(db, selectedSchool.id);
+    if (response) {
+      console.log("Clases", response);
       setClassItems(response);
     }
   };
@@ -103,7 +132,7 @@ const QRCode = () => {
       setFilter(
         new FilterModel({
           classId: selectedClass.id != "0" ? selectedClass.id : "",
-          section: section,
+          section: selectedSection.id != "0" ? selectedSection.value : "",
           gender: "",
           status: "",
           result: "",
@@ -113,9 +142,25 @@ const QRCode = () => {
   };
 
   useEffect(() => {
-    getSchoolsHandler();
-    getClassesHandler();
-  }, []);
+    if (selectedSchool.id != "0") {
+      getUniqueClassesHandler();
+    }
+  }, [selectedSchool]);
+
+  useEffect(() => {
+    if (selectedClass.id != "0") {
+      getUniqueSectionsHandler();
+    }
+  }, [selectedClass]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getSchoolsHandler();
+      return () => {
+        console.log("Screen unfocused");
+      };
+    }, [])
+  );
 
   return (
     <View style={{ padding: 10 }}>
@@ -125,10 +170,11 @@ const QRCode = () => {
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
           onChange={selectSchoolHandler}
+          required={true}
         />
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ flexGrow: 1 }}>
+        <View style={{ flexGrow: 1, flexBasis: 1, padding: 5 }}>
           <StyledDropdown
             label="Class"
             items={[BLANK_DROPDOWN_MODEL, ...classItems]}
@@ -136,12 +182,18 @@ const QRCode = () => {
             onChange={selectClassHandler}
           />
         </View>
-        <View style={{ flexGrow: 1 }}>
-          <CustomInput
+        <View style={{ flexGrow: 1, flexBasis: 1, padding: 5 }}>
+          {/* <CustomInput
             id="section"
             label="Section"
             value={section}
             onChangeText={sectionChangeHandler}
+          /> */}
+          <StyledDropdown
+            label="Section"
+            items={[BLANK_DROPDOWN_MODEL, ...sectionItems]}
+            selectedItem={selectedSection}
+            onChange={selectSectionHandler}
           />
         </View>
       </View>

@@ -30,7 +30,7 @@ export const getStudentBySchoolId = async (token: string, schoolId: string) => {
         lastName: item.lastName,
         classId: item.classId,
         classTitle: "",
-        section: "",
+        section: item.section,
         rollNo: item.rollNo,
         gender: item.gender,
         age: "",

@@ -1,42 +1,3 @@
-// import { TextInput } from "react-native-paper";
-// import { View, Text } from "react-native";
-
-// interface Props {
-//   id: string;
-//   label: string;
-//   value: string;
-//   onChangeText: (val: string) => void;
-//   isError?: boolean;
-//   errorMessage?: string;
-// }
-// const CustomInput = ({
-//   id,
-//   label,
-//   value,
-//   onChangeText,
-//   isError,
-//   errorMessage,
-// }: Props) => {
-//   return (
-//     <View>
-//       <TextInput
-//         id={id}
-//         label={label}
-//         value={value}
-//         onChangeText={onChangeText}
-//         mode="outlined"
-//       />
-//       {isError && (
-//         <View>
-//           <Text style={{ color: "red" }}>{errorMessage}</Text>
-//         </View>
-//       )}
-//     </View>
-//   );
-// };
-
-// export default CustomInput;
-
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 interface Props {
@@ -44,20 +5,31 @@ interface Props {
   label: string;
   value: string;
   onChangeText: (val: string) => void;
+  maxLength?: number;
   isError?: boolean;
   errorMessage?: string;
+  required?: boolean;
 }
 const CustomInput = ({
   id,
   label,
   value,
   onChangeText,
+  maxLength,
   isError,
   errorMessage,
+  required,
 }: Props) => {
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <Text style={styles.label}>
+          {label}
+          {required ? (
+            <Text style={{ color: "red", fontWeight: "bold" }}>*</Text>
+          ) : null}
+        </Text>
+      )}
       <TextInput
         id={id}
         // label={label}
@@ -65,6 +37,7 @@ const CustomInput = ({
         value={value}
         onChangeText={onChangeText}
         // mode="outlined"
+        maxLength={maxLength}
         style={styles.input}
       />
 
@@ -81,11 +54,7 @@ const CustomInput = ({
 export default CustomInput;
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 17,
-    // backgroundColor: "#f7f7f7",
-    flex: 1,
-  },
+  container: {},
   label: {
     marginBottom: 6,
     fontSize: 14,

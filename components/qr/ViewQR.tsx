@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { Button } from "react-native-paper";
 import QRCode from "react-native-qrcode-svg";
+import CustomButton from "../utils/CustomButton";
 
 interface Props {
-  item: any;
+  studentId: string;
+  onClose: () => void;
 }
 
-const ViewQR = ({ item }: Props) => {
+const ViewQR = ({ studentId, onClose }: Props) => {
   const db = useSQLiteContext();
   const [studentData, setStudentData] = useState<any>();
   const [qrData, setQrData] = useState<any>();
@@ -24,7 +26,7 @@ const ViewQR = ({ item }: Props) => {
 
   const getStudentDataHandler = async () => {
     const response: any = await db.getFirstAsync(
-      `SELECT * FROM students WHERE id=${item.studentId}`
+      `SELECT * FROM students WHERE id=${studentId}`
     );
     console.log("RESPONSE", response);
     if (response) {
@@ -38,7 +40,7 @@ const ViewQR = ({ item }: Props) => {
       return () => {
         console.log("Screen unfocused");
       };
-    }, [item])
+    }, [studentId])
   );
 
   return (
@@ -51,11 +53,17 @@ const ViewQR = ({ item }: Props) => {
           alignItems: "center",
         }}
       >
-        <QRCode value={JSON.stringify(qrData)} size={200} />
+        <View>
+          <QRCode value={JSON.stringify(qrData)} size={300} />
+        </View>
 
         <View style={{ marginTop: 40, flexDirection: "row" }}>
-          <Button mode="outlined">Close</Button>
-          <Button mode="outlined">Print QR</Button>
+          <View style={{ padding: 5 }}>
+            <CustomButton title="Close" onPress={onClose} />
+          </View>
+          <View style={{ padding: 5 }}>
+            <CustomButton title="Print QR" onPress={() => {}} />
+          </View>
         </View>
       </View>
     </View>

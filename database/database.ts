@@ -433,7 +433,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   FOREIGN KEY (mrId) REFERENCES mrTags(id));
 
   CREATE TABLE IF NOT EXISTS diagnosis (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,   
+  id INTEGER PRIMARY KEY NOT NULL,
   diagnosisItems TEXT,
   mrId INTEGER,
   createdAt DATETIME DEFAULT (datetime('now')),
@@ -877,6 +877,7 @@ export const findScreeningById = async (db: SQLiteDatabase, id: string) => {
     const response = await db.getFirstAsync(
       `SELECT * from screenings LEFT JOIN students ON screenings.studentId = students.id WHERE screenings.studentId=${id}`
     );
+    console.log("RES *****************************", response);
     if (response) {
       return response;
     }
@@ -1505,7 +1506,8 @@ export const saveDiagnosis = async (
 ) => {
   try {
     const response = db.runSync(
-      "INSERT OR REPLACE INTO diagnosis(diagnosisItems,mrId) VALUES (?,?)",
+      "INSERT OR REPLACE INTO diagnosis(id,diagnosisItems,mrId) VALUES (?,?,?)",
+      item.id,
       item.diagnosisItems,
       item.mrId
     );
@@ -1517,8 +1519,8 @@ export const saveDiagnosis = async (
 
 export const findDiagnosisByMRId = async (db: SQLiteDatabase, mrId: string) => {
   try {
-    const response = db.getAllAsync(
-      `SELECT diagnosisItems FROM diagnosis WHERE mrId=${mrId} `
+    const response = db.getFirstAsync(
+      `SELECT * FROM diagnosis WHERE mrId=${mrId} `
     );
     console.log("RESSSSS***********");
     return response;
@@ -1597,7 +1599,7 @@ export const getPSStudentsBySchoolId = async (
   console.log("WHERE", whereCondition);
   try {
     const response = await db.getAllAsync(
-      `SELECT students.id, students.firstName,students.tempId,students.middleName,students.lastName,students.gender,students.age,students.section,students.classId,students.isMarkedForQC,students.contactNo, screenings.psStatus FROM students LEFT JOIN  screenings ON students.id = screenings.studentId  WHERE ${whereCondition}`
+      `SELECT students.id, students.firstName,students.tempId,students.middleName,students.lastName,students.gender,students.age,students.section,students.classId,students.isMarkedForQC,students.contactNo, screenings.psStatus,classes.title FROM students JOIN classes ON students.classId = classes.id LEFT JOIN  screenings ON students.id = screenings.studentId   WHERE ${whereCondition}`
     );
     return response;
   } catch (err) {
@@ -1627,7 +1629,7 @@ export const getMRTagStudentsBySchoolId = async (
     whereCondition += ` AND mt.mrNo != ""`;
   }
   if (appliedFilters.status == "NOT DONE") {
-    whereCondition += ` AND screenings.mrNo IS NULL`;
+    whereCondition += ` AND mt.mrNo IS NULL`;
   }
 
   console.log("WHERE", whereCondition);
@@ -1640,7 +1642,7 @@ export const getMRTagStudentsBySchoolId = async (
   console.log("************ GETTING STUDENTS MR TAGS ****************");
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,s.gender,s.age,s.section,s.classId,scr.studentId,scr.psStatus, mt.mrNo FROM students s  INNER JOIN  screenings scr ON s.id = scr.studentId  LEFT JOIN mrTags mt ON s.id = mt.studentId  WHERE ${whereCondition}`
+      `SELECT s.id, s.firstName,s.tempId,s.middleName,s.lastName,s.gender,s.age,s.section,s.classId,scr.studentId,scr.psStatus, mt.mrNo,cl.title FROM students s JOIN classes cl ON s.classId = cl.id  INNER JOIN  screenings scr ON s.id = scr.studentId  LEFT JOIN mrTags mt ON s.id = mt.studentId  WHERE ${whereCondition}`
     );
     return response;
   } catch (err) {
@@ -2388,7 +2390,7 @@ export const saveDiagnosisMaster = async (
 // Get Frame Materials
 export const findAllDiagnosisMaster = async (db: SQLiteDatabase) => {
   try {
-    const response = await db.getAllAsync(`SELECT * FROM diagnosisMasterxwxw`);
+    const response = await db.getAllAsync(`SELECT * FROM diagnosisMaster`);
     const arr: DropdownModel[] = [];
     if (response) {
       response.map((item: any) => {
@@ -2783,11 +2785,73 @@ export const findAllTorchlightFindings = async (db: SQLiteDatabase) => {
   }
 };
 
+export const findUniqueClasses = async (
+  db: SQLiteDatabase,
+  schoolId: string
+) => {
+  console.log("classId Id", schoolId);
+  try {
+    const response = await db.getAllAsync(
+      `SELECT DISTINCT s.classId,cl.title FROM students s JOIN classes cl ON s.classId = cl.id WHERE s.schoolId="${schoolId}"`
+    );
+
+    const arr: DropdownModel[] = [];
+    if (response) {
+      response.map((item: any) => {
+        arr.push(
+          new DropdownModel({
+            id: item.classId,
+            value: item.title,
+            label: item.title,
+          })
+        );
+      });
+    }
+    return arr;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+};
+
+// Get Sections
+export const findUniqueSections = async (
+  db: SQLiteDatabase,
+  schoolId: string,
+  classId: string
+) => {
+  console.log("classId Id", schoolId);
+  try {
+    const response = await db.getAllAsync(
+      `SELECT DISTINCT section FROM students WHERE schoolId="${schoolId}" AND classId="${classId}"`
+    );
+    const arr: DropdownModel[] = [];
+    if (response) {
+      response.map((item: any, index: number) => {
+        if (item.section != "") {
+          arr.push(
+            new DropdownModel({
+              id: (index + 1)?.toString(),
+              value: item.section,
+              label: item.section,
+            })
+          );
+        }
+      });
+    }
+    return arr;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+};
+
 export const saveUsers = async (db: SQLiteDatabase, items: UserModel[]) => {
   try {
     console.log("ITEMS***************", items);
     const response = await db.withTransactionAsync(async () => {
       items.forEach((item: UserModel) => {
+        console.log("ITEMS USR *************************", item);
         db.runSync(
           `INSERT OR REPLACE INTO users(id,userName,password,firstName,middleName,lastName,designation,isPartnerAgreement,isUserAgreement,isPIIAgreement,isDevicePreparation,isDataSync,isQualityCheck) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
           item.id,
@@ -2896,8 +2960,47 @@ export const getSpecStudentsBySchoolId = async (
   );
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.section,s.studentId,sb.bookingDate FROM students s  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON s.id = sb.studentId  WHERE ${whereCondition}`
+      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.section,s.studentId,sb.bookingDate,cl.title FROM students s JOIN classes cl ON s.classId = cl.id  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON s.id = sb.studentId  WHERE ${whereCondition}`
     );
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const removeSchool = async (db: SQLiteDatabase, schoolId: string) => {
+  console.log("SchoolId", schoolId);
+  try {
+    const response = await db.withTransactionAsync(async () => {
+      db.runSync(
+        `DELETE FROM diagnosis WHERE mrId IN (
+          SELECT mt.id FROM mrTags mt JOIN students s ON mt.studentId = s.id WHERE s.schoolId="${schoolId}"
+        )`
+      );
+      db.runSync(
+        `DELETE FROM advice WHERE mrId IN (
+          SELECT mt.id FROM mrTags mt JOIN students s ON mt.studentId = s.id WHERE s.schoolId="${schoolId}"
+        )`
+      );
+      db.runSync(
+        `DELETE FROM refraction WHERE mrId IN (
+          SELECT mt.id FROM mrTags mt JOIN students s ON mt.studentId = s.id WHERE s.schoolId="${schoolId}"
+        )`
+      );
+      db.runSync(
+        `DELETE FROM visualAcuity WHERE mrId IN (
+          SELECT mt.id FROM mrTags mt JOIN students s ON mt.studentId = s.id WHERE s.schoolId="${schoolId}"
+        )`
+      );
+      db.runSync(
+        `DELETE FROM mrTags WHERE studentId IN (
+          SELECT id FROM students WHERE students.schoolId="${schoolId}"
+        )`
+      );
+      db.runSync(`DELETE FROM students WHERE schoolId="${schoolId}"`);
+      db.runSync(`DELETE FROM schools WHERE id="${schoolId}"`);
+    });
+    console.log("Response", response);
     return response;
   } catch (err) {
     console.log(err);

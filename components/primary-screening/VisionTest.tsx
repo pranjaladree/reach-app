@@ -1,6 +1,6 @@
 import { setScreeningItem } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
-import { Text, View, StyleSheet, Alert } from "react-native";
+import { Text, View, StyleSheet, Alert, NativeModules } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import CustomRadioGroup from "../utils/CustomRadioGroup";
 import { YES_NO_DROPDOWN_ITEMS, YES_NO_RADIO_ITEMS } from "@/constants/Data";
@@ -11,7 +11,7 @@ import { Button } from "react-native-paper";
 import { useEffect } from "react";
 import StyledDropdown from "../new_UI/StyledDropdown";
 
-// const { IntentLauncher } = NativeModules;
+const { IntentLauncher } = NativeModules;
 
 const VisionTest = () => {
   const screeningItem = useSelector(
@@ -75,72 +75,91 @@ const VisionTest = () => {
     }
   };
 
-  // const openOccularApp = async () => {
-  //   let isExist = await IntentLauncher.isAppInstalled("me.vgsoham.eyeapp");
-  //   if (isExist == true) {
-  //     const params = {
-  //       packageName: "me.vgsoham.eyeapp", // Package name of the external app
-  //       className: "me.vgsoham.eyeapp.TakeD2DFarVisionTestActivity", // Class name of the activity
-  //       extra: {
-  //         chart: "ETDRS",
-  //         row: 5,
-  //         crowding: true,
-  //         crowdingSpacer: 1.0,
-  //         currentEye: "OD",
-  //         screenBothEyes: true,
-  //       },
-  //     };
+  const openOccularApp = async () => {
+    console.log("Opening Ocular app ...");
+    let isExist = await IntentLauncher.isAppInstalled("me.vgsoham.eyeapp");
+    if (isExist == true) {
+      const params = {
+        packageName: "me.vgsoham.eyeapp", // Package name of the external app
+        className: "me.vgsoham.eyeapp.TakeD2DFarVisionTestActivity", // Class name of the activity
+        extra: {
+          chart: "ETDRS",
+          row: 5,
+          crowding: true,
+          crowdingSpacer: 1.0,
+          currentEye: "OD",
+          screenBothEyes: true,
+        },
+      };
 
-  //     try {
-  //       const result = await IntentLauncher.startActivity(params);
-  //       let data = result.data;
-  //       let dataObj = JSON.parse(data);
-  //       if (dataObj?.completed == true) {
-  //         let od = dataObj?.OD;
-  //         let os = dataObj?.OS;
-  //         let correct = true;
-  //         let odValue = "";
-  //         if (od == "correct") {
-  //           odValue = "Yes";
-  //         } else {
-  //           odValue = "No";
-  //         }
-  //         let osValue = "";
-  //         if (os == "correct") {
-  //           osValue = "Yes";
-  //         } else {
-  //           osValue = "No";
-  //         }
+      try {
+        const result = await IntentLauncher.startActivity(params);
+        let data = result.data;
+        let dataObj = JSON.parse(data);
+        if (dataObj?.completed == true) {
+          let od = dataObj?.OD;
+          let os = dataObj?.OS;
+          let correct = true;
+          let odValue = "";
+          if (od == "correct") {
+            odValue = "Yes";
+          } else {
+            odValue = "No";
+          }
+          let osValue = "";
+          if (os == "correct") {
+            osValue = "YES";
+          } else {
+            osValue = "NO";
+          }
 
-  //         console.log("ODRE", odValue);
-  //         console.log("OSLE", osValue);
+          console.log("ODRE", odValue);
+          console.log("OSLE", osValue);
 
-  //         // handleInputChange(odValue, "withoutSpcOdRe");
-  //         // handleInputChange(osValue, "withoutSpcOsLe");
-  //         // if (odValue == "Yes" && osValue == "Yes") {
-  //         //   setOccularTestVisible(true);
-  //         // } else {
-  //         //   setOccularTestVisible(false);
-  //         // }
+          const foundItemRE = YES_NO_DROPDOWN_ITEMS.find(
+            (item) => item.value == odValue
+          );
 
-  //         // handleInputChange("", "ocularComplaintData");
-  //         // handleInputChange([], "ocularComplaintList");
-  //         // if (odValue == "No" || osValue == "No") {
-  //         //   setNormalCase(false);
-  //         //   setIsTle(false);
-  //         //   setIsColorVisionTest(false);
-  //         //   handleInputChange("", "colorVisionRe");
-  //         //   handleInputChange("", "colorVisionLe");
-  //         // }
-  //       } else {
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to launch activity:", error);
-  //     }
-  //   } else {
-  //     Alert.alert("Alert", "OcularCheck App is not installed");
-  //   }
-  // };
+          const foundItemLE = YES_NO_DROPDOWN_ITEMS.find(
+            (item) => item.value == osValue
+          );
+
+          if (foundItemLE && foundItemRE) {
+            dispatch(
+              setScreeningItem({
+                ...screeningItem,
+                canReadLogmarRE: foundItemRE,
+                canReadLogmarLE: foundItemLE,
+              })
+            );
+          }
+
+          // handleInputChange(odValue, "withoutSpcOdRe");
+          // handleInputChange(osValue, "withoutSpcOsLe");
+          // if (odValue == "Yes" && osValue == "Yes") {
+          //   setOccularTestVisible(true);
+          // } else {
+          //   setOccularTestVisible(false);
+          // }
+
+          // handleInputChange("", "ocularComplaintData");
+          // handleInputChange([], "ocularComplaintList");
+          // if (odValue == "No" || osValue == "No") {
+          //   setNormalCase(false);
+          //   setIsTle(false);
+          //   setIsColorVisionTest(false);
+          //   handleInputChange("", "colorVisionRe");
+          //   handleInputChange("", "colorVisionLe");
+          // }
+        } else {
+        }
+      } catch (error) {
+        console.error("Failed to launch activity:", error);
+      }
+    } else {
+      Alert.alert("Alert", "OcularCheck App is not installed");
+    }
+  };
 
   return (
     <View style={styles.box}>
@@ -174,7 +193,7 @@ const VisionTest = () => {
           {/* View 2 */}
           <View>
             <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-              <Button mode="outlined" onPress={() => {}}>
+              <Button mode="outlined" onPress={openOccularApp}>
                 Ocular Check
               </Button>
             </View>

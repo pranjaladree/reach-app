@@ -24,6 +24,8 @@ import {
 import { Button, Dialog, Portal, TextInput } from "react-native-paper";
 import { nanoid } from "nanoid/non-secure";
 import CustomInput from "@/components/utils/CustomInput";
+import CustomButton from "@/components/utils/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
 
 const AddStudent = () => {
   const db = useSQLiteContext();
@@ -430,13 +432,24 @@ const AddStudent = () => {
               />
             </View>
             <View>
-              <Button
+              <CustomButton
+                title="Save"
+                onPress={addStudentHandler}
+                icon={
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={20}
+                    color="white"
+                  />
+                }
+              />
+              {/* <Button
                 onPress={addStudentHandler}
                 mode="contained"
                 loading={isLoading}
               >
                 Add Student
-              </Button>
+              </Button> */}
             </View>
             <Portal>
               <Dialog visible={visible} onDismiss={hideDialog}>

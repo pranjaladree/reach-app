@@ -2,6 +2,7 @@ import {
   findAllDvas,
   findAllNvas,
   findAllPhs,
+  findOneMRTag,
   findOneVisualAcuity,
   getMasterDataFromDB,
   saveVisualAcuity,
@@ -23,15 +24,20 @@ import { VisualAcuityModel } from "@/models/patient-at-fixed-facilty/VisualAcuit
 import { useFocusEffect } from "expo-router";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
-import CustomTabs from "../utils/CustomTabs";
+import CustomTabs, { TabItem } from "../utils/CustomTabs";
 
-const TAB_ITEMS = ["With Spectacle", "Without Spectacle"];
+const TAB_ITEMS = [
+  { title: "With Spectacle", disabled: false },
+  { title: "Without Spectacle", disabled: false },
+];
 //
 interface Props {
   mrId: string;
+  isMRTagDone: boolean;
 }
 
-const VisualAcuity = ({ mrId }: Props) => {
+const VisualAcuity = ({ mrId, isMRTagDone }: Props) => {
+  console.log("MR ID", mrId);
   const [activeTab, setActiveTab] = useState(TAB_ITEMS[0]);
   const db = useSQLiteContext();
   const [distanceDvaItems, setDistanceDvaItems] = useState<GridDropdownModel[]>(
@@ -74,7 +80,7 @@ const VisualAcuity = ({ mrId }: Props) => {
   const [visualExam_WithSpecs_NVA_LE, setVisualExam_WithSpecs_NVA_LE] =
     useState(BLANK_GRID_DROPDOWN_MODEl);
 
-  const tabChangeHandler = (item: string) => {
+  const tabChangeHandler = (item: TabItem) => {
     setActiveTab(item);
   };
 
@@ -346,7 +352,7 @@ const VisualAcuity = ({ mrId }: Props) => {
       {/* Tabs */}
       <CustomTabs
         items={TAB_ITEMS}
-        activeTab={activeTab}
+        activeTab={activeTab.title}
         onPress={tabChangeHandler}
       />
       {/* Box 1 */}
@@ -481,6 +487,7 @@ const VisualAcuity = ({ mrId }: Props) => {
           icon={
             <Ionicons name="checkmark-circle-outline" size={20} color="white" />
           }
+          disabled={!isMRTagDone}
         />
       </View>
       {/* <View style={styles.action}>

@@ -59,6 +59,7 @@ import { getAllLensTint } from "@/http/lens-tint-http";
 import { getAllSpecialInstructions } from "@/http/special-instructions-http";
 import { getAllReasonForReferrals } from "@/http/reason-for-referral-http";
 import { getAllDiagnosis } from "@/http/diagnosis-http";
+import CustomButton from "@/components/utils/CustomButton";
 
 type UpdateKey =
   | "Classes"
@@ -447,12 +448,13 @@ const SystemUpdate = () => {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16, marginTop: 20 }}>
-      <AppButton
+      {/* <AppButton
         title="System Update"
         onPress={systemUpdateHandler}
         loading={isLoading}
         disabled={isLoading}
-      />
+      /> */}
+      <CustomButton title="System Update" onPress={systemUpdateHandler} />
       {/* <Button onPress={systemUpdateHandler} mode="contained" loading={isLoading}>
         System Update
       </Button> */}

@@ -36,7 +36,7 @@ const MRStudentItem = ({ item, onPress }: Props) => {
         </View>
         <View>
           <Text>
-            {item.classId} / {item.section}
+            {item.title} / {item.section}
           </Text>
           <Text>
             {item.gender} / {item.age}

@@ -31,7 +31,7 @@ const QRItem = ({ item, onPress }: Props) => {
 
   useEffect(() => {
     setQrData({
-      id: item.studentId,
+      id: item?.studentId,
     });
   }, [item]);
 
@@ -44,7 +44,7 @@ const QRItem = ({ item, onPress }: Props) => {
         </View>
         <View>
           <Text style={itemStyle}>
-            {item.classId} / {item.section}
+            {item.title} / {item.section}
           </Text>
           <Text style={itemStyle}>
             {item.gender} / {item.age}

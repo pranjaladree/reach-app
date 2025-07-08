@@ -2,6 +2,7 @@ import {
   findAllAdds,
   findAllAxis,
   findAllCyls,
+  findAllDvas,
   findAllFrameMaterials,
   findAllLensMaterials,
   findAllLensSurfaceCoatings,
@@ -39,23 +40,27 @@ import { DropdownModel } from "@/models/ui/DropdownModel";
 import { Collapsible } from "../Collapsible";
 import { RefractionModel } from "@/models/patient-at-fixed-facilty/RefractionModel";
 import { useFocusEffect } from "expo-router";
-import CustomTabs from "../utils/CustomTabs";
+import CustomTabs, { TabItem } from "../utils/CustomTabs";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomInput from "../utils/CustomInput";
 
-const TAB_ITEMS = ["OD (RE)", "OS (LE)"];
+const TAB_ITEMS = [
+  { title: "OD (RE)", disabled: false },
+  { title: "OS (LE)", disabled: false },
+];
 //
 interface Props {
   mrId: string;
+  isMRTagDone: boolean;
 }
 
-const Refraction = ({ mrId }: Props) => {
+const Refraction = ({ mrId, isMRTagDone }: Props) => {
   const db = useSQLiteContext();
   const [activeTab, setActiveTab] = useState(TAB_ITEMS[0]);
-  const tabChangeHandler = (item: string) => {
+  const tabChangeHandler = (item: TabItem) => {
     setActiveTab(item);
   };
   const [sphItems, setSphItems] = useState<GridDropdownModel[]>([]);
@@ -63,6 +68,7 @@ const Refraction = ({ mrId }: Props) => {
   const [axisItems, setAxisItems] = useState<DropdownModel[]>([]);
   const [addItems, setAddItems] = useState<DropdownModel[]>([]);
   const [nvaItems, setNvaItems] = useState<GridDropdownModel[]>([]);
+  const [distanceItems, setDistanceItems] = useState<GridDropdownModel[]>([]);
 
   const [refraction_PGP_SPH_RE, setRefraction_PGP_SPH_RE] = useState(
     BLANK_GRID_DROPDOWN_MODEl
@@ -307,10 +313,11 @@ const Refraction = ({ mrId }: Props) => {
   };
 
   //LE  Acceptance
-  const [refractionAcceptanceSphLe, setrefractionAcceptanceSphLe] =
-    useState(BLANK_DROPDOWN_MODEL);
+  const [refractionAcceptanceSphLe, setrefractionAcceptanceSphLe] = useState(
+    BLANK_GRID_DROPDOWN_MODEl
+  );
 
-  const refractionAcceptanceSphLeHandler = (item: DropdownModel) => {
+  const refractionAcceptanceSphLeHandler = (item: GridDropdownModel) => {
     setrefractionAcceptanceSphLe(item);
   };
 
@@ -597,6 +604,13 @@ const Refraction = ({ mrId }: Props) => {
     }
   };
 
+  const getDistanceHandler = async () => {
+    const response: any = await findAllDvas(db);
+    if (response) {
+      setDistanceItems(response);
+    }
+  };
+
   const getLensMaterialHandler = async () => {
     const response = await findAllLensMaterials(db);
     if (response) {
@@ -716,7 +730,7 @@ const Refraction = ({ mrId }: Props) => {
             : "",
         refractionAcceptanceSphLe:
           refractionAcceptanceSphLe.id !== "0"
-            ? refraction_PGP_SPH_LE.title
+            ? refractionAcceptanceSphLe.title
             : "",
         refractionAcceptanceCylRe:
           refraction_Acceptance_CYL_RE.id !== "0"
@@ -759,56 +773,8 @@ const Refraction = ({ mrId }: Props) => {
           specialInstruction.id !== "0" ? specialInstruction.id : "",
         refractionRemarks2: "",
         spectaclesPrescribed: isPrescribed,
-
-        // refractionPgpSphLe: refraction_PGP_SPH_LE.title,
-        // refractionPgpSphRe: refraction_PGP_SPH_RE.title,
-        // refractionPgpCylLe: refraction_PGP_CYL_LE.title,
-        // refractionPgpCylRe: refraction_PGP_CYL_RE.title,
-        // refractionPgpAxisLe: refraction_PGP_Axis_LE.value,
-        // refractionPgpAxisRe: refraction_PGP_Axis_RE.value,
-        // refractionPgpAddLe: refraction_PGP_Add_LE.value,
-        // refractionPgpAddRe: refraction_PGP_Add_RE.value,
-        // refractionDRYRETINOSphRe: refraction_Dry_SPH_RE.title,
-        // refractionDRYRETINOSphLe: refraction_Dry_SPH_LE.title,
-        // refractionDRYRETINOCylRe: "",
-        // refractionDRYRETINOCylLe: "",
-        // refractionDRYRETINOAXIS_RE: "",
-        // refractionDRYRETINOAXIS_LE: "",
-        // refractionCYCLORETINOSphRe: "",
-        // refractionCYCLORETINOSphLe: "",
-        // refractionCYCLORETINOCylRe: "",
-        // refractionCYCLORETINOCylLe: "",
-        // refractionCYCLORETINO_AXIS_RE: "",
-        // refractionCYCLORETINO_AXIS_LE: "",
-        // refractionAcceptanceSphRe: "",
-        // refractionAcceptanceSphLe: "",
-        // refractionAcceptanceCylRe: "",
-        // refractionAcceptanceCylLe: "",
-        // refractionAcceptanceAxisRe: "",
-        // refractionAcceptanceAxisLe: "",
-        // refractionBCVARe: "",
         refractionBCVALe: "",
-        // refractionAddSphRe: "",
-        // refractionAddSphLe: "",
-        // refractionBCVASphLe: "",
-        // refractionAddNvaRe: "",
-        // refractionAddNvaLe: "",
-        // refractionPapillaryDistSPhRe: "",
-        // refractionPapillaryDistIPdRe: "",
-        // refractionPapillaryDistSPhLe: "",
-        // refractionRemarksRe: "",
-        // refractionRemarksLe: "",
-        // refractionLensMaterial: "",
-        // refractionFrameMaterial: "",
-        // refractionLensType: "",
-        // refractionSpecialityLens: "",
-        // refractionModeOfWear: "",
-        // refractionLensSurface_Coating: "",
-        // refractionLensTint: "",
         refractionSpecialInstruction: "",
-        // refractionRemarks2: "",
-        // spectaclesPrescribed: isPrescribed,
-        // specialInstruction: "",
         mrId: mrId,
       })
     );
@@ -827,21 +793,21 @@ const Refraction = ({ mrId }: Props) => {
 
   const hideDialog = () => setVisible(false);
 
-  useEffect(() => {
-    getSPHHandler();
-    getCylHandler();
-    getAxisHandler();
-    getAddsHandler();
-    getLensMaterialHandler();
-    getFrameMaterialHandler();
-    getLensTypeHandler();
-    getSpecialityLensHandler();
-    getLensTintHandler();
-    getModeOfHandler();
-    getLensSurfaceCoatingHandler();
-    getSpecialInstructionsHandler();
-    getNvaHandler();
-  }, []);
+  // useEffect(() => {
+  //   getSPHHandler();
+  //   getCylHandler();
+  //   getAxisHandler();
+  //   getAddsHandler();
+  //   getLensMaterialHandler();
+  //   getFrameMaterialHandler();
+  //   getLensTypeHandler();
+  //   getSpecialityLensHandler();
+  //   getLensTintHandler();
+  //   getModeOfHandler();
+  //   getLensSurfaceCoatingHandler();
+  //   getSpecialInstructionsHandler();
+  //   getNvaHandler();
+  // }, []);
 
   const [refractionItem, setRefractionItem] = useState<any>();
 
@@ -911,12 +877,12 @@ const Refraction = ({ mrId }: Props) => {
         setRefraction_Cyclo_SPH_LE(foundSPH_Cyclo_LE);
       }
 
-      // const foundSPH_Acceptance_LE = sphItems.find(
-      //   (item) => item.title == refractionItem.refractionAcceptanceSphle
-      // );
-      // if (foundSPH_Acceptance_LE) {
-      //   acccec(foundSPH_Acceptance_LE);
-      // }
+      const foundSPH_Acceptance_LE = sphItems.find(
+        (item) => item.title == refractionItem.refractionAcceptanceSphle
+      );
+      if (foundSPH_Acceptance_LE) {
+        setrefractionAcceptanceSphLe(foundSPH_Acceptance_LE);
+      }
 
       const foundSPH_Add_LE = sphItems.find(
         (item) => item.title == refractionItem.refractionAddSphle
@@ -1105,6 +1071,26 @@ const Refraction = ({ mrId }: Props) => {
 
   useEffect(() => {
     if (refractionItem) {
+      const found_BCVA_RE = distanceItems.find(
+        (item) => item.title == refractionItem.refractionBCVARe
+      );
+      if (found_BCVA_RE) {
+        setBcva_RE(found_BCVA_RE);
+      }
+
+      //LE
+
+      const found_BCVA_LE = distanceItems.find(
+        (item) => item.title == refractionItem.refractionBCVALe
+      );
+      if (found_BCVA_LE) {
+        setBcva_LE(found_BCVA_LE);
+      }
+    }
+  }, [distanceItems, refractionItem]);
+
+  useEffect(() => {
+    if (refractionItem) {
       setPupilaryDistanceRE(refractionItem.refractionPapillaryDistSPhRe);
       setPupilaryDistanceLE(refractionItem.refractionPapillaryDistSPhLe);
       setPupilaryDistanceBoth(refractionItem.refractionPapillaryDistIPdRe);
@@ -1205,6 +1191,20 @@ const Refraction = ({ mrId }: Props) => {
   useFocusEffect(
     useCallback(() => {
       getExistingData();
+      getSPHHandler();
+      getCylHandler();
+      getAxisHandler();
+      getAddsHandler();
+      getLensMaterialHandler();
+      getFrameMaterialHandler();
+      getLensTypeHandler();
+      getSpecialityLensHandler();
+      getLensTintHandler();
+      getModeOfHandler();
+      getLensSurfaceCoatingHandler();
+      getSpecialInstructionsHandler();
+      getNvaHandler();
+      getDistanceHandler();
       return () => {
         console.log("Screen unfocused");
       };
@@ -1214,410 +1214,413 @@ const Refraction = ({ mrId }: Props) => {
   return (
     <View style={styles.screen}>
       {/* Tabs */}
-      <CustomTabs
-        items={TAB_ITEMS}
-        activeTab={activeTab}
-        onPress={tabChangeHandler}
-      />
+
       {/* Box 1 */}
-      {activeTab == TAB_ITEMS[0] && (
-        <View style={styles.box}>
-          {/* Row 1 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>PGP</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={refraction_PGP_SPH_REHandler}
-                selectedItem={refraction_PGP_SPH_RE.title}
-              />
+      <Collapsible title="Refraction">
+        <CustomTabs
+          items={TAB_ITEMS}
+          activeTab={activeTab.title}
+          onPress={tabChangeHandler}
+        />
+        {activeTab == TAB_ITEMS[0] && (
+          <View style={styles.box}>
+            {/* Row 1 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>PGP</Text>
             </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="CYL"
-                items={cylItems}
-                onSelect={refraction_PGP_CYL_REHandler}
-                selectedItem={refraction_PGP_CYL_RE.title}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={refraction_PGP_SPH_REHandler}
+                  selectedItem={refraction_PGP_SPH_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="CYL"
+                  items={cylItems}
+                  onSelect={refraction_PGP_CYL_REHandler}
+                  selectedItem={refraction_PGP_CYL_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="AXIS"
+                  items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
+                  selectedItem={refraction_PGP_Axis_RE}
+                  onChange={refraction_PGP_Axis_REHandler}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="ADD"
+                  items={[BLANK_DROPDOWN_MODEL, ...addItems]}
+                  selectedItem={refraction_PGP_Add_RE}
+                  onChange={refraction_PGP_Add_REHandler}
+                />
+              </View>
             </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="AXIS"
-                items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
-                selectedItem={refraction_PGP_Axis_RE}
-                onChange={refraction_PGP_Axis_REHandler}
-              />
+            {/* Row 2 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>DRY RETINOSCOPY</Text>
             </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="ADD"
-                items={[BLANK_DROPDOWN_MODEL, ...addItems]}
-                selectedItem={refraction_PGP_Add_RE}
-                onChange={refraction_PGP_Add_REHandler}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={refraction_Dry_SPH_REHandler}
+                  selectedItem={refraction_Dry_SPH_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="CYL"
+                  items={cylItems}
+                  onSelect={refraction_Dry_CYL_REHandler}
+                  selectedItem={refraction_Dry_CYL_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="AXIS"
+                  items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
+                  selectedItem={refraction_Dry_Axis_RE}
+                  onChange={refraction_Dry_Axis_REHandler}
+                />
+              </View>
             </View>
-          </View>
-          {/* Row 2 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>DRY RETINOSCOPY</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={refraction_Dry_SPH_REHandler}
-                selectedItem={refraction_Dry_SPH_RE.title}
-              />
+            {/* Row 3 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>CYCLO RETINOSCOPY</Text>
             </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="CYL"
-                items={cylItems}
-                onSelect={refraction_Dry_CYL_REHandler}
-                selectedItem={refraction_Dry_CYL_RE.title}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={refraction_Cyclo_SPH_REHandler}
+                  selectedItem={refraction_Cyclo_SPH_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="CYL"
+                  items={cylItems}
+                  onSelect={refraction_Cyclo_CYL_REHandler}
+                  selectedItem={refraction_Cyclo_CYL_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="AXIS"
+                  items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
+                  selectedItem={refraction_Cyclo_Axis_RE}
+                  onChange={refraction_Cyclo_Axis_REHandler}
+                />
+              </View>
             </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="AXIS"
-                items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
-                selectedItem={refraction_Dry_Axis_RE}
-                onChange={refraction_Dry_Axis_REHandler}
-              />
+            {/* Row 4 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>ACCEPTANCE</Text>
             </View>
-          </View>
-          {/* Row 3 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>CYCLO RETINOSCOPY</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={refraction_Cyclo_SPH_REHandler}
-                selectedItem={refraction_Cyclo_SPH_RE.title}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={refraction_Acceptance_SPH_REHandler}
+                  selectedItem={refraction_Acceptance_SPH_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="CYL"
+                  items={cylItems}
+                  onSelect={refraction_Acceptance_CYL_REHandler}
+                  selectedItem={refraction_Acceptance_CYL_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="AXIS"
+                  items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
+                  selectedItem={refraction_Acceptance_Axis_RE}
+                  onChange={refraction_Acceptance_Axis_REHandler}
+                />
+              </View>
             </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="CYL"
-                items={cylItems}
-                onSelect={refraction_Cyclo_CYL_REHandler}
-                selectedItem={refraction_Cyclo_CYL_RE.title}
-              />
+            {/* Row 5 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>BCVA</Text>
             </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="AXIS"
-                items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
-                selectedItem={refraction_Cyclo_Axis_RE}
-                onChange={refraction_Cyclo_Axis_REHandler}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="BCVA"
+                  items={distanceItems}
+                  onSelect={bcva_REHandler}
+                  selectedItem={bcva_RE.title}
+                />
+              </View>
             </View>
-          </View>
-          {/* Row 4 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>ACCEPTANCE</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={refraction_Acceptance_SPH_REHandler}
-                selectedItem={refraction_Acceptance_SPH_RE.title}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="CYL"
-                items={cylItems}
-                onSelect={refraction_Acceptance_CYL_REHandler}
-                selectedItem={refraction_Acceptance_CYL_RE.title}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="AXIS"
-                items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
-                selectedItem={refraction_Acceptance_Axis_RE}
-                onChange={refraction_Acceptance_Axis_REHandler}
-              />
-            </View>
-          </View>
-          {/* Row 5 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>BCVA</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="BCVA"
-                items={nvaItems}
-                onSelect={bcva_REHandler}
-                selectedItem={bcva_RE.title}
-              />
-            </View>
-          </View>
 
-          {/* Row 6 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>ADD</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={setAdd_SPH_RE}
-                selectedItem={add_sph_RE.title}
-              />
+            {/* Row 6 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>ADD</Text>
             </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="NVA"
-                items={nvaItems}
-                onSelect={add_Nva_REHandler}
-                selectedItem={add_nva_RE.title}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={setAdd_SPH_RE}
+                  selectedItem={add_sph_RE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="NVA"
+                  items={nvaItems}
+                  onSelect={add_Nva_REHandler}
+                  selectedItem={add_nva_RE.title}
+                />
+              </View>
+            </View>
+            {/* Row 7 */}
+            <View>
+              <Text>Pupilary Distance</Text>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  id="Pupilary Distance ( RE )"
+                  label="Pupilary Distance ( RE )"
+                  value={pupilaryDistanceRE}
+                  onChangeText={pupilaryDistanceREChangeHandler}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <TextInput
+                  label="IPD Both"
+                  value={pupilaryDistanceBoth}
+                  onChangeText={pupilaryDistanceBothChangeHandler}
+                  mode="outlined"
+                />
+              </View>
+            </View>
+            {/* Row 8 */}
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <TextInput
+                  label="Remarks ( RE )"
+                  value={remarksRE}
+                  onChangeText={remarksREChangeHandler}
+                  mode="outlined"
+                />
+              </View>
             </View>
           </View>
-          {/* Row 7 */}
-          <View>
-            <Text>Pupilary Distance</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomInput
-                id="Pupilary Distance ( RE )"
-                label="Pupilary Distance ( RE )"
-                value={pupilaryDistanceRE}
-                onChangeText={pupilaryDistanceREChangeHandler}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <TextInput
-                label="IPD Both"
-                value={pupilaryDistanceBoth}
-                onChangeText={pupilaryDistanceBothChangeHandler}
-                mode="outlined"
-              />
-            </View>
-          </View>
-          {/* Row 8 */}
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <TextInput
-                label="Remarks ( RE )"
-                value={remarksRE}
-                onChangeText={remarksREChangeHandler}
-                mode="outlined"
-              />
-            </View>
-          </View>
-        </View>
-      )}
+        )}
 
-      {/* Box 2 */}
-      {activeTab == TAB_ITEMS[1] && (
-        <View style={styles.box}>
-          {/* Row 1 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>PGP</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={refraction_PGP_SPH_LEHandler}
-                selectedItem={refraction_PGP_SPH_LE.title}
-              />
+        {/* Box 2 */}
+        {activeTab == TAB_ITEMS[1] && (
+          <View style={styles.box}>
+            {/* Row 1 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>PGP</Text>
             </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="CYL"
-                items={cylItems}
-                onSelect={refraction_PGP_CYL_LEHandler}
-                selectedItem={refraction_PGP_CYL_LE.title}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={refraction_PGP_SPH_LEHandler}
+                  selectedItem={refraction_PGP_SPH_LE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="CYL"
+                  items={cylItems}
+                  onSelect={refraction_PGP_CYL_LEHandler}
+                  selectedItem={refraction_PGP_CYL_LE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="AXIS"
+                  items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
+                  selectedItem={refraction_PGP_Axis_LE}
+                  onChange={refraction_PGP_Axis_LEHandler}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="ADD"
+                  items={[BLANK_DROPDOWN_MODEL, ...addItems]}
+                  selectedItem={refraction_PGP_Add_LE}
+                  onChange={refraction_PGP_Add_LEHandler}
+                />
+              </View>
             </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="AXIS"
-                items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
-                selectedItem={refraction_PGP_Axis_LE}
-                onChange={refraction_PGP_Axis_LEHandler}
-              />
+            {/* Row 2 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>DRY RETINOSCOPY</Text>
             </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="ADD"
-                items={[BLANK_DROPDOWN_MODEL, ...addItems]}
-                selectedItem={refraction_PGP_Add_LE}
-                onChange={refraction_PGP_Add_LEHandler}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={refraction_Dry_SPH_LEHandler}
+                  selectedItem={refraction_Dry_SPH_LE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="CYL"
+                  items={cylItems}
+                  onSelect={refraction_Dry_CYL_LEHandler}
+                  selectedItem={refraction_Dry_CYL_LE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="AXIS"
+                  items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
+                  selectedItem={refraction_Dry_Axis_LE}
+                  onChange={refraction_Dry_Axis_LEHandler}
+                />
+              </View>
             </View>
-          </View>
-          {/* Row 2 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>DRY RETINOSCOPY</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={refraction_Dry_SPH_LEHandler}
-                selectedItem={refraction_PGP_SPH_LE.title}
-              />
+            {/* Row 3 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>CYCLO RETINOSCOPY</Text>
             </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="CYL"
-                items={cylItems}
-                onSelect={refraction_Dry_CYL_LEHandler}
-                selectedItem={refraction_Dry_CYL_LE.title}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={refraction_Cyclo_SPH_LEHandler}
+                  selectedItem={refraction_Cyclo_SPH_LE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="CYL"
+                  items={cylItems}
+                  onSelect={refraction_Cyclo_CYL_LEHandler}
+                  selectedItem={refraction_Cyclo_CYL_LE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="AXIS"
+                  items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
+                  selectedItem={refraction_Cyclo_Axis_LE}
+                  onChange={refraction_Cyclo_Axis_LEHandler}
+                />
+              </View>
             </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="AXIS"
-                items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
-                selectedItem={refraction_Dry_Axis_LE}
-                onChange={refraction_Dry_Axis_LEHandler}
-              />
+            {/* Row 4 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>ACCEPTANCE</Text>
             </View>
-          </View>
-          {/* Row 3 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>CYCLO RETINOSCOPY</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={refraction_Cyclo_SPH_LEHandler}
-                selectedItem={refraction_Cyclo_SPH_LE.title}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={refractionAcceptanceSphLeHandler}
+                  selectedItem={refractionAcceptanceSphLe.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="CYL"
+                  items={cylItems}
+                  onSelect={refraction_Acceptance_CYL_LEHandler}
+                  selectedItem={refraction_Acceptance_CYL_LE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="AXIS"
+                  items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
+                  selectedItem={refraction_Acceptance_Axis_LE}
+                  onChange={refraction_Acceptance_Axis_LEHandler}
+                />
+              </View>
             </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="CYL"
-                items={cylItems}
-                onSelect={refraction_Cyclo_CYL_LEHandler}
-                selectedItem={refraction_Cyclo_CYL_LE.title}
-              />
+            {/* Row 5 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>BCVA</Text>
             </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="AXIS"
-                items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
-                selectedItem={refraction_Cyclo_Axis_LE}
-                onChange={refraction_Cyclo_Axis_LEHandler}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="BCVA"
+                  items={distanceItems}
+                  onSelect={bcva_LEHandler}
+                  selectedItem={bcva_LE.title}
+                />
+              </View>
             </View>
-          </View>
-          {/* Row 4 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>ACCEPTANCE</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={refraction_Acceptance_SPH_REHandler}
-                selectedItem={refraction_Acceptance_SPH_RE.title}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="CYL"
-                items={cylItems}
-                onSelect={refraction_Acceptance_CYL_LEHandler}
-                selectedItem={refraction_Acceptance_CYL_LE.title}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <StyledDropdown
-                label="AXIS"
-                items={[BLANK_DROPDOWN_MODEL, ...axisItems]}
-                selectedItem={refraction_Acceptance_Axis_LE}
-                onChange={refraction_Acceptance_Axis_LEHandler}
-              />
-            </View>
-          </View>
-          {/* Row 5 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>BCVA</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="BCVA"
-                items={nvaItems}
-                onSelect={bcva_LEHandler}
-                selectedItem={bcva_LE.title}
-              />
-            </View>
-          </View>
 
-          {/* Row 6 */}
-          <View style={styles.headerItem}>
-            <Text style={styles.headerItemTitle}>ADD</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="SPH"
-                items={sphItems}
-                onSelect={add_sph_LEHandler}
-                selectedItem={add_sph_LE.title}
-              />
+            {/* Row 6 */}
+            <View style={styles.headerItem}>
+              <Text style={styles.headerItemTitle}>ADD</Text>
             </View>
-            <View style={styles.rowItem}>
-              <CustomGridDropdown
-                label="NVA"
-                items={nvaItems}
-                onSelect={add_nva_LEHandler}
-                selectedItem={add_nva_LE.title}
-              />
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="SPH"
+                  items={sphItems}
+                  onSelect={add_sph_LEHandler}
+                  selectedItem={add_sph_LE.title}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomGridDropdown
+                  label="NVA"
+                  items={nvaItems}
+                  onSelect={add_nva_LEHandler}
+                  selectedItem={add_nva_LE.title}
+                />
+              </View>
+            </View>
+            {/* Row 7 */}
+            <View>
+              <Text>Pupilary Distance</Text>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <TextInput
+                  label="Pupilary Distance ( LE )"
+                  value={pupilaryDistanceLE}
+                  onChangeText={pupilaryDistanceLEChangeHandler}
+                  mode="outlined"
+                />
+              </View>
+            </View>
+            {/* Row 8 */}
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <TextInput
+                  label="Remarks ( LE )"
+                  value={remarksLE}
+                  onChangeText={remarksLEChangeHandler}
+                  mode="outlined"
+                />
+              </View>
             </View>
           </View>
-          {/* Row 7 */}
-          <View>
-            <Text>Pupilary Distance</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <TextInput
-                label="Pupilary Distance ( LE )"
-                value={pupilaryDistanceLE}
-                onChangeText={pupilaryDistanceLEChangeHandler}
-                mode="outlined"
-              />
-            </View>
-          </View>
-          {/* Row 8 */}
-          <View style={styles.row}>
-            <View style={styles.rowItem}>
-              <TextInput
-                label="Remarks ( RE )"
-                value={remarksLE}
-                onChangeText={remarksLEChangeHandler}
-                mode="outlined"
-              />
-            </View>
-          </View>
-        </View>
-      )}
+        )}
+      </Collapsible>
 
       {/* Box 3 */}
       <Collapsible title="Lens Information">
@@ -1718,6 +1721,7 @@ const Refraction = ({ mrId }: Props) => {
           icon={
             <Ionicons name="checkmark-circle-outline" size={20} color="white" />
           }
+          disabled={!isMRTagDone}
         />
       </View>
 

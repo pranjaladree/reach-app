@@ -31,7 +31,6 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="reachapp"/>
-        <data android:scheme="exp+reach-app"/>
       </intent-filter>
     </activity>
   </application>

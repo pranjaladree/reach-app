@@ -20,6 +20,7 @@ import AppButton from "../new_UI/AppButton";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 const MRTagDataSync = () => {
   const db = useSQLiteContext();
@@ -27,6 +28,8 @@ const MRTagDataSync = () => {
   const token = useSelector((state: RootState) => state.userSlice.token);
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
+  const [schoolHasError, setSchoolHasError] = useState(false);
+  const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
   const [diaglogMessage, setDialogMessage] = useState("");
 
   const [visible, setVisible] = useState(false);
@@ -44,9 +47,16 @@ const MRTagDataSync = () => {
         setSelectedSchool(foundItem);
       }
     }
+    setSchoolHasError(false);
+    setSchoolErrorMessage("");
   };
 
   const syncMrTagHandler = async () => {
+    if (selectedSchool.id == "0") {
+      setSchoolHasError(true);
+      setSchoolErrorMessage("Please select a school !");
+      return;
+    }
     setIsLoading(true);
     const response = await prepareMRDataSync(db, selectedSchool.id);
     console.log("MR PREPARED DATA", JSON.stringify(response));
@@ -61,6 +71,39 @@ const MRTagDataSync = () => {
     setIsLoading(false);
   };
 
+  const [isCountLoading, setIsCountLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(-1);
+  const [mrDoneCount, setMrDoneCount] = useState(-1);
+
+  const getStatisticsHandler = async () => {
+    if (selectedSchool.id == "0") {
+      setSchoolHasError(true);
+      setSchoolErrorMessage("Please select a school !");
+      return;
+    }
+    setIsCountLoading(true);
+    try {
+      const response1: any = await db.getFirstAsync(
+        `SELECT COUNT(*) AS count FROM students WHERE schoolId="${selectedSchool.id}"`
+      );
+      console.log("RESPONSE 1 &&&&&&&&&&&", response1);
+      if (response1) {
+        setTotalCount(response1.count);
+      }
+
+      const response2: any = await db.getFirstAsync(
+        `SELECT COUNT(*) AS count FROM students JOIN mrTags ON mrTags.studentId = students.id WHERE schoolId="${selectedSchool.id}"`
+      );
+      console.log("RESPONSE 2 &&&&&&&&&&&", response2);
+      if (response2) {
+        setMrDoneCount(response2.count);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    setIsCountLoading(false);
+  };
+
   const getSchools = async () => {
     const response = await getSchoolByActivityType(
       db,
@@ -70,8 +113,6 @@ const MRTagDataSync = () => {
       setSchoolItems(response);
     }
   };
-
-  const getStatisticsHandler = async () => {};
 
   useFocusEffect(
     useCallback(() => {
@@ -89,6 +130,9 @@ const MRTagDataSync = () => {
             items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
             selectedItem={selectedSchool}
             onChange={selectSchoolHandler}
+            isError={schoolHasError}
+            errorMessage={schoolErrorMessage}
+            required={true}
           />
         </View>
         <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
@@ -102,15 +146,21 @@ const MRTagDataSync = () => {
                 color="white"
               />
             }
+            isLoading={isCountLoading}
           />
         </View>
       </View>
       <View style={styles.infobox}>
-        <Text style={styles.infoLine}>Total Students :</Text>
         <Text style={styles.infoLine}>
-          No of Students undergone Detailed Evaluation :
+          Total Students : {totalCount == -1 ? "" : totalCount}
         </Text>
-        <Text style={styles.infoLine}>No of unsynced data: </Text>
+        <Text style={styles.infoLine}>
+          No of Students undergone Detailed Evaluation :{" "}
+          {mrDoneCount == -1 ? "" : mrDoneCount}
+        </Text>
+        <Text style={styles.infoLine}>
+          No of unsynced data: {mrDoneCount == -1 ? "" : mrDoneCount}
+        </Text>
       </View>
       <View style={{ padding: 10, marginTop: 10 }}>
         <CustomButton
@@ -119,6 +169,7 @@ const MRTagDataSync = () => {
           icon={
             <Ionicons name="cloud-upload-outline" size={20} color="white" />
           }
+          isLoading={isLoading}
         />
       </View>
       <Portal>
@@ -148,6 +199,8 @@ const styles = StyleSheet.create({
   },
   infoLine: {
     padding: 5,
+    color: Colors.primary,
+    fontWeight: "bold",
   },
 });
 

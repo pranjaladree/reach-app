@@ -16,7 +16,7 @@ const SpecStudentItem = ({ item, onPress }: Props) => {
   const router = useRouter();
   const db = useSQLiteContext();
   const dispatch = useDispatch();
-  console.log(item);
+  console.log("SSSSS", item);
 
   return (
     <Pressable onPress={onPress} style={styles.item}>
@@ -32,7 +32,7 @@ const SpecStudentItem = ({ item, onPress }: Props) => {
             {item.mrNo}
           </Text>
           <Text>
-            {item.classId} / {item.section}
+            {item.title} / {item.section}
           </Text>
           <Text>
             {item.gender} / {item.age}

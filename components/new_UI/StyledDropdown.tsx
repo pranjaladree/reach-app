@@ -13,6 +13,9 @@ type Props = {
   items: DropdownItem[];
   selectedItem: DropdownItem;
   onChange: (val?: string) => void;
+  required?: boolean;
+  isError?: boolean;
+  errorMessage?: string;
 };
 
 const StyledDropdown: React.FC<Props> = ({
@@ -20,31 +23,48 @@ const StyledDropdown: React.FC<Props> = ({
   items,
   selectedItem,
   onChange,
+  required,
+  isError,
+  errorMessage,
 }) => {
   return (
-    <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
-
-      <Dropdown
-        data={items}
-        labelField="label"
-        valueField="value"
-        value={selectedItem.value}
-        onChange={(item) => onChange(item.value)}
-        style={styles.dropdown}
-        placeholderStyle={styles.placeholder}
-        selectedTextStyle={styles.selectedText}
-        itemTextStyle={styles.itemText}
-        containerStyle={styles.dropdownContainer}
-        iconStyle={styles.iconStyle}
-        keyboardAvoiding
-        autoScroll
-        renderRightIcon={() => (
-          <MaterialIcons name="arrow-drop-down" size={24} color="#000" />
+    <>
+      <View style={styles.container}>
+        {label && (
+          <Text style={styles.label}>
+            {label}{" "}
+            {required ? (
+              <Text style={{ color: "red", fontWeight: "bold" }}>*</Text>
+            ) : null}
+          </Text>
         )}
-        placeholder="Select"
-      />
-    </View>
+
+        <Dropdown
+          data={items}
+          labelField="label"
+          valueField="value"
+          value={selectedItem.value}
+          onChange={(item) => onChange(item.value)}
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholder}
+          selectedTextStyle={styles.selectedText}
+          itemTextStyle={styles.itemText}
+          containerStyle={styles.dropdownContainer}
+          iconStyle={styles.iconStyle}
+          keyboardAvoiding
+          autoScroll
+          renderRightIcon={() => (
+            <MaterialIcons name="arrow-drop-down" size={24} color="#000" />
+          )}
+          placeholder="Select"
+        />
+      </View>
+      {isError && (
+        <View>
+          <Text style={{ color: "red" }}>{errorMessage}</Text>
+        </View>
+      )}
+    </>
   );
 };
 

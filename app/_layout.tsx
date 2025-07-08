@@ -54,6 +54,60 @@ export default function RootLayout() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(other)/add-student"
+                options={{
+                  headerTitle: "Add New Student",
+                }}
+              />
+              <Stack.Screen
+                name="(other)/update-student"
+                options={{
+                  headerTitle: "Update Student",
+                }}
+              />
+              <Stack.Screen
+                name="(other)/screening-list"
+                options={{
+                  headerTitle: "Primary Screening",
+                }}
+              />
+              <Stack.Screen
+                name="(other)/reason-for-referral"
+                options={{
+                  headerTitle: "Referral Form",
+                }}
+              />
+              <Stack.Screen
+                name="(other)/screening-detail"
+                options={{
+                  headerTitle: "Primary Screening",
+                }}
+              />
+              <Stack.Screen
+                name="(other)/mr-tag-list"
+                options={{
+                  headerTitle: "Detailed Evaluation",
+                }}
+              />
+              <Stack.Screen
+                name="(other)/mr-tag-detail"
+                options={{
+                  headerTitle: "Detailed Evaluation",
+                }}
+              />
+              <Stack.Screen
+                name="(other)/qr-list"
+                options={{
+                  headerTitle: "View QR Code",
+                }}
+              />
+              <Stack.Screen
+                name="(other)/spectacle-list"
+                options={{
+                  headerTitle: "Spectacle Booking",
+                }}
+              />
             </Stack>
             <StatusBar style="auto" />
           </ThemeProvider>

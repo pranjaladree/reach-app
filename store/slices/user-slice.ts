@@ -64,6 +64,24 @@ export const userSlice = createSlice({
       state.isUserAgreement = action.payload.isUserAgreement;
       state.isPartnerAgreement = action.payload.isPartnerAgreement;
     },
+    setLoggedOut: (state) => {
+      console.log("Log Out method");
+      state.userId = "";
+      state.isAuthenticated = false;
+      state.isTempAuthenticated = false;
+      state.tempToken = "";
+      state.isUserAgreement = false;
+      state.isPartnerAgreement = false;
+      state.isMFARegistered = false;
+      state.isMFARequired = false;
+      state.token = "";
+      state.fullName = "";
+      state.partnerId = 0;
+      state.partnerName = "";
+      state.userType = "";
+      state.isPIIAgreement = false;
+      state.isAdministrator = false;
+    },
   },
 });
 
@@ -75,6 +93,7 @@ export const {
   setTempAuthenticate,
   setTempToken,
   setLoggedInUser,
+  setLoggedOut,
 } = userSlice.actions;
 
 export default userSlice.reducer;

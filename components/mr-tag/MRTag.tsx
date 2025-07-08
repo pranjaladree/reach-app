@@ -31,9 +31,10 @@ import { Ionicons } from "@expo/vector-icons";
 interface Props {
   item: MRTagModel;
   studentId: string;
+  tempId: string;
 }
 
-const MRTagItem = ({ item, studentId }: Props) => {
+const MRTagItem = ({ item, studentId, tempId }: Props) => {
   console.log("Item", item);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -51,9 +52,13 @@ const MRTagItem = ({ item, studentId }: Props) => {
     []
   );
   const [facilityItems, setFacilityItems] = useState<DropdownModel[]>([]);
-  const [facilityLabel, setFacilityLabel] = useState("");
+  const [facilityLabel, setFacilityLabel] = useState("Facility Type");
   const [facilityType, setSelectedFaciliType] = useState(BLANK_DROPDOWN_MODEL);
+  const [facilityTypeHasError, setFacilityTypeHasError] = useState(false);
+  const [facilityTypeErrorMessage, setFacilityTypeErrorMessage] = useState("");
   const [facilityName, setFacilityName] = useState(BLANK_DROPDOWN_MODEL);
+  const [facilityNameHasError, setFacilityNameHasError] = useState(false);
+  const [facilityNameErrorMessage, setFacilityNameErrorMessage] = useState("");
 
   const mrNoChangeHandler = (val: string) => {
     setMrNo(val);
@@ -61,7 +66,7 @@ const MRTagItem = ({ item, studentId }: Props) => {
 
   const selectActivityTypeHandler = (val?: string) => {
     console.log("Val", val);
-    if (val == "") {
+    if (val == "SELECT") {
       setSelectedFaciliType(BLANK_DROPDOWN_MODEL);
     } else {
       const foundItem = FACILITY_TYPES_ITEMS.find((item) => item.value == val);
@@ -69,11 +74,13 @@ const MRTagItem = ({ item, studentId }: Props) => {
         setSelectedFaciliType(foundItem);
       }
     }
+    setFacilityTypeHasError(false);
+    setFacilityTypeErrorMessage("");
   };
 
   const selectFacilityNameHandler = (val?: string) => {
     console.log("Val", val);
-    if (val == "") {
+    if (val == "SELECT") {
       setFacilityName(BLANK_DROPDOWN_MODEL);
     } else {
       const foundItem = facilityItems.find((item) => item.value == val);
@@ -81,14 +88,35 @@ const MRTagItem = ({ item, studentId }: Props) => {
         setFacilityName(foundItem);
       }
     }
+    setFacilityNameHasError(false);
+    setFacilityNameErrorMessage("");
+  };
+
+  const fieldValidator = () => {
+    let isValid = true;
+    console.log("Facility Type", facilityType);
+    if (facilityType.value == "SELECT") {
+      setFacilityTypeHasError(true);
+      setFacilityTypeErrorMessage("Please select facility type !");
+      isValid = false;
+    }
+    if (facilityName.id == "0") {
+      setFacilityNameHasError(true);
+      setFacilityNameErrorMessage("Please select facility name !");
+      isValid = false;
+    }
+    return isValid;
   };
 
   const addMRTagHandler = async () => {
+    if (!fieldValidator()) {
+      return;
+    }
     const response = await saveMRTag(
       db,
       new MRTagModel({
         id: studentId,
-        mrNo: mrNo,
+        mrNo: tempId,
         visitDate: dayjs(new Date()).format("YYYY-MM-DD"),
         facilityType: facilityType.value,
         facilityId: facilityName.id,
@@ -177,23 +205,26 @@ const MRTagItem = ({ item, studentId }: Props) => {
 
   return (
     <>
-      <View style={{ marginTop: 10 }}>
+      <View style={{ marginTop: 10, padding: 10 }}>
         <View>
           <CustomInput
             id="mrNo"
             label="MR No"
-            value={mrNo}
-            onChangeText={mrNoChangeHandler}
+            value={tempId}
+            onChangeText={() => {}}
           />
         </View>
 
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <View style={{ flexGrow: 1, padding: 5 }}>
             <StyledDropdown
               label="Facility Type"
               items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
               selectedItem={facilityType}
               onChange={selectActivityTypeHandler}
+              required={true}
+              isError={facilityTypeHasError}
+              errorMessage={facilityTypeErrorMessage}
             />
           </View>
           <View style={{ flexGrow: 1, padding: 5 }}>
@@ -202,10 +233,13 @@ const MRTagItem = ({ item, studentId }: Props) => {
               items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
               selectedItem={facilityName}
               onChange={selectFacilityNameHandler}
+              required={true}
+              isError={facilityNameHasError}
+              errorMessage={facilityNameErrorMessage}
             />
           </View>
         </View>
-        <View>
+        <View style={{ marginTop: 10 }}>
           <CustomButton
             title="Proceed"
             onPress={addMRTagHandler}

@@ -1,4 +1,5 @@
 import {
+  findUserById,
   getMRCounts,
   getPSCounts,
   getSchoolCounts,
@@ -22,6 +23,8 @@ import UnifiedStatCard from "@/components/new_UI/unifiedStatCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import ReadStudent from "@/components/qr/ReadStudent";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const Home = () => {
   const [totalSchoolCount, setTotalSchoolCount] = useState(0);
@@ -33,6 +36,21 @@ const Home = () => {
   const db = useSQLiteContext();
   const navigation = useNavigation();
   const [isScanQR, setIsScanQR] = useState(false);
+
+  const userId = useSelector((state: RootState) => state.userSlice.userId);
+
+  const getUserHandler = async () => {
+    const response: any = await findUserById(db, userId);
+    console.log("RES********", response);
+
+    if (response) {
+      if (response.isQualityCheck == 0) {
+        console.log("QC False");
+      } else {
+        console.log("QC True");
+      }
+    }
+  };
 
   const getStatistics = async () => {
     const response = await getSchoolCounts(db);
@@ -71,6 +89,7 @@ const Home = () => {
   useFocusEffect(
     useCallback(() => {
       getStatistics();
+      getUserHandler();
       return () => {
         console.log("Screen unfocused");
       };

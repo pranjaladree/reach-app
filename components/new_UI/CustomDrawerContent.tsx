@@ -15,12 +15,18 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
+import { useDispatch } from "react-redux";
+import { setLoggedOut } from "@/store/slices/user-slice";
+import CustomButton from "../utils/CustomButton";
+import { useRouter } from "expo-router";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   navigation,
   state,
 }) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const drawerItems = [
     {
       label: "Home",
@@ -36,13 +42,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       ),
       route: "device-preparation",
     },
-    // {
-    //   label: "Database Test",
-    //   icon: (color: string) => (
-    //     <FontAwesome5 name="database" size={20} color={color} />
-    //   ),
-    //   route: "database-test",
-    // },
+    {
+      label: "Database Test",
+      icon: (color: string) => (
+        <FontAwesome5 name="database" size={20} color={color} />
+      ),
+      route: "database-test",
+    },
     {
       label: "Primary Screening",
       icon: (color: string) => (
@@ -58,7 +64,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       route: "mr-tag",
     },
     {
-      label: "View QR",
+      label: "View QR Code",
       icon: (color: string) => (
         <Ionicons name="qr-code-outline" size={20} color={color} />
       ),
@@ -108,18 +114,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const activeRouteName = state.routes[state.index].name;
 
   const handleLogout = async () => {
-    alert("Logout");
-    return;
+    console.log("Logging Out....");
     try {
-      //   await AsyncStorage.removeItem("authToken");
-      //   await AsyncStorage.removeItem("user");
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "login" }],
-      });
-    } catch (error) {
-      console.error("Logout error:", error);
+      dispatch(setLoggedOut());
+    } catch (err) {
+      console.log(err);
     }
+    router.replace("/(auth)/login");
   };
 
   return (
@@ -133,7 +134,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Text style={styles.name}></Text>
         <Text style={styles.email}></Text>
       </View>
-
       {/* Drawer Items */}
       <View style={{ flex: 1 }}>
         {drawerItems.map((item, index) => {
@@ -156,22 +156,18 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             </Pressable>
           );
         })}
+        <View style={{ padding: 10, marginTop: 20 }}>
+          <CustomButton title="Logout" onPress={handleLogout} />
+        </View>
       </View>
-
       {/* Logout Button */}
-      <View style={styles.logoutContainer}>
-        <Pressable
-          onPress={handleLogout}
-          style={({ hovered }) => [
-            styles.drawerItem,
-            hovered && Platform.OS === "web" && styles.hoverItem,
-          ]}
-        >
+      <View style={styles.versionContainer}>
+        <View style={styles.drawerItem}>
           <View style={styles.icon}>
-            <Ionicons name="log-out-outline" size={20} color="#4F4F4F" />
+            <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
           </View>
-          <Text style={styles.label}>Logout</Text>
-        </Pressable>
+          <Text style={styles.label}>V 1.0.6</Text>
+        </View>
       </View>
     </View>
   );
@@ -227,7 +223,7 @@ const styles = StyleSheet.create({
   hoverItem: {
     backgroundColor: "#F2F2F2",
   },
-  logoutContainer: {
+  versionContainer: {
     borderTopWidth: 1,
     borderTopColor: "#eee",
     paddingVertical: 10,

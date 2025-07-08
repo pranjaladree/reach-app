@@ -10,8 +10,16 @@ const DatabaseTest = () => {
   const db = useSQLiteContext();
 
   const dropTablesHandler = () => {
-    const response = db.runSync(`DROP TABLE diagnosis`);
-    console.log("REDF", response);
+    try {
+      const response = db.runSync(
+        `DELETE FROM mrTags WHERE studentId IN (
+        SELECT id FROM students WHERE students.schoolId="9"
+      )`
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    // console.log("REDF", response);
     // dropTables(db);
   };
   const getStudentData = async () => {

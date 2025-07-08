@@ -4,7 +4,7 @@ import { ResponseModel } from "@/models/utils/ResponseModel";
 
 export const getAllUsers = async (token: string) => {
   try {
-    const res = await fetch(`${baseUrl}/api/users/partner/users `, {
+    const res = await fetch(`${baseUrl}/api/users/partner/users`, {
       method: "GET",
       headers: {
         Accept: "application/json",

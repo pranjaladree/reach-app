@@ -27,11 +27,13 @@ import {
 } from "@/constants/Data";
 import {
   findAdviceByMrId,
+  findAllDiagnosisMaster,
   findAllDvas,
   findAllHospitals,
   findAllNvas,
   findAllOtherFacilities,
   findAllPhs,
+  findAllReasonForReferrals,
   findAllVisionCenters,
   findDiagnosisByMRId,
   saveAdvice,
@@ -48,23 +50,25 @@ import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   mrId: string;
+  isMRTagDone: boolean;
 }
 
-const Advice = ({ mrId }: Props) => {
+const Advice = ({ mrId, isMRTagDone }: Props) => {
   const db = useSQLiteContext();
 
-  const [diagnosisItems, setDiagnosisItems] = useState<DropdownModel[]>([
-    new DropdownModel({ id: "1", value: "Diagnosis 1", label: "Diagnosis 1" }),
-    new DropdownModel({ id: "2", value: "Diagnosis 2", label: "Diagnosis 2" }),
-  ]);
-
+  const [diagnosisDropdownItems, setDiagnosisDropdownItems] = useState<
+    DropdownModel[]
+  >([]);
   const [diagnosisType, setDiagnosisType] = useState(BLANK_DROPDOWN_MODEL);
+
   const selectDiagnosisTypeHandler = (val?: string) => {
     console.log("Val", val);
     if (val == "") {
       setDiagnosisType(BLANK_DROPDOWN_MODEL);
     } else {
-      const foundItem = diagnosisItems.find((item) => item.value == val);
+      const foundItem = diagnosisDropdownItems.find(
+        (item) => item.value == val
+      );
       if (foundItem) {
         setDiagnosisType(foundItem);
       }
@@ -136,25 +140,26 @@ const Advice = ({ mrId }: Props) => {
   const hideDialog = () => setVisible(false);
 
   const saveDiagnosisHandler = async () => {
-    const diagnosisItems = [
-      {
-        diagnosisType: diagnosisType.value,
-        diagnosis_RE_LE: selectedEye.value,
-      },
-    ];
+    console.log("Saved Diagnosis Items", savedDiagnosisItem);
+    let newItem = `${
+      savedDiagnosisItem == "" ? "" : `${savedDiagnosisItem}##`
+    }id:${diagnosisType.id}@@diagnosisType:${
+      diagnosisType.value
+    }@@selectedEye:${selectedEye.value}`;
 
-    console.log("ITEN *************************", diagnosisItems);
+    console.log("ITEN *************************", newItem);
     const response = await saveDiagnosis(
       db,
       new DiagnosisVisitModel({
         id: mrId,
-        diagnosisItems: JSON.stringify(diagnosisItems),
+        diagnosisItems: newItem,
         mrId: mrId,
       })
     );
     if (response) {
       showDialog();
       setDialogMessage("Diagnosis Data Saved !");
+      getExistingDiagnosisHandler();
     }
   };
 
@@ -281,18 +286,55 @@ const Advice = ({ mrId }: Props) => {
   };
 
   const [diagnosisList, setDiagnosisList] = useState<any[]>([]);
+  const [savedDiagnosisItem, setSavedDiagnosisItems] = useState("");
 
   const getExistingDiagnosisHandler = async () => {
     console.log("GETTING Diagnosis ******************");
     const response: any = await findDiagnosisByMRId(db, mrId);
-    console.log("Response DIA ********************", response);
-    try {
-      console.log(JSON.parse(response.diagnosisItems));
-    } catch (err) {
-      console.log(err);
-    }
+    console.log("Response DIASSSSSSS ********************", response);
+    console.log("Response", response.diagnosisItems);
     if (response) {
-      setDiagnosisList(JSON.parse(response));
+      setSavedDiagnosisItems(response.diagnosisItems);
+    }
+
+    //Parse String and Convert to List
+    // diagnosisType:9@@selectedEye:RE##diagnosisType:12@@selectedEye:RE
+
+    // try {
+    //   console.log(JSON.parse(response.diagnosisItems));
+    // } catch (err) {
+    //   console.log(err);
+    // }
+    // if (response) {
+    //   setDiagnosisList(JSON.parse(response));
+    // }
+  };
+
+  useEffect(() => {
+    // const input =
+    //   "id:1@@diagnosisType:Abnormal@@selectedEye:RE##id:1@@diagnosisType:mypia@@selectedEye:RE";
+
+    const output = savedDiagnosisItem.split("##").map((item) => {
+      const obj: any = {};
+      item.split("@@").forEach((pair) => {
+        const [key, value] = pair.split(":");
+        obj[key] = value;
+      });
+      return obj;
+    });
+
+    console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&", output);
+    setDiagnosisList(output);
+  }, [savedDiagnosisItem]);
+
+  const getSpecPrescribedStatus = async () => {
+    const response: any = await db.getFirstAsync(
+      `SELECT spectaclesPrescribed FROM refraction WHERE mrId="${mrId}"`
+    );
+    if (response) {
+      setIsSpectaclePrescribed(
+        response.spectaclesPrescribed == 0 ? false : true
+      );
     }
   };
 
@@ -358,11 +400,52 @@ const Advice = ({ mrId }: Props) => {
     }
   }, [adviceItem, referralReasonItems]);
 
+  const getDiagnosisMasterHandler = async () => {
+    const response = await findAllDiagnosisMaster(db);
+    if (response) {
+      setDiagnosisDropdownItems(response);
+    }
+  };
+
+  const getReasonsForReferralHandler = async () => {
+    const response = await findAllReasonForReferrals(db);
+    console.log("REFERRALS *********", response);
+    if (response) {
+      setReferralReasonItems(response);
+    }
+  };
+
+  const [isDisableNoTreatment, setIsDiableNoTreatment] = useState(false);
+  const [isDisableOtherAdvise, setDisableOtherAdvise] = useState(false);
+
+  useEffect(() => {
+    if (
+      isSpectaclePrescribed ||
+      isContinueWithSameGlass ||
+      isMedicinePrescribed
+    ) {
+      setIsDiableNoTreatment(true);
+    } else {
+      setIsDiableNoTreatment(false);
+    }
+    if (isNoTreatmentRequired) {
+      setDisableOtherAdvise(true);
+    }
+  }, [
+    isSpectaclePrescribed,
+    isContinueWithSameGlass,
+    isMedicinePrescribed,
+    isNoTreatmentRequired,
+  ]);
+
   useFocusEffect(
     useCallback(() => {
       getFacilityHandler();
       getExistingDiagnosisHandler();
+      getSpecPrescribedStatus();
       getExistingAdviceHandler();
+      getDiagnosisMasterHandler();
+      getReasonsForReferralHandler();
       return () => {
         console.log("Screen unfocused");
       };
@@ -376,7 +459,7 @@ const Advice = ({ mrId }: Props) => {
           <View>
             <StyledDropdown
               label="Diagnosis Type"
-              items={[BLANK_DROPDOWN_MODEL, ...diagnosisItems]}
+              items={[BLANK_DROPDOWN_MODEL, ...diagnosisDropdownItems]}
               selectedItem={diagnosisType}
               onChange={selectDiagnosisTypeHandler}
             />
@@ -400,6 +483,7 @@ const Advice = ({ mrId }: Props) => {
                   color="white"
                 />
               }
+              disabled={!isMRTagDone}
             />
             {/* <Button onPress={saveDiagnosisHandler} mode="contained">
               Save
@@ -429,9 +513,7 @@ const Advice = ({ mrId }: Props) => {
             <View style={styles.rowItem}>
               <Checkbox
                 status={isSpectaclePrescribed ? "checked" : "unchecked"}
-                onPress={() => {
-                  setIsSpectaclePrescribed(!isSpectaclePrescribed);
-                }}
+                onPress={() => {}}
               />
               <Text>Spectacle Prescribed</Text>
             </View>
@@ -441,12 +523,14 @@ const Advice = ({ mrId }: Props) => {
                 onPress={() => {
                   setIsMedicinePrescribed(!isMedicinePrescribed);
                 }}
+                disabled={isDisableOtherAdvise}
               />
               <Text>Medcine Prescribed</Text>
             </View>
             <View style={styles.rowItem}>
               <Checkbox
                 status={isContinueWithSameGlass ? "checked" : "unchecked"}
+                disabled={isSpectaclePrescribed || isDisableOtherAdvise}
                 onPress={() => {
                   setIsContinueWithSameGlasses(!isContinueWithSameGlass);
                 }}
@@ -459,6 +543,7 @@ const Advice = ({ mrId }: Props) => {
                 onPress={() => {
                   setIsNoTreatmentRequired(!isNoTreatmentRequired);
                 }}
+                disabled={isDisableNoTreatment}
               />
               <Text>No Treatment Required</Text>
             </View>
@@ -545,6 +630,7 @@ const Advice = ({ mrId }: Props) => {
                 color="white"
               />
             }
+            disabled={!isMRTagDone}
           />
           {/* <Button onPress={saveAdviceHandler} mode="contained">
             Save

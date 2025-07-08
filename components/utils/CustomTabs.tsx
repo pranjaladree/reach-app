@@ -1,29 +1,36 @@
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 
+export type TabItem = {
+  title: string;
+  disabled: boolean;
+};
+
 interface Props {
   activeTab: string;
-  items: string[];
-  onPress: (item: string) => void;
+  items: TabItem[];
+  onPress: (item: TabItem) => void;
 }
 
 const CustomTabs = ({ activeTab, items, onPress }: Props) => {
   return (
     <View style={styles.row}>
       {items.map((item) => (
-        <View style={styles.tabRow} key={item}>
+        <View style={styles.tabRow} key={item.title}>
           <TouchableOpacity
-            style={[styles.tab, activeTab === item && styles.activeTab]}
+            style={[styles.tab, activeTab === item.title && styles.activeTab]}
             onPress={() => {
-              onPress(item);
+              if (!item.disabled) {
+                onPress(item);
+              }
             }}
           >
             <Text
               style={[
                 styles.tabText,
-                activeTab === item && styles.activeTabText,
+                activeTab === item.title && styles.activeTabText,
               ]}
             >
-              {item}
+              {item.title}
             </Text>
           </TouchableOpacity>
         </View>

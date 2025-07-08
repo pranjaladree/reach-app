@@ -19,6 +19,9 @@ const MRTagList = () => {
   );
   const { schoolId } = useLocalSearchParams();
   const [studentList, setStudentList] = useState<any[]>([]);
+  const [filteredList, setFilteredList] = useState<any[]>([]);
+  const [doneCount, setDoneCount] = useState(0);
+  const [notDoneCount, setNotDoneCount] = useState(0);
   const filteredStudents = useSelector(
     (state: RootState) => state.studentSlice.filteredStudents
   );
@@ -27,14 +30,37 @@ const MRTagList = () => {
 
   const searchTermChangeHandler = (val: string) => {
     setSearchTerm(val);
+
+    //Search in Each Key Stroke
+    const filterArr: any = studentList.filter((item) => {
+      if (
+        item.firstName?.toUpperCase().includes(val?.toUpperCase()) ||
+        item.middleName?.toUpperCase().includes(val?.toUpperCase()) ||
+        item.lastName?.toUpperCase().includes(val?.toUpperCase())
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    setFilteredList(filterArr);
   };
 
-  const navigationHandler = (item: StudentModel) => {
+  const navigationHandler = (item: any) => {
+    setSearchTerm("");
     router.push({
       pathname: "/mr-tag-detail",
       params: {
         studentId: item.id,
-        studentName: item.firstName,
+        tempId: item.tempId,
+        studentName: `${item.firstName}  ${
+          item.middleName ? item.middleName : ""
+        }  ${item.lastName ? item.lastName : ""}`,
+        classTitle: item.title,
+        section: item.section,
+        gender: item.gender,
+        age: item.age,
+        schoolId: schoolId,
       },
     });
   };
@@ -50,13 +76,29 @@ const MRTagList = () => {
       console.log("RESPONS", response);
       if (response) {
         setStudentList(response);
+        setFilteredList(response);
       }
     }
   };
 
+  const getCountsHandler = async () => {
+    const response: any = await db.getFirstAsync(
+      `SELECT COUNT(*) as count FROM students JOIN mrTags ON students.id = mrTags.studentId WHERE students.schoolId="${schoolId}"`
+    );
+    console.log("Count", response);
+    if (response) {
+      setDoneCount(response.count);
+    }
+  };
+
+  useEffect(() => {
+    setNotDoneCount(studentList.length - doneCount);
+  }, [studentList, doneCount]);
+
   useFocusEffect(
     useCallback(() => {
       getStudents();
+      getCountsHandler();
       return () => {
         console.log("Screen unfocused");
       };
@@ -76,8 +118,8 @@ const MRTagList = () => {
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text>Total Student: {studentList.length}</Text>
-          <Text>Done:</Text>
-          <Text>Not Done :</Text>
+          <Text>Done: {doneCount}</Text>
+          <Text>Not Done : {notDoneCount}</Text>
         </View>
         <View style={{ marginTop: 10 }}>
           <CustomInput
@@ -92,7 +134,7 @@ const MRTagList = () => {
         style={{ paddingHorizontal: 10, paddingTop: 150, paddingBottom: 100 }}
       >
         <FlatList
-          data={studentList}
+          data={filteredList}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <MRStudentItem

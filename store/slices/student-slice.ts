@@ -41,9 +41,120 @@ export const studentSlice = createSlice({
     },
     setScreeningItem: (state, action) => {
       state.screeningItem = action.payload;
-
-      // Check Test Visibility
       let item = state.screeningItem;
+
+      //check test visibility
+      // Vision Test Visibility
+
+      //Workflow
+      if (item.usingSpectacle == "NO") {
+        item.isVisionTestVisible = true;
+      } else {
+        if (item.haveSpecNow == "NO") {
+          item.isVisionTestVisible = true;
+        } else {
+          if (item.specCondition != "") {
+            item.isVisionTestVisible = true;
+            if (item.specCondition == "BAD") {
+              item.isNormal = false;
+            }
+          } else {
+            item.isVisionTestVisible = false;
+          }
+        }
+      }
+
+      if (item.unableToPerformVisionTest == "YES") {
+        item.isOcularComplaintVisible = false;
+        item.isNormal = false;
+      } else {
+        if (
+          item.canReadLogmarLE.value == "YES" &&
+          item.canReadLogmarRE.value == "YES"
+        ) {
+          item.isOcularComplaintVisible = true;
+        } else {
+          item.isOcularComplaintVisible = false;
+          item.isTorchlightVisible = false;
+        }
+
+        if (
+          item.canReadLogmarLE.value == "NO" ||
+          item.canReadLogmarRE.value == "NO"
+        ) {
+          item.isNormal = false;
+        }
+      }
+
+      if (item.isOcularComplaintVisible) {
+        if (item.ocularComplaint == "YES") {
+          item.isNormal = false;
+        }
+      }
+
+      if (item.isTorchlightVisible) {
+        if (
+          item.torchlightCheckLE.value == "ABNORMAL" ||
+          item.torchlightCheckRE.value == "ABNORMAL"
+        ) {
+          item.isNormal = false;
+        }
+      }
+
+      // // Vision Test Visibility
+      // if (item.usingSpectacle == "NO") {
+      //   item.isVisionTestVisible = true;
+      // } else {
+      //   if (item.haveSpecNow == "NO") {
+      //     item.isVisionTestVisible = true;
+      //   } else {
+      //     if (item.specCondition != "") {
+      //       item.isVisionTestVisible = true;
+      //     } else {
+      //       item.isVisionTestVisible = false;
+      //     }
+      //   }
+      // }
+
+      // if (item.unableToPerformVisionTest == "YES") {
+      //   item.isNormal = false;
+      // }
+
+      // //Ocular Visibility
+      // if (
+      //   item.canReadLogmarLE.value == "YES" &&
+      //   item.canReadLogmarRE.value == "YES"
+      // ) {
+      //   item.isOcularComplaintVisible = true;
+      // } else {
+      //   item.isOcularComplaintVisible = false;
+      //   item.isTorchlightVisible = false;
+      // }
+
+      // // Autoref Visibility
+
+      // if (
+      //   item.plus2DTestLE.value == "NO" &&
+      //   item.plus2DTestRE.value == "NO" &&
+      //   item.npcTest.value !== "ABNORMAL" &&
+      //   item.coverTest.value != "ABNORMAL"
+      // ) {
+      //   item.isTorchlightVisible = true;
+      // } else {
+      //   item.isTorchlightVisible = false;
+      // }
+
+      // if (item.ocularComplaint == "NO") {
+      //   item.isTorchlightVisible = true;
+      // }
+
+      //Update Screening Item
+      state.screeningItem = item;
+    },
+    setScreening: (state, action) => {
+      state.screeningItem = action.payload;
+      const item = state.screeningItem;
+
       // Vision Test Visibility
       if (item.usingSpectacle == "NO") {
         item.isVisionTestVisible = true;
@@ -59,10 +170,6 @@ export const studentSlice = createSlice({
         }
       }
 
-      if (item.unableToPerformVisionTest == "YES") {
-        item.isNormal = false;
-      }
-
       //Ocular Visibility
       if (
         item.canReadLogmarLE.value == "YES" &&
@@ -72,27 +179,10 @@ export const studentSlice = createSlice({
       } else {
         item.isOcularComplaintVisible = false;
       }
-
-      // Autoref Visibility
-
-      if (
-        item.plus2DTestLE.value == "NO" &&
-        item.plus2DTestRE.value == "NO" &&
-        item.npcTest.value !== "ABNORMAL" &&
-        item.coverTest.value != "ABNORMAL"
-      ) {
-        item.isTorchlightVisible = true;
-      }
-
-      if (item.ocularComplaint == "NO") {
-        item.isTorchlightVisible = true;
-      }
-
-      //Update Screening Item
-      state.screeningItem = item;
     },
     setNormalCheck: (state) => {
       const item = state.screeningItem;
+      item.isNormal = true;
       item.unableToPerformVisionTest = "NO";
       item.canReadLogmarLE = YES_NO_DROPDOWN_ITEMS[0];
       item.canReadLogmarRE = YES_NO_DROPDOWN_ITEMS[0];

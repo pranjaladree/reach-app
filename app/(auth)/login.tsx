@@ -7,8 +7,8 @@ import {
   setTempAuthenticate,
   setTempToken,
 } from "@/store/slices/user-slice";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -18,16 +18,20 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { TextInput } from "react-native-paper";
-import { Button } from "react-native-paper";
 import { getProfile } from "@/http/profile-http";
 import CustomButton from "@/components/utils/CustomButton";
+import { useSQLiteContext } from "expo-sqlite";
+import bcrypt from "react-native-bcrypt";
+import NetInfo from "@react-native-community/netinfo";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
+  const db = useSQLiteContext();
   const router = useRouter();
-  const [userName, setUserName] = useState("GEH@admin");
-  const [password, setPassword] = useState("Orbis@123");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const userNameChangeHandler = (val: string) => {
     setUserName(val);
@@ -53,7 +57,45 @@ const LoginScreen = () => {
     );
   };
 
-  const loginHandler = async () => {
+  const [isOnline, setIsOnline] = useState(false);
+
+  const saveSessionData = () => {};
+
+  const loginOfflineHandler = async () => {
+    setIsLoading(true);
+    try {
+      const response: any = await db.getFirstAsync(
+        `SELECT * FROM users WHERE userName="${userName}"`
+      );
+      console.log("Response OFFLINE LOGIN ********************", response);
+      if (response) {
+        const isLoggedIn = bcrypt.compareSync(password, response.password);
+        console.log("IS Logged IN ***********", isLoggedIn);
+        if (isLoggedIn) {
+          dispatch(setLoggedIn("OFFLINE_TOKEN"));
+          setLoggedInUser({
+            userId: response.id,
+            fullName: response.firstName,
+            partnerId: "",
+            userType: "PARTNER_USER",
+            partnerName: "",
+            isUserAgreement: response.isUserAgreement,
+            isPartnerAgreement: response.isPartnerAgreement,
+          });
+          router.navigate("/");
+          //Login Success
+        } else {
+          // Login Failed
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    setIsLoading(false);
+  };
+
+  const loginOnlineHandler = async () => {
+    setIsLoading(true);
     console.log("Login ...");
     const requestBody = {
       userId: userName,
@@ -95,7 +137,37 @@ const LoginScreen = () => {
       }
       router.navigate("/");
     }
+    setIsLoading(false);
   };
+
+  const loginHandler = async () => {
+    console.log("LOGIN ************");
+    if (isOnline) {
+      loginOnlineHandler();
+    } else {
+      loginOfflineHandler();
+    }
+  };
+
+  const checkInternetHandler = async () => {
+    NetInfo.fetch().then((state) => {
+      console.log("Is connected?", state.isConnected);
+      if (state.isConnected) {
+        setIsOnline(true);
+      } else {
+        setIsOnline(false);
+      }
+    });
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      checkInternetHandler();
+      return () => {
+        console.log("Screen unfocused");
+      };
+    }, [])
+  );
 
   return (
     <KeyboardAvoidingView
@@ -145,7 +217,12 @@ const LoginScreen = () => {
             />
           </View>
           <View style={styles.actions}>
-            <CustomButton title="Login" onPress={loginHandler} />
+            <CustomButton
+              title="Login"
+              onPress={loginHandler}
+              isLoading={isLoading}
+              disabled={isLoading}
+            />
             {/* <Button mode="contained" onPress={loginHandler}>
               LOGIN
             </Button> */}

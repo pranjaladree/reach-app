@@ -14,6 +14,8 @@ import {
 } from "@/constants/Data";
 import {
   findAllClassesDropdowns,
+  findUniqueClasses,
+  findUniqueSections,
   getMRTagStudentsBySchoolId,
   getSchoolByActivityType,
 } from "@/database/database";
@@ -35,6 +37,7 @@ const MRTag = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
+  const [sectionItems, setSectionItems] = useState<DropdownModel[]>([]);
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
   const [classItems, setClassItems] = useState<DropdownModel[]>([]);
 
@@ -62,25 +65,38 @@ const MRTag = () => {
     }
   };
 
-  const [section, setSection] = useState("");
+  const [selectedSection, setSelectedSection] = useState(BLANK_DROPDOWN_MODEL);
 
-  const sectionChangeHandler = (val: string) => {
-    setSection(val);
+  const selectSectionHandler = (val?: string) => {
+    if (val == "SELECT") {
+      setSelectedSection(BLANK_DROPDOWN_MODEL);
+    } else {
+      const foundItem = sectionItems.find((item) => item.value == val);
+      if (foundItem) {
+        setSelectedSection(foundItem);
+      }
+    }
   };
 
-  const [gender, setGender] = useState("All");
+  // const [section, setSection] = useState("");
+
+  // const sectionChangeHandler = (val: string) => {
+  //   setSection(val);
+  // };
+
+  const [gender, setGender] = useState("ALL");
 
   const genderChangeHandler = (val: string) => {
     setGender(val);
   };
 
-  const [status, setStatus] = useState("All");
+  const [status, setStatus] = useState("ALL");
 
   const statusChangeHandler = (val: string) => {
     setStatus(val);
   };
 
-  const [result, setResult] = useState("All");
+  const [result, setResult] = useState("ALL");
 
   const resultChangeHandler = (val: string) => {
     setResult(val);
@@ -116,19 +132,51 @@ const MRTag = () => {
     }
   };
 
-  const getClassesHandler = async () => {
-    const response = await findAllClassesDropdowns(db);
+  const getUniqueSectionsHandler = async () => {
+    const response = await findUniqueSections(
+      db,
+      selectedSchool.id?.toString(),
+      selectedClass.id
+    );
     if (response) {
+      console.log("SECTIONS", response);
+      setSectionItems(response);
+    }
+  };
+
+  const getUniqueClassesHandler = async () => {
+    const response = await findUniqueClasses(db, selectedSchool.id);
+    if (response) {
+      console.log("Clases", response);
       setClassItems(response);
     }
   };
+
+  useEffect(() => {
+    if (selectedSchool.id != "0") {
+      getUniqueClassesHandler();
+    }
+  }, [selectedSchool]);
+
+  useEffect(() => {
+    if (selectedClass.id != "0") {
+      getUniqueSectionsHandler();
+    }
+  }, [selectedClass]);
+
+  // const getClassesHandler = async () => {
+  //   const response = await findAllClassesDropdowns(db);
+  //   if (response) {
+  //     setClassItems(response);
+  //   }
+  // };
 
   const applyFilterHandler = () => {
     dispatch(
       setFilter(
         new FilterModel({
           classId: selectedClass.id != "0" ? selectedClass.id : "",
-          section: section,
+          section: selectedSection.id != "0" ? selectedSection.value : "",
           gender: gender == "ALL" ? "" : gender,
           status: status == "ALL" ? "" : status,
           result: result == "ALL" ? "" : result,
@@ -139,7 +187,7 @@ const MRTag = () => {
 
   useEffect(() => {
     getSchoolsHandler();
-    getClassesHandler();
+    // getClassesHandler();
   }, []);
 
   return (
@@ -150,10 +198,11 @@ const MRTag = () => {
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
           onChange={selectSchoolHandler}
+          required={true}
         />
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <View style={{ flexGrow: 1 }}>
+        <View style={{ flexGrow: 1, flexBasis: 1, padding: 5 }}>
           <StyledDropdown
             label="Class"
             items={[BLANK_DROPDOWN_MODEL, ...classItems]}
@@ -161,13 +210,19 @@ const MRTag = () => {
             onChange={selectClassHandler}
           />
         </View>
-        <View style={{ flexGrow: 1 }}>
-          <CustomInput
+        <View style={{ flexGrow: 1, flexBasis: 1, padding: 5 }}>
+          <StyledDropdown
+            label="Section"
+            items={[BLANK_DROPDOWN_MODEL, ...sectionItems]}
+            selectedItem={selectedSection}
+            onChange={selectSectionHandler}
+          />
+          {/* <CustomInput
             id="section"
             label="Section"
             value={section}
             onChangeText={sectionChangeHandler}
-          />
+          /> */}
         </View>
       </View>
       <View>
@@ -189,14 +244,14 @@ const MRTag = () => {
           onChange={statusChangeHandler}
         />
       </View>
-      <View>
+      {/* <View>
         <CustomRadioGroup
           label="Result"
           items={RESULT_RADIO_ITEMS}
           selectedOption={result}
           onChange={resultChangeHandler}
         />
-      </View>
+      </View> */}
       <View style={{ padding: 10 }}>
         <CustomButton title="Search" onPress={getStudentsHandler} />
       </View>

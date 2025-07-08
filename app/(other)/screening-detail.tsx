@@ -44,6 +44,7 @@ const ScreeningDetails = () => {
   const hideDialog = () => setVisible(false);
   const [dialogMessage, setDialogMessage] = useState("");
   const [isAutorefAvailable, setIsAutorefAvailable] = useState(false);
+  const [visionCenterId, setVisionCenterId] = useState("");
   const [isQCPopupEligible, setIsQCPopupEligible] = useState(false);
   const [isQCUser, setIsQCUser] = useState(false);
   const {
@@ -61,6 +62,8 @@ const ScreeningDetails = () => {
     (state: RootState) => state.studentSlice.screeningItem
   );
   const [status, setStatus] = useState("");
+  const [isEligibleForColorVision, setIsEligibleForColorVision] =
+    useState(false);
 
   const saveScreeningHandler = async () => {
     const response = await savePrimaryScreening(
@@ -112,22 +115,28 @@ const ScreeningDetails = () => {
           params: {
             isQCPopupEligible: isQCPopupEligible?.toString(),
             isQCUser: isQCUser?.toString(),
+            visionCenterId: visionCenterId,
           },
         });
       }
     }
   };
 
+  console.log("VC CENE", visionCenterId);
+
   const getAutorefStatusHandler = () => {
     console.log("GETTING AUTOREF.....");
     const response: any = db.getFirstSync(
-      `SELECT autoRefAvailable FROM schools WHERE id=${schoolId}`
+      `SELECT autoRefAvailable,visionCenterId FROM schools WHERE id=${schoolId}`
     );
-    console.log("AUTO REFE STARTUS", response);
-    if (response?.autoRefAvailable) {
-      setIsAutorefAvailable(true);
-    } else {
-      setIsAutorefAvailable(false);
+    if (response) {
+      setVisionCenterId(response.visionCenterId);
+      console.log("AUTO REFE STARTUS", response);
+      if (response?.autoRefAvailable) {
+        setIsAutorefAvailable(true);
+      } else {
+        setIsAutorefAvailable(false);
+      }
     }
   };
 
@@ -220,57 +229,65 @@ const ScreeningDetails = () => {
       //     "torchlightFindings": "",
       // }
       dispatch(
-        setScreeningItem({
-          id: studentId,
-          studentId: studentId,
-          schoolId: schoolId,
-          isNormal: false,
-          usingSpectacle: response.usingSpectacle,
-          haveSpecNow: response.haveSpecNow,
-          specCondition: response.specCondition,
-          isVisionTestVisible:
-            response.unableToPerformVisionTest != "" ? true : false,
-          unableToPerformVisionTest: response.unableToPerformVisionTest,
-          canReadLogmarLE: canReadLE ? canReadLE : BLANK_DROPDOWN_MODEL,
-          canReadLogmarRE: canReadRE ? canReadRE : BLANK_DROPDOWN_MODEL,
-          isAutoRefVisible: false,
-          visionAutoRefLE: visonAutoLE ? visonAutoLE : BLANK_DROPDOWN_MODEL,
-          visionAutoRefRE: visionAutoRE ? visionAutoRE : BLANK_DROPDOWN_MODEL,
-          acceptanceSPHLE: sphLe,
-          acceptanceSPHRE: sphRe,
-          acceptanceCYLLE: cylLe,
-          acceptanceCYLRE: cylRe,
-          acceptanceAXISLE: axisLe,
-          acceptanceAXISRE: axisRe,
-          IPDBoth: response.IPDBoth,
-          isTorchlightVisible: false,
-          torchlightCheckLE: TLELE ? TLELE : BLANK_DROPDOWN_MODEL,
-          torchlightCheckRE: TLERE ? TLERE : BLANK_DROPDOWN_MODEL,
-          torchlightFindings: response.torchlightFindings,
-          isOcularComplaintVisible: false,
-          ocularComplaint: response.ocularComplaint,
-          ocularList: "",
-          isBinucularTestVisible: false,
-          npcTest: NPC ? NPC : BLANK_DROPDOWN_MODEL,
-          coverTest: Cover ? Cover : BLANK_DROPDOWN_MODEL,
-          plus2DTestLE: BLANK_DROPDOWN_MODEL,
-          plus2DTestRE: BLANK_DROPDOWN_MODEL,
-          isColorVisionTestVisible: false,
-          colorVisionLE: BLANK_DROPDOWN_MODEL,
-          colorVisionRE: BLANK_DROPDOWN_MODEL,
-          psStatus: "",
-          referralReason: "",
-          appointmentDate: "",
-          mobileNo: "",
-          facilityType: BLANK_DROPDOWN_MODEL,
-          facilityName: BLANK_DROPDOWN_MODEL,
-          otherReason: "",
-          instructionForReferralCenter: "",
-          isAutoRefRequired: false,
-          isBinacularTestRequired: false,
-          isColorVisionTestRequired: false,
-          isTleRefer: false,
-        })
+        setScreeningItem(
+          new ScreeningModel({
+            id: studentId?.toString(),
+            studentId: studentId?.toString(),
+            schoolId: schoolId?.toString(),
+            isNormal: false,
+            usingSpectacle: response.usingSpectacle,
+            haveSpecNow: response.haveSpecNow,
+            specCondition: response.specCondition,
+            isVisionTestVisible:
+              response.unableToPerformVisionTest != "" ? true : false,
+            unableToPerformVisionTest: response.unableToPerformVisionTest,
+            canReadLogmarLE: canReadLE ? canReadLE : BLANK_DROPDOWN_MODEL,
+            canReadLogmarRE: canReadRE ? canReadRE : BLANK_DROPDOWN_MODEL,
+            isAutoRefVisible: false,
+            visionAutoRefLE: visonAutoLE ? visonAutoLE : BLANK_DROPDOWN_MODEL,
+            visionAutoRefRE: visionAutoRE ? visionAutoRE : BLANK_DROPDOWN_MODEL,
+            acceptanceSPHLE: sphLe,
+            acceptanceSPHRE: sphRe,
+            acceptanceCYLLE: cylLe,
+            acceptanceCYLRE: cylRe,
+            acceptanceAXISLE: axisLe,
+            acceptanceAXISRE: axisRe,
+            IPDBoth: response.IPDBoth,
+            isTorchlightVisible: false,
+            torchlightCheckLE: TLELE ? TLELE : BLANK_DROPDOWN_MODEL,
+            torchlightCheckRE: TLERE ? TLERE : BLANK_DROPDOWN_MODEL,
+            torchlightFindings: response.torchlightFindings,
+            isOcularComplaintVisible: false,
+            ocularComplaint: response.ocularComplaint,
+            ocularList: "",
+            isBinucularTestVisible: false,
+            isNpcTest: false,
+            isCoverTest: false,
+            isPlus2DTest: false,
+            npcTest: NPC ? NPC : BLANK_DROPDOWN_MODEL,
+            coverTest: Cover ? Cover : BLANK_DROPDOWN_MODEL,
+            plus2DTestLE: BLANK_DROPDOWN_MODEL,
+            plus2DTestRE: BLANK_DROPDOWN_MODEL,
+            isColorVisionTestVisible: false,
+            colorVisionLE: BLANK_DROPDOWN_MODEL,
+            colorVisionRE: BLANK_DROPDOWN_MODEL,
+            psStatus: "",
+            referralReason: "",
+            appointmentDate: "",
+            mobileNo: "",
+            facilityType: BLANK_DROPDOWN_MODEL,
+            facilityName: BLANK_DROPDOWN_MODEL,
+            otherReason: "",
+            instructionForReferralCenter: "",
+            isAutoRefRequired: false,
+            isBinacularTestRequired: false,
+            isColorVisionTestRequired: false,
+            isTleRefer: false,
+            isQCDone: false,
+            isPsDone: false,
+            isEditable: false,
+          })
+        )
       );
     } else {
       dispatch(
@@ -279,6 +296,7 @@ const ScreeningDetails = () => {
           id: studentId,
           studentId: studentId,
           schoolId: schoolId,
+          unableToPerformVisionTest: "NO",
         })
       );
     }
@@ -343,6 +361,20 @@ const ScreeningDetails = () => {
     screeningItem.haveSpecNow,
   ]);
 
+  useEffect(() => {
+    if (
+      screeningItem.unableToPerformVisionTest == "YES" &&
+      isAutorefAvailable
+    ) {
+      dispatch(
+        setScreeningItem({
+          ...screeningItem,
+          isTorchlightVisible: true,
+        })
+      );
+    }
+  }, [screeningItem.unableToPerformVisionTest, isAutorefAvailable]);
+
   return (
     <>
       <ScrollView style={styles.screen}>
@@ -387,7 +419,6 @@ const ScreeningDetails = () => {
             isAutorefAvailable && (
               <>
                 <AutoRef />
-                <TLE />
               </>
             )}
 

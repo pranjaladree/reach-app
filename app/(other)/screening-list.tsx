@@ -14,6 +14,8 @@ import { useSelector } from "react-redux";
 
 const ScreeningList = () => {
   const db = useSQLiteContext();
+  const [doneCount, setDoneCount] = useState(0);
+  const [notDoneCount, setNotDoneCount] = useState(0);
   const appliedFilters = useSelector(
     (state: RootState) => state.studentSlice.appliedFilters
   );
@@ -22,26 +24,31 @@ const ScreeningList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const [studentList, setStudentList] = useState<any[]>([]);
+  const [filteredList, setFilteredList] = useState<any[]>([]);
 
   const searchTermChangeHandler = (val: string) => {
     setSearchTerm(val);
+    console.log(val);
 
     //Search in Each Key Stroke
-
     const filterArr: any = studentList.filter((item) => {
-      console.log("&&&&&&&&&&&&&&&&&", item);
-      if (item.firstName.includes(val)) {
+      if (
+        item.firstName?.toUpperCase().includes(val?.toUpperCase()) ||
+        item.middleName?.toUpperCase().includes(val?.toUpperCase()) ||
+        item.lastName?.toUpperCase().includes(val?.toUpperCase())
+      ) {
         return true;
       } else {
         return false;
       }
     });
-    setSearchTerm(filterArr);
+    setFilteredList(filterArr);
   };
 
   const navigationHandler = (item: any) => {
+    setSearchTerm("");
     console.log("NAVIGA", item);
-    router.replace({
+    router.push({
       pathname: "/screening-detail",
       params: {
         studentId: item.id,
@@ -49,7 +56,7 @@ const ScreeningList = () => {
         studentName: `${item.firstName}  ${
           item.middleName ? item.middleName : ""
         }  ${item.lastName ? item.lastName : ""}`,
-        classTitle: item.classId,
+        classTitle: item.title,
         section: item.section,
         gender: item.gender,
         age: item.age,
@@ -70,13 +77,29 @@ const ScreeningList = () => {
       console.log("STUDENT INFO ************", response);
       if (response) {
         setStudentList(response);
+        setFilteredList(response);
       }
     }
   };
 
+  const getCountsHandler = async () => {
+    const response: any = await db.getFirstAsync(
+      `SELECT COUNT(*) as count FROM students JOIN screenings ON students.id = screenings.studentId WHERE students.schoolId="${schoolId}"`
+    );
+    console.log("Count", response);
+    if (response) {
+      setDoneCount(response.count);
+    }
+  };
+
+  useEffect(() => {
+    setNotDoneCount(studentList.length - doneCount);
+  }, [studentList, doneCount]);
+
   useFocusEffect(
     useCallback(() => {
       getStudents();
+      getCountsHandler();
       return () => {
         console.log("Screen unfocused");
       };
@@ -96,8 +119,8 @@ const ScreeningList = () => {
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text>Total Student: {studentList.length}</Text>
-          <Text>Done:</Text>
-          <Text>Not Done :</Text>
+          <Text>Done: {doneCount}</Text>
+          <Text>Not Done : {notDoneCount}</Text>
         </View>
         <View style={{ marginTop: 10 }}>
           <CustomInput
@@ -112,7 +135,7 @@ const ScreeningList = () => {
         style={{ paddingHorizontal: 10, paddingTop: 150, paddingBottom: 100 }}
       >
         <FlatList
-          data={studentList}
+          data={filteredList}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <PSStudentItem

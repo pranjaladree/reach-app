@@ -6,23 +6,26 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const AuthContext = () => {
-  // const isAuthenticated = useSelector(
-  //   (state: RootState) => state.userSlice.isAuthenticated
-  // );
-  // const isTempAuthenticated = useSelector(
-  //   (state: RootState) => state.userSlice.isTempAuthenticated
-  // );
-  // const isMFARegistered = useSelector(
-  //   (state: RootState) => state.userSlice.isMFARegistered
-  // );
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.userSlice.isAuthenticated
+  );
+  console.log("Is Auth", isAuthenticated);
+  const isTempAuthenticated = useSelector(
+    (state: RootState) => state.userSlice.isTempAuthenticated
+  );
+  console.log("Is Temp Auth", isTempAuthenticated);
+  const isMFARegistered = useSelector(
+    (state: RootState) => state.userSlice.isMFARegistered
+  );
+  console.log("Is MFARegister", isAuthenticated);
 
-  // if (!isAuthenticated && !isTempAuthenticated) {
-  //   return <Redirect href="/login" />;
-  // }
+  if (!isAuthenticated && !isTempAuthenticated) {
+    return <Redirect href="/login" />;
+  }
 
-  // if (isTempAuthenticated && !isMFARegistered) {
-  //   return <Redirect href="/(auth)/register-mfa" />;
-  // }
+  if (isTempAuthenticated && !isMFARegistered) {
+    return <Redirect href="/(auth)/register-mfa" />;
+  }
 
   return <Redirect href="/(drawer)" />;
 };

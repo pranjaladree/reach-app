@@ -2,7 +2,7 @@ import { DropdownModel } from "../ui/DropdownModel";
 import { GridDropdownModel } from "../ui/GridDropdownModel";
 
 export class ScreeningModel {
-  id: number;
+  id: string;
   studentId: string;
   schoolId: string;
   isNormal: boolean;
@@ -31,6 +31,9 @@ export class ScreeningModel {
   ocularComplaint: string;
   ocularList: string;
   isBinucularTestVisible: boolean;
+  isNpcTest: boolean;
+  isCoverTest: boolean;
+  isPlus2DTest: boolean;
   npcTest: DropdownModel;
   coverTest: DropdownModel;
   plus2DTestLE: DropdownModel;
@@ -84,6 +87,9 @@ export class ScreeningModel {
     ocularComplaint,
     ocularList,
     isBinucularTestVisible,
+    isNpcTest,
+    isCoverTest,
+    isPlus2DTest,
     npcTest,
     coverTest,
     plus2DTestLE,
@@ -107,7 +113,7 @@ export class ScreeningModel {
     isPsDone,
     isEditable,
   }: {
-    id: number;
+    id: string;
     studentId: string;
     schoolId: string;
     isNormal: boolean;
@@ -136,6 +142,9 @@ export class ScreeningModel {
     ocularComplaint: string;
     ocularList: string;
     isBinucularTestVisible: boolean;
+    isNpcTest: boolean;
+    isCoverTest: boolean;
+    isPlus2DTest: boolean;
     npcTest: DropdownModel;
     coverTest: DropdownModel;
     plus2DTestLE: DropdownModel;
@@ -188,6 +197,9 @@ export class ScreeningModel {
     this.ocularComplaint = ocularComplaint;
     this.ocularList = ocularList;
     this.isBinucularTestVisible = isBinucularTestVisible;
+    this.isNpcTest = isNpcTest;
+    this.isCoverTest = isCoverTest;
+    this.isPlus2DTest = isPlus2DTest;
     this.npcTest = npcTest;
     this.coverTest = coverTest;
     this.plus2DTestLE = plus2DTestLE;

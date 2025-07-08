@@ -22,17 +22,24 @@ import {
 } from "@/database/database";
 import dayjs from "dayjs";
 import { ScreeningModel } from "@/models/primary-screening/ScreeningModel";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import CustomInput from "../utils/CustomInput";
 import { DateSelector } from "../new_UI/date-picker";
 import QRCode from "react-native-qrcode-svg";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
+import ViewQR from "../qr/ViewQR";
 
 const ReasonForm = () => {
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
   );
+  const navigation = useNavigation();
 
   const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
   const [qrData, setQrData] = useState<any>();
@@ -45,7 +52,9 @@ const ReasonForm = () => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
   const [diaglogMessage, setDialogMessage] = useState("");
-  const { isQCPopupEligible, isQCUser } = useLocalSearchParams();
+  const { isQCPopupEligible, isQCUser, visionCenterId } =
+    useLocalSearchParams();
+  console.log("Vision Center ID *********", visionCenterId);
   const [hospitalItems, setHospitalItems] = useState<DropdownModel[]>([]);
   const [visionCenterItems, setVisionCenterItems] = useState<DropdownModel[]>(
     []
@@ -56,17 +65,23 @@ const ReasonForm = () => {
   const [selected, setSelected] = useState<DateType>();
   const [facilityItems, setFacilityItems] = useState<DropdownModel[]>([]);
   const [facilityLabel, setFacilityLabel] = useState("");
-  const [facilityType, setSelectedFaciliType] = useState(
-    FACILITY_TYPES_ITEMS[1]
-  );
+  const [facilityType, setSelectedFaciliType] = useState(BLANK_DROPDOWN_MODEL);
+  const [facilityTypeHasError, setFacilityTypeHasError] = useState(false);
+  const [facilityTypeErrorMessage, setFacilityTypeErrorMessage] = useState("");
   const [facilityName, setFacilityName] = useState(BLANK_DROPDOWN_MODEL);
+  const [facilityNameHasError, setFacilityNameHasError] = useState(false);
+  const [facilityNameErrorMessage, setFacilityNameErrorMessage] = useState("");
 
   const [mobileNo, setMobileNo] = useState("");
+  const [mobileNoHasError, setMobileNoHasError] = useState(false);
+  const [mobileNoErrorMessage, setMobileNoErrorMessage] = useState("");
+
   const [other, setOther] = useState("");
   const [instructions, setInstructions] = useState("");
 
   const selectActivityTypeHandler = (val?: string) => {
-    if (val == "") {
+    console.log("*****************", val);
+    if (val == "SELECT") {
       setSelectedFaciliType(BLANK_DROPDOWN_MODEL);
     } else {
       const foundItem = FACILITY_TYPES_ITEMS.find((item) => item.value == val);
@@ -74,6 +89,8 @@ const ReasonForm = () => {
         setSelectedFaciliType(foundItem);
       }
     }
+    setFacilityTypeHasError(false);
+    setFacilityTypeErrorMessage("");
   };
 
   const selectFacilityNameHandler = (val?: string) => {
@@ -85,6 +102,8 @@ const ReasonForm = () => {
         setFacilityName(foundItem);
       }
     }
+    setFacilityNameHasError(false);
+    setFacilityNameErrorMessage("");
   };
 
   const selectDateHandler = ({ date }: any) => {
@@ -94,6 +113,8 @@ const ReasonForm = () => {
 
   const mobileNoChangeHandler = (val: string) => {
     setMobileNo(val);
+    setMobileNoHasError(false);
+    setMobileNoErrorMessage("");
   };
 
   const otherChangeHandler = (val: string) => {
@@ -104,7 +125,35 @@ const ReasonForm = () => {
     setInstructions(val);
   };
 
+  const fieldValidator = () => {
+    let isValid = true;
+    console.log("Facility Type", facilityType);
+    if (facilityType.value == "SELECT") {
+      setFacilityTypeHasError(true);
+      setFacilityTypeErrorMessage("Please select facility type !");
+      isValid = false;
+    }
+    if (facilityName.id == "0") {
+      setFacilityNameHasError(true);
+      setFacilityNameErrorMessage("Please select facility name !");
+      isValid = false;
+    }
+    if (screeningItem.psStatus == "REFER") {
+      if (mobileNo.length != 10) {
+        isValid = false;
+        setMobileNoHasError(true);
+        setMobileNoErrorMessage("Please enter a valid mobile No");
+      }
+    }
+    return isValid;
+  };
+
   const saveScreeningHandler = async () => {
+    console.log("IS QC User", isQCUser == "true");
+    if (!fieldValidator()) {
+      return;
+    }
+
     const response = await savePrimaryScreening(
       db,
       new ScreeningModel({
@@ -139,6 +188,7 @@ const ReasonForm = () => {
   };
 
   useEffect(() => {
+    console.log("RUNNing Facilities...");
     if (facilityType.value?.toUpperCase() == "VISION CENTER") {
       setFacilityItems(visionCenterItems);
       setFacilityLabel("Vision Center");
@@ -172,6 +222,21 @@ const ReasonForm = () => {
     }
   };
 
+  const [isInitial, setIsInitial] = useState(false);
+
+  useEffect(() => {
+    if (isInitial) {
+      console.log("Facility Items", facilityItems);
+      console.log("Vision Center Id", visionCenterId);
+      const foundItem = facilityItems.find((item) => item.id == visionCenterId);
+      console.log("FOUND", foundItem);
+      if (foundItem) {
+        setFacilityName(foundItem);
+        setIsInitial(false);
+      }
+    }
+  }, [facilityItems]);
+
   useEffect(() => {
     setQrData({
       id: screeningItem.studentId,
@@ -181,20 +246,31 @@ const ReasonForm = () => {
   useFocusEffect(
     useCallback(() => {
       getFacilityHandler();
+      setSelectedFaciliType(FACILITY_TYPES_ITEMS[1]);
+      setIsInitial(true);
       return () => {
         console.log("Screen unfocused");
       };
     }, [])
   );
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle:
+        screeningItem.psStatus == "REFER" ? "Referral Form" : "Advise Form",
+    });
+  }, [navigation]);
+
   return (
     <View style={styles.screen}>
       <View>
-        <TextInput
+        <CustomInput
           id="reason"
-          label="Reason For Referral / Advice"
+          label={`Reason For ${
+            screeningItem.psStatus == "REFER" ? "Referral" : "Advise"
+          }`}
           value={screeningItem.referralReason}
           onChangeText={() => {}}
-          mode="outlined"
         />
       </View>
       <View
@@ -240,46 +316,53 @@ const ReasonForm = () => {
         </Pressable>
       </View> */}
 
-      <View>
-        <StyledDropdown
-          label="Facility Type"
-          items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
-          selectedItem={facilityType}
-          onChange={selectActivityTypeHandler}
-        />
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
+          <StyledDropdown
+            label="Facility Type"
+            items={[BLANK_DROPDOWN_MODEL, ...FACILITY_TYPES_ITEMS]}
+            selectedItem={facilityType}
+            onChange={selectActivityTypeHandler}
+            required={true}
+            isError={facilityTypeHasError}
+            errorMessage={facilityTypeErrorMessage}
+          />
+        </View>
+        <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
+          <StyledDropdown
+            label={facilityLabel}
+            items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
+            selectedItem={facilityName}
+            onChange={selectFacilityNameHandler}
+            required={true}
+            isError={facilityNameHasError}
+            errorMessage={facilityNameErrorMessage}
+          />
+        </View>
       </View>
       <View>
-        <StyledDropdown
-          label={facilityLabel}
-          items={[BLANK_DROPDOWN_MODEL, ...facilityItems]}
-          selectedItem={facilityName}
-          onChange={selectFacilityNameHandler}
-        />
-      </View>
-      <View>
-        <TextInput
+        <CustomInput
           label="Mobile No"
           value={mobileNo}
           onChangeText={mobileNoChangeHandler}
-          mode="outlined"
           maxLength={10}
+          isError={mobileNoHasError}
+          errorMessage={mobileNoErrorMessage}
+          required={true}
         />
       </View>
       <View style={{ marginTop: 10 }}>
-        <TextInput
+        <CustomInput
           label="Other"
           value={other}
           onChangeText={otherChangeHandler}
-          mode="outlined"
         />
       </View>
       <View style={{ marginTop: 10 }}>
-        <TextInput
+        <CustomInput
           label="Instruction for Referred Center"
           value={instructions}
           onChangeText={instructionsChangeHandler}
-          mode="outlined"
-          numberOfLines={4}
         />
       </View>
       <View style={{ marginTop: 20 }}>
@@ -327,19 +410,29 @@ const ReasonForm = () => {
             alignItems: "center",
           }}
         >
-          <QRCode value={JSON.stringify(qrData)} size={200} />
+          {/* <QRCode value={JSON.stringify(qrData)} size={200} /> */}
+          <ViewQR
+            studentId={screeningItem.studentId}
+            onClose={() => {
+              setIsQRCodeVisible(false);
+            }}
+          />
 
-          <View style={{ marginTop: 40, flexDirection: "row" }}>
-            <Button
-              mode="outlined"
-              onPress={() => {
-                setIsQRCodeVisible(false);
-              }}
-            >
-              Close
-            </Button>
-            <Button mode="outlined">Print QR</Button>
-          </View>
+          {/* <View style={{ marginTop: 40, flexDirection: "row" }}>
+            <View style={{ padding: 5 }}>
+              <Button
+                mode="outlined"
+                onPress={() => {
+                  setIsQRCodeVisible(false);
+                }}
+              >
+                Close
+              </Button>
+            </View>
+            <View style={{ padding: 5 }}>
+              <Button mode="outlined">Print QR</Button>
+            </View>
+          </View> */}
         </View>
       </Modal>
     </View>

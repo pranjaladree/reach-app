@@ -1,4 +1,5 @@
 import { DropdownModel } from "@/models/ui/DropdownModel";
+import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { View, Text } from "react-native";
 import { Dropdown } from "react-native-paper-dropdown";
@@ -32,7 +33,6 @@ const CustomDropdown = ({
         value={selectedItem.value}
         onSelect={onChange}
         disabled={disabled}
-        mode="outlined"
       />
       {isError && (
         <View>

@@ -7,6 +7,7 @@ import { Button } from "react-native-paper";
 import {
   getSchoolsDropdownFromDB,
   preparePSDataSync,
+  removeSchool,
 } from "@/database/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "@react-navigation/native";
@@ -18,6 +19,7 @@ import AppButton from "../new_UI/AppButton";
 import CustomButton from "../utils/CustomButton";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 const PrimaryDataSync = () => {
   const db = useSQLiteContext();
@@ -25,6 +27,8 @@ const PrimaryDataSync = () => {
   const token = useSelector((state: RootState) => state.userSlice.token);
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
+  const [schoolHasError, setSchoolHasError] = useState(false);
+  const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
   const [diaglogMessage, setDialogMessage] = useState("");
 
   const [visible, setVisible] = useState(false);
@@ -42,11 +46,19 @@ const PrimaryDataSync = () => {
         setSelectedSchool(foundItem);
       }
     }
+    setSchoolHasError(false);
+    setSchoolErrorMessage("");
   };
 
   const syncPrimaryScreeningHandler = async () => {
+    if (selectedSchool.id == "0") {
+      setSchoolHasError(true);
+      setSchoolErrorMessage("Please select a school !");
+      return;
+    }
     setIsLoading(true);
     const response = await preparePSDataSync(db, selectedSchool.id);
+    console.log("PREPARED DATA******************", JSON.stringify(response));
     const syncResponse = await syncPSData(token, response);
     if (syncResponse.isError) {
       setDialogMessage(syncResponse.data);
@@ -54,6 +66,19 @@ const PrimaryDataSync = () => {
     } else {
       showDialog();
       setDialogMessage(syncResponse.data);
+
+      //If School Activity is Primary Screening Then Remove School
+      const schoolResponse: any = await db.getFirstAsync(
+        `SELECT * FROM schools WHERE id="${selectedSchool.id}"`
+      );
+      if (schoolResponse) {
+        if (
+          schoolResponse.activityType == "PRIMARY_SCREENING" ||
+          schoolResponse.activityType == "ANNUAL_FOLLOW_UP_VISIT"
+        ) {
+          removeSchool(db, selectedSchool.id);
+        }
+      }
     }
     setIsLoading(false);
   };
@@ -65,7 +90,38 @@ const PrimaryDataSync = () => {
     }
   };
 
-  const getStatisticsHandler = async () => {};
+  const [isCountLoading, setIsCountLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(-1);
+  const [psDoneCount, setPsDoneCount] = useState(-1);
+
+  const getStatisticsHandler = async () => {
+    if (selectedSchool.id == "0") {
+      setSchoolHasError(true);
+      setSchoolErrorMessage("Please select a school !");
+      return;
+    }
+    setIsCountLoading(true);
+    try {
+      const response1: any = await db.getFirstAsync(
+        `SELECT COUNT(*) AS count FROM students WHERE schoolId="${selectedSchool.id}"`
+      );
+      console.log("RESPONSE 1 &&&&&&&&&&&", response1);
+      if (response1) {
+        setTotalCount(response1.count);
+      }
+
+      const response2: any = await db.getFirstAsync(
+        `SELECT COUNT(*) AS count FROM students JOIN screenings ON screenings.studentId = students.id WHERE schoolId="${selectedSchool.id}"`
+      );
+      console.log("RESPONSE 2 &&&&&&&&&&&", response2);
+      if (response2) {
+        setPsDoneCount(response2.count);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    setIsCountLoading(false);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -83,6 +139,9 @@ const PrimaryDataSync = () => {
             items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
             selectedItem={selectedSchool}
             onChange={selectSchoolHandler}
+            isError={schoolHasError}
+            errorMessage={schoolErrorMessage}
+            required={true}
           />
         </View>
         <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
@@ -96,15 +155,21 @@ const PrimaryDataSync = () => {
                 color="white"
               />
             }
+            isLoading={isCountLoading}
           />
         </View>
       </View>
       <View style={styles.infobox}>
-        <Text style={styles.infoLine}>Total Students :</Text>
         <Text style={styles.infoLine}>
-          No of Students undergone Primary Screening :
+          Total Students : {totalCount == -1 ? "" : totalCount}
         </Text>
-        <Text style={styles.infoLine}>No of unsynced data: </Text>
+        <Text style={styles.infoLine}>
+          No of Students undergone Primary Screening :{" "}
+          {psDoneCount == -1 ? "" : psDoneCount}
+        </Text>
+        <Text style={styles.infoLine}>
+          No of unsynced data: {psDoneCount == -1 ? "" : psDoneCount}{" "}
+        </Text>
       </View>
       <View style={{ marginTop: 10, padding: 10 }}>
         <CustomButton
@@ -113,6 +178,7 @@ const PrimaryDataSync = () => {
           icon={
             <Ionicons name="cloud-upload-outline" size={20} color="white" />
           }
+          isLoading={isLoading}
         />
         {/* <Button
           mode="contained"
@@ -161,6 +227,8 @@ const styles = StyleSheet.create({
   },
   infoLine: {
     padding: 5,
+    color: Colors.primary,
+    fontWeight: "bold",
   },
 });
 

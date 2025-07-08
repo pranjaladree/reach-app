@@ -1,19 +1,31 @@
 import { Colors } from "@/constants/Colors";
-import { Pressable, View, Text, StyleSheet } from "react-native";
+import {
+  Pressable,
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 
 interface Props {
   title: string;
   onPress: () => void;
   icon?: any;
+  disabled?: boolean;
+  isLoading?: boolean;
 }
 
-const CustomButton = ({ title, onPress, icon }: Props) => {
+const CustomButton = ({ title, onPress, icon, disabled, isLoading }: Props) => {
   return (
-    <Pressable onPress={onPress}>
-      <View style={styles.button}>
+    <Pressable onPress={disabled ? () => {} : onPress}>
+      <View style={disabled ? styles.buttonDisabled : styles.button}>
         <View style={{ padding: 5 }}>{icon}</View>
         <View style={{ padding: 5 }}>
-          <Text style={styles.title}>{title}</Text>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.title}>{title}</Text>
+          )}
         </View>
       </View>
     </Pressable>
@@ -26,6 +38,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: Colors.primary,
+    padding: 10,
+  },
+  buttonDisabled: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#c2c3c4",
     padding: 10,
   },
   title: {

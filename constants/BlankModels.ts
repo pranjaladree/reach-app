@@ -77,7 +77,7 @@ export const BLANK_STUDENT_MODEL = new StudentModel({
 });
 
 export const BLANK_SCREENING_MODEL = new ScreeningModel({
-  id: 0,
+  id: "",
   studentId: "",
   schoolId: "",
   isNormal: false,
@@ -106,6 +106,9 @@ export const BLANK_SCREENING_MODEL = new ScreeningModel({
   ocularComplaint: "",
   ocularList: "",
   isBinucularTestVisible: false,
+  isNpcTest: false,
+  isCoverTest: false,
+  isPlus2DTest: false,
   npcTest: BLANK_DROPDOWN_MODEL,
   coverTest: BLANK_DROPDOWN_MODEL,
   plus2DTestLE: BLANK_DROPDOWN_MODEL,

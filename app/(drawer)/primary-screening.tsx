@@ -12,8 +12,9 @@ import {
   STATUS_RADIO_ITEMS,
 } from "@/constants/Data";
 import {
-  findAllClasses,
   findAllClassesDropdowns,
+  findUniqueClasses,
+  findUniqueSections,
   getSchoolsDropdownFromDB,
 } from "@/database/database";
 import { DropdownModel } from "@/models/ui/DropdownModel";
@@ -25,12 +26,13 @@ import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Button, Menu } from "react-native-paper";
+import { Menu } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
 const PrimaryScreening = () => {
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
   const [classItems, setClassItems] = useState<DropdownModel[]>([]);
+  const [sectionItems, setSectionItems] = useState<DropdownModel[]>([]);
   const db = useSQLiteContext();
   const router = useRouter();
   const dispatch = useDispatch();
@@ -60,11 +62,24 @@ const PrimaryScreening = () => {
     }
   };
 
-  const [section, setSection] = useState("");
+  const [selectedSection, setSelectedSection] = useState(BLANK_DROPDOWN_MODEL);
 
-  const sectionChangeHandler = (val: string) => {
-    setSection(val);
+  const selectSectionHandler = (val?: string) => {
+    if (val == "SELECT") {
+      setSelectedSection(BLANK_DROPDOWN_MODEL);
+    } else {
+      const foundItem = sectionItems.find((item) => item.value == val);
+      if (foundItem) {
+        setSelectedSection(foundItem);
+      }
+    }
   };
+
+  // const [section, setSection] = useState("");
+
+  // const sectionChangeHandler = (val: string) => {
+  //   setSection(val);
+  // };
 
   const [gender, setGender] = useState("All");
 
@@ -104,17 +119,41 @@ const PrimaryScreening = () => {
     }
   };
 
-  const getClassesHandler = async () => {
-    const response = await findAllClassesDropdowns(db);
+  const getUniqueSectionsHandler = async () => {
+    const response = await findUniqueSections(
+      db,
+      selectedSchool.id?.toString(),
+      selectedClass.id
+    );
     if (response) {
+      console.log("SECTIONS", response);
+      setSectionItems(response);
+    }
+  };
+
+  const getUniqueClassesHandler = async () => {
+    const response = await findUniqueClasses(db, selectedSchool.id);
+    if (response) {
+      console.log("Clases", response);
       setClassItems(response);
     }
   };
 
+  useEffect(() => {
+    if (selectedSchool.id != "0") {
+      getUniqueClassesHandler();
+    }
+  }, [selectedSchool]);
+
+  useEffect(() => {
+    if (selectedClass.id != "0") {
+      getUniqueSectionsHandler();
+    }
+  }, [selectedClass]);
+
   useFocusEffect(
     useCallback(() => {
       getSchoolsHandler();
-      getClassesHandler();
       return () => {
         console.log("Screen unfocused");
       };
@@ -145,7 +184,7 @@ const PrimaryScreening = () => {
       setFilter(
         new FilterModel({
           classId: selectedClass.id != "0" ? selectedClass.id : "",
-          section: section,
+          section: selectedSection.id != "0" ? selectedSection.value : "",
           gender: gender == "All" ? "" : gender,
           status: status == "ALL" ? "" : status,
           result: result == "ALL" ? "" : result,
@@ -195,6 +234,7 @@ const PrimaryScreening = () => {
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
           onChange={selectSchoolHandler}
+          required={true}
         />
       </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -207,11 +247,11 @@ const PrimaryScreening = () => {
           />
         </View>
         <View style={{ flexGrow: 1, padding: 5 }}>
-          <CustomInput
-            id="section"
+          <StyledDropdown
             label="Section"
-            value={section}
-            onChangeText={sectionChangeHandler}
+            items={[BLANK_DROPDOWN_MODEL, ...sectionItems]}
+            selectedItem={selectedSection}
+            onChange={selectSectionHandler}
           />
         </View>
       </View>

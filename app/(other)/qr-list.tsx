@@ -23,6 +23,7 @@ const QRList = () => {
   );
   const { schoolId } = useLocalSearchParams();
   const [studentList, setStudentList] = useState<any[]>([]);
+  const [filteredList, setFilteredList] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const filteredStudents = useSelector(
     (state: RootState) => state.studentSlice.filteredStudents
@@ -32,19 +33,23 @@ const QRList = () => {
 
   const searchTermChangeHandler = (val: string) => {
     setSearchTerm(val);
+
+    //Search in Each Key Stroke
+    const filterArr: any = studentList.filter((item) => {
+      if (
+        item.firstName?.toUpperCase().includes(val?.toUpperCase()) ||
+        item.middleName?.toUpperCase().includes(val?.toUpperCase()) ||
+        item.lastName?.toUpperCase().includes(val?.toUpperCase())
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    setFilteredList(filterArr);
   };
 
   const [selectedItem, setSelectedItem] = useState<any>();
-
-  const navigationHandler = (item: StudentModel) => {
-    router.push({
-      pathname: "/mr-tag-detail",
-      params: {
-        studentId: item.id,
-        studentName: item.firstName,
-      },
-    });
-  };
 
   const openModalHandler = (item: any) => {
     setSelectedItem(item);
@@ -66,6 +71,7 @@ const QRList = () => {
       console.log("RESPONS", response);
       if (response) {
         setStudentList(response);
+        setFilteredList(response);
       }
     }
   };
@@ -82,21 +88,34 @@ const QRList = () => {
   return (
     <>
       <View>
-        <View>
-          <View>
-            <Text>Total Student:</Text>
+        <View
+          style={{
+            padding: 10,
+            position: "absolute",
+            zIndex: 100,
+            backgroundColor: "white",
+            width: "100%",
+          }}
+        >
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text>Total Student: {studentList.length}</Text>
           </View>
-          <View>
+          <View style={{ marginTop: 10 }}>
             <CustomInput
+              id="search"
+              label="Seach Student"
               value={searchTerm}
-              label="Search Student"
               onChangeText={searchTermChangeHandler}
             />
           </View>
         </View>
-        <View style={{ padding: 10 }}>
+        <View
+          style={{ paddingHorizontal: 10, paddingTop: 150, paddingBottom: 100 }}
+        >
           <FlatList
-            data={studentList}
+            data={filteredList}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <QRItem item={item} onPress={openModalHandler.bind(this, item)} />
@@ -104,8 +123,22 @@ const QRList = () => {
           />
         </View>
       </View>
-      <Modal visible={isModalOpen} onDismiss={closeModalHandler}>
-        <ViewQR item={selectedItem} />
+      <Modal
+        visible={isModalOpen}
+        onDismiss={closeModalHandler}
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "white",
+          zIndex: 500,
+        }}
+      >
+        <ViewQR
+          studentId={selectedItem?.studentId}
+          onClose={() => {
+            setIsModalOpen(false);
+          }}
+        />
       </Modal>
     </>
   );

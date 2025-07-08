@@ -5,9 +5,12 @@ import {
 } from "@/constants/Data";
 import { setScreeningItem } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
-import { View, Text } from "react-native";
+import { View, Text, Alert, NativeModules } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import CustomDropdown from "../utils/CustomDropdown";
+import StyledDropdown from "../new_UI/StyledDropdown";
+import { Button } from "react-native-paper";
+const { IntentLauncher } = NativeModules;
 
 const BinacularTest = () => {
   const dispatch = useDispatch();
@@ -105,14 +108,97 @@ const BinacularTest = () => {
     }
   };
 
+  const openOccularApp = async () => {
+    console.log("Opening Ocular app ...");
+    let isExist = await IntentLauncher.isAppInstalled("me.vgsoham.eyeapp");
+    if (isExist == true) {
+      const params = {
+        packageName: "me.vgsoham.eyeapp", // Package name of the external app
+        className: "me.vgsoham.eyeapp.TakeD2DFarVisionTestActivity", // Class name of the activity
+        extra: {
+          chart: "ETDRS",
+          row: 5,
+          crowding: true,
+          crowdingSpacer: 1.0,
+          currentEye: "OD",
+          screenBothEyes: true,
+        },
+      };
+
+      try {
+        const result = await IntentLauncher.startActivity(params);
+        let data = result.data;
+        let dataObj = JSON.parse(data);
+        if (dataObj?.completed == true) {
+          let od = dataObj?.OD;
+          let os = dataObj?.OS;
+          let correct = true;
+          let odValue = "";
+          if (od == "correct") {
+            odValue = "Yes";
+          } else {
+            odValue = "No";
+          }
+          let osValue = "";
+          if (os == "correct") {
+            osValue = "YES";
+          } else {
+            osValue = "NO";
+          }
+
+          console.log("ODRE", odValue);
+          console.log("OSLE", osValue);
+
+          const foundItemRE = YES_NO_DROPDOWN_ITEMS.find(
+            (item) => item.value == odValue
+          );
+
+          const foundItemLE = YES_NO_DROPDOWN_ITEMS.find(
+            (item) => item.value == osValue
+          );
+
+          if (foundItemLE && foundItemRE) {
+            dispatch(
+              setScreeningItem({
+                ...screeningItem,
+                plus2DTestRE: foundItemRE,
+                plus2DTestLE: foundItemLE,
+              })
+            );
+          }
+
+          // handleInputChange(odValue, "withoutSpcOdRe");
+          // handleInputChange(osValue, "withoutSpcOsLe");
+          // if (odValue == "Yes" && osValue == "Yes") {
+          //   setOccularTestVisible(true);
+          // } else {
+          //   setOccularTestVisible(false);
+          // }
+
+          // handleInputChange("", "ocularComplaintData");
+          // handleInputChange([], "ocularComplaintList");
+          // if (odValue == "No" || osValue == "No") {
+          //   setNormalCase(false);
+          //   setIsTle(false);
+          //   setIsColorVisionTest(false);
+          //   handleInputChange("", "colorVisionRe");
+          //   handleInputChange("", "colorVisionLe");
+          // }
+        } else {
+        }
+      } catch (error) {
+        console.error("Failed to launch activity:", error);
+      }
+    } else {
+      Alert.alert("Alert", "OcularCheck App is not installed");
+    }
+  };
+
   return (
     <View>
       <View>
         <View>
-          <Text>Cover Test</Text>
-        </View>
-        <View>
-          <CustomDropdown
+          <StyledDropdown
             items={[BLANK_DROPDOWN_MODEL, ...NORMAL_ABNORMAL_DROPDOWN_ITEMS]}
             label="Cover Test"
             selectedItem={screeningItem.coverTest}
@@ -122,10 +208,7 @@ const BinacularTest = () => {
       </View>
       <View>
         <View>
-          <Text>NPC</Text>
-        </View>
-        <View>
-          <CustomDropdown
+          <StyledDropdown
             items={[BLANK_DROPDOWN_MODEL, ...NORMAL_ABNORMAL_DROPDOWN_ITEMS]}
             label="NPC"
             selectedItem={screeningItem.npcTest}
@@ -137,24 +220,27 @@ const BinacularTest = () => {
         <View>
           <Text>Can Student Read using +2.0D lens</Text>
         </View>
-        <View>
-          <View>
-            <View>
-              <CustomDropdown
-                items={[BLANK_DROPDOWN_MODEL, ...YES_NO_DROPDOWN_ITEMS]}
-                label="OD (LE)"
-                selectedItem={screeningItem.plus2DTestLE}
-                onChange={plus2DTestLEChangeHandler}
-              />
-            </View>
-            <View>
-              <CustomDropdown
-                items={[BLANK_DROPDOWN_MODEL, ...YES_NO_DROPDOWN_ITEMS]}
-                label="OD (RE)"
-                selectedItem={screeningItem.plus2DTestRE}
-                onChange={plus2DTestREChangeHandler}
-              />
-            </View>
+        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+          <Button mode="outlined" onPress={openOccularApp}>
+            Ocular Check
+          </Button>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
+            <StyledDropdown
+              items={[BLANK_DROPDOWN_MODEL, ...YES_NO_DROPDOWN_ITEMS]}
+              label="OD (LE)"
+              selectedItem={screeningItem.plus2DTestLE}
+              onChange={plus2DTestLEChangeHandler}
+            />
+          </View>
+          <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
+            <StyledDropdown
+              items={[BLANK_DROPDOWN_MODEL, ...YES_NO_DROPDOWN_ITEMS]}
+              label="OD (RE)"
+              selectedItem={screeningItem.plus2DTestRE}
+              onChange={plus2DTestREChangeHandler}
+            />
           </View>
         </View>
       </View>

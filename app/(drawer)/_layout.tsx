@@ -67,6 +67,9 @@ import {
 import { useWindowDimensions } from "react-native";
 import CustomDrawerContent from "@/components/new_UI/CustomDrawerContent";
 import { Button } from "react-native-paper";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { Redirect } from "expo-router";
 
 export default function Layout() {
   const dimensions = useWindowDimensions();
@@ -157,10 +160,20 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
+          name="qr-codes"
+          options={{
+            drawerLabel: "View QR Code",
+            title: "View QR Code",
+            drawerIcon: ({ color, size }) => (
+              <Feather name="search" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
           name="remove-school"
           options={{
             drawerLabel: "Remove School",
-            title: "MR Tag",
+            title: "Remove School",
             drawerIcon: ({ color, size }) => (
               <MaterialCommunityIcons
                 name="bank-remove"
