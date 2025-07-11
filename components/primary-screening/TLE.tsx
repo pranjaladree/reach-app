@@ -7,7 +7,10 @@ import { Text, View, StyleSheet, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import CustomDropdown from "../utils/CustomDropdown";
 import { TorchLightModel } from "@/models/other-masters/TorchLightModel";
-import { setAllTorchLights } from "@/store/slices/torch-light-slice";
+import {
+  setAllTorchLights,
+  uncheckAllTles,
+} from "@/store/slices/torch-light-slice";
 import { getAllTorchLights } from "@/http/torchlight-http";
 import { Checkbox, Modal, Portal } from "react-native-paper";
 import { findAllTorchlightFindings } from "@/database/database";
@@ -39,6 +42,7 @@ const TLE = () => {
   );
 
   const torchLightCheckLEChangeHandler = (val?: string) => {
+    setIsInitial(false);
     if (val == "0") {
       dispatch(
         setScreeningItem({
@@ -62,6 +66,7 @@ const TLE = () => {
   };
 
   const torchLightCheckREChangeHandler = (val?: string) => {
+    setIsInitial(false);
     if (val == "0") {
       dispatch(
         setScreeningItem({
@@ -85,7 +90,6 @@ const TLE = () => {
   };
 
   const [tleFindings, setTleFindings] = useState("");
-  console.log("TLE Findins", tleFindings);
 
   const torchLightFindingChangeHandler = (item: TorchLightModel) => {
     // let arr2: string[] = [];
@@ -101,23 +105,36 @@ const TLE = () => {
     dispatch(setAllTorchLights(arr));
 
     let arr2: string[] = [];
+    let isRefer = false;
     arr.map((item: any) => {
       if (item.isSelected) {
+        if (item.action == "Refer") {
+          isRefer = true;
+        }
         arr2.push(item.finding);
       }
     });
+    console.log("TLE REFER *****************", isRefer);
 
     let tleItem = "";
     let count = 0;
     arr2.map((item) => {
+      console.log("TLE ********ER", item);
       if (count == 0) {
         tleItem = tleItem + item;
       } else {
-        tleItem = tleItem + "," + item;
+        tleItem = tleItem + " , " + item;
       }
       count++;
     });
     setTleFindings(tleItem);
+    dispatch(
+      setScreeningItem({
+        ...screeningItem,
+        torchlightFindings: tleItem,
+        isTleRefer: isRefer,
+      })
+    );
   };
 
   const getTorchlightFindings = async () => {
@@ -128,12 +145,26 @@ const TLE = () => {
     }
   };
 
+  const [isInitial, setIsInitial] = useState(true);
+
   useEffect(() => {
     if (
       screeningItem.torchlightCheckLE.value == "ABNORMAL" ||
       screeningItem.torchlightCheckRE.value == "ABNORMAL"
     ) {
-      openOcularModal();
+      if (!isInitial) {
+        openOcularModal();
+      }
+    }
+  }, [screeningItem.torchlightCheckLE, screeningItem.torchlightCheckRE]);
+
+  useEffect(() => {
+    if (
+      screeningItem.torchlightCheckLE.value == "NORMAL" &&
+      screeningItem.torchlightCheckRE.value == "NORMAL"
+    ) {
+      setTleFindings("");
+      dispatch(uncheckAllTles());
     }
   }, [screeningItem.torchlightCheckLE, screeningItem.torchlightCheckRE]);
 

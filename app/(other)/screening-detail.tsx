@@ -19,6 +19,7 @@ import {
 } from "@/constants/Data";
 import { checkPSStatus } from "@/constants/Methods";
 import {
+  findReachConfigs,
   findScreeningById,
   findUserById,
   savePrimaryScreening,
@@ -46,6 +47,9 @@ const ScreeningDetails = () => {
   const [isAutorefAvailable, setIsAutorefAvailable] = useState(false);
   const [visionCenterId, setVisionCenterId] = useState("");
   const [isQCPopupEligible, setIsQCPopupEligible] = useState(false);
+  const [reachConfigs, setReachConfigs] = useState(
+    BLANK_REACH_CONFIGURATION_MODEL
+  );
   const [isQCUser, setIsQCUser] = useState(false);
   const {
     studentId,
@@ -95,7 +99,7 @@ const ScreeningDetails = () => {
     // Check Ps Status
     const response = checkPSStatus(
       screeningItem,
-      BLANK_REACH_CONFIGURATION_MODEL,
+      reachConfigs,
       isAutorefAvailable
     );
     if (response) {
@@ -329,16 +333,26 @@ const ScreeningDetails = () => {
     }
   }, [isQCUser, isMarkedForQc]);
 
+  const getReachConfigsHandler = async () => {
+    const response: any = await findReachConfigs(db);
+    if (response) {
+      setReachConfigs(response);
+    }
+  };
+
   useEffect(() => {
     if (userId) {
       getUserHandler();
     }
   }, [userId]);
 
+  useEffect(() => {}, [isQCUser]);
+
   useFocusEffect(
     useCallback(() => {
       getExistingData();
       getAutorefStatusHandler();
+      getReachConfigsHandler();
       return () => {
         console.log("Screen unfocused");
       };

@@ -35,7 +35,7 @@ export const checkPSStatus = (
           screeningItem.torchlightCheckRE.value == "ABNORMAL"
         ) {
           status = "REFER";
-          reason = "Torchlight Examination Failed";
+          reason = `Torchlight Examination Failed ( ${screeningItem.torchlightFindings} )`;
           return { status, reason };
         } else {
           // IF Torchlight also Normal
@@ -62,6 +62,7 @@ export const checkPSStatus = (
     } else {
       // If logmar 0.2 passed
       console.log("Bina Check", screeningItem.isBinacularTestRequired);
+      console.log("Reachconfigs", reachConfigs);
       if (
         screeningItem.ocularComplaint == "YES" &&
         screeningItem.isBinacularTestRequired
@@ -77,8 +78,6 @@ export const checkPSStatus = (
             screeningItem.plus2DTestLE.value == "YES" ||
             screeningItem.plus2DTestRE.value == "YES"
           ) {
-            //CHECK TLE
-          } else {
             status = "REFER";
             let failedTest = `( `;
             if (screeningItem.coverTest.value == "ABNORMAL") {
@@ -96,6 +95,8 @@ export const checkPSStatus = (
             failedTest += " )";
             reason = `Binacular Test Failed ${failedTest}`;
             return { status, reason };
+          } else {
+            //CHECK TLE
           }
         } else {
           status = "REFER";
@@ -112,11 +113,11 @@ export const checkPSStatus = (
           //Check Torchlight findings for ADVICE / REFER
           if (screeningItem.isTleRefer) {
             status = "REFER";
-            reason = "Torchlight Examination Failed";
+            reason = `Torchlight Examination Failed ( ${screeningItem.torchlightFindings} )`;
             return { status, reason };
           } else {
             status = "ADVISE";
-            reason = "Torchlight Examination Failed";
+            reason = `Torchlight Examination Failed ( ${screeningItem.torchlightFindings} )`;
             return { status, reason };
           }
         } else {
@@ -124,13 +125,13 @@ export const checkPSStatus = (
           if (screeningItem.isColorVisionTestRequired) {
           } else {
             // Color Vision Test Not Required
-            if (screeningItem.specCondition == "GOOD") {
-              status = "NORMAL";
-              reason = "";
-              return { status, reason };
-            } else {
+            if (screeningItem.specCondition == "BAD") {
               status = "ADVISE";
               reason = "Bad Spectacle Condition";
+              return { status, reason };
+            } else {
+              status = "NORMAL";
+              reason = "";
               return { status, reason };
             }
           }

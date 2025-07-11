@@ -16,7 +16,6 @@ export const getReachConfiguration = async (
       },
     });
     const resData = await res.json();
-    console.log("REACH CONFIGS", resData);
     let data;
     //   Converting Fetched Api data to frontend model object
     if (resData) {

@@ -102,9 +102,9 @@ const VisionTest = () => {
           let correct = true;
           let odValue = "";
           if (od == "correct") {
-            odValue = "Yes";
+            odValue = "YES";
           } else {
-            odValue = "No";
+            odValue = "NO";
           }
           let osValue = "";
           if (os == "correct") {

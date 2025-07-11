@@ -34,7 +34,10 @@ import {
 } from "@/database/database";
 import { getVisionCenters } from "@/http/vision-center-http";
 import { getAllHospitals } from "@/http/hospital-http";
-import { getOtherFacilities } from "@/http/other-facility-http";
+import {
+  getOtherFacilities,
+  searchOtherFacilities,
+} from "@/http/other-facility-http";
 import { getAllOculars } from "@/http/ocular-complaints-http";
 import { getReachConfiguration } from "@/http/reach-configuration-http";
 import { getAllDistanceDvas } from "@/http/distance-dva-http";
@@ -170,7 +173,7 @@ const SystemUpdate = () => {
     OtherFacilities: async () => {
       updateStatus("OtherFacilities", "loading");
       try {
-        const res = await getOtherFacilities(token);
+        const res = await searchOtherFacilities(token);
         if (!res?.isError) {
           saveOtherFacilities(db, res.data);
           updateStatus("OtherFacilities", "success");

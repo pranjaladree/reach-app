@@ -54,7 +54,9 @@ const CustomInput = ({
 export default CustomInput;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    width: "100%",
+  },
   label: {
     marginBottom: 6,
     fontSize: 14,
@@ -67,6 +69,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   input: {
+    width: "100%",
     height: 48,
     borderWidth: 1,
     borderColor: "#004aad",

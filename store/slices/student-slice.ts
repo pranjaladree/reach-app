@@ -90,8 +90,11 @@ export const studentSlice = createSlice({
         if (item.ocularComplaint == "YES") {
           item.isNormal = false;
         }
-      }
 
+        if (item.ocularComplaint == "NO") {
+          item.isTorchlightVisible = true;
+        }
+      }
       if (item.isTorchlightVisible) {
         if (
           item.torchlightCheckLE.value == "ABNORMAL" ||
@@ -101,84 +104,19 @@ export const studentSlice = createSlice({
         }
       }
 
-      // // Vision Test Visibility
-      // if (item.usingSpectacle == "NO") {
-      //   item.isVisionTestVisible = true;
-      // } else {
-      //   if (item.haveSpecNow == "NO") {
-      //     item.isVisionTestVisible = true;
-      //   } else {
-      //     if (item.specCondition != "") {
-      //       item.isVisionTestVisible = true;
-      //     } else {
-      //       item.isVisionTestVisible = false;
-      //     }
-      //   }
-      // }
-
-      // if (item.unableToPerformVisionTest == "YES") {
-      //   item.isNormal = false;
-      // }
-
-      // //Ocular Visibility
-      // if (
-      //   item.canReadLogmarLE.value == "YES" &&
-      //   item.canReadLogmarRE.value == "YES"
-      // ) {
-      //   item.isOcularComplaintVisible = true;
-      // } else {
-      //   item.isOcularComplaintVisible = false;
-      //   item.isTorchlightVisible = false;
-      // }
-
-      // // Autoref Visibility
-
-      // if (
-      //   item.plus2DTestLE.value == "NO" &&
-      //   item.plus2DTestRE.value == "NO" &&
-      //   item.npcTest.value !== "ABNORMAL" &&
-      //   item.coverTest.value != "ABNORMAL"
-      // ) {
-      //   item.isTorchlightVisible = true;
-      // } else {
-      //   item.isTorchlightVisible = false;
-      // }
-
-      // if (item.ocularComplaint == "NO") {
-      //   item.isTorchlightVisible = true;
-      // }
-
-      //Update Screening Item
-      state.screeningItem = item;
-    },
-    setScreening: (state, action) => {
-      state.screeningItem = action.payload;
-      const item = state.screeningItem;
-
-      // Vision Test Visibility
-      if (item.usingSpectacle == "NO") {
-        item.isVisionTestVisible = true;
-      } else {
-        if (item.haveSpecNow == "NO") {
-          item.isVisionTestVisible = true;
+      if (item.isBinucularTestVisible) {
+        if (
+          item.coverTest.value == "NORMAL" &&
+          item.npcTest.value == "NORMAL" &&
+          item.plus2DTestLE.value == "NO" &&
+          item.plus2DTestRE.value == "NO"
+        ) {
+          item.isTorchlightVisible = true;
         } else {
-          if (item.specCondition != "") {
-            item.isVisionTestVisible = true;
-          } else {
-            item.isVisionTestVisible = false;
-          }
+          item.isTorchlightVisible = false;
         }
       }
-
-      //Ocular Visibility
-      if (
-        item.canReadLogmarLE.value == "YES" &&
-        item.canReadLogmarRE.value == "YES"
-      ) {
-        item.isOcularComplaintVisible = true;
-      } else {
-        item.isOcularComplaintVisible = false;
-      }
+      state.screeningItem = item;
     },
     setNormalCheck: (state) => {
       const item = state.screeningItem;

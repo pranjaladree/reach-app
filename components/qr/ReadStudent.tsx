@@ -6,14 +6,24 @@ import {
   BarcodeScanningResult,
 } from "expo-camera";
 import { useSQLiteContext } from "expo-sqlite";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Dialog, Portal } from "react-native-paper";
 import { Button } from "react-native-paper";
+import CustomButton from "../utils/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "expo-router";
 
-export default function ReadStudent() {
+interface Props {
+  onClose: () => void;
+}
+
+export default function ReadStudent({ onClose }: Props) {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanningData, setScanningData] = useState<any>();
+  const [studentId, setStudentId] = useState("");
+
+  console.log("SCS", scanningData?.studentId);
 
   const [visible, setVisible] = useState(false);
   const db = useSQLiteContext();
@@ -26,11 +36,22 @@ export default function ReadStudent() {
   const barCodeDataChangeHandler = (scanningResult: BarcodeScanningResult) => {
     if (scanningResult.raw) {
       showDialog();
-      console.log(scanningResult.raw);
+      console.log("RAAAA&&&&&&&", scanningResult.raw);
       setScanningData(scanningResult.raw);
       setIsScanned(true);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (scanningData) {
+        setStudentId(scanningData.studentId);
+      }
+      return () => {
+        console.log("Screen unfocused");
+      };
+    }, [scanningData])
+  );
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -66,10 +87,24 @@ export default function ReadStudent() {
           }}
         >
           <View style={{ borderWidth: 1, padding: 20, minWidth: 200 }}>
-            <Text>Student ID : {scanningData.tempId}</Text>
+            <Text>Student ID : {studentId}</Text>
+            <Text>Class : {scanningData?.class}</Text>
           </View>
           <View style={{ width: 200, marginTop: 20 }}>
-            <Button mode="contained">Save</Button>
+            <Button mode="contained" onPress={onClose}>
+              Close
+            </Button>
+            <CustomButton
+              title="Save"
+              onPress={() => {}}
+              icon={
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={20}
+                  color="white"
+                />
+              }
+            />
           </View>
         </View>
       )}

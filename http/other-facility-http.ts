@@ -36,3 +36,40 @@ export const getOtherFacilities = async (token: string) => {
     });
   }
 };
+
+export const searchOtherFacilities = async (token: string) => {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/facility/search/0/1000?facilityName=&active=Yes`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+      }
+    );
+    const resData = await res.json();
+    console.log("RSESSSS &&&&&&", resData);
+    let arr: DropdownModel[] = [];
+    resData.content.forEach((element: any) => {
+      arr.push(
+        new DropdownModel({
+          id: element.id.toString(),
+          label: element.facilityName,
+          value: element.facilityName,
+        })
+      );
+    });
+
+    return new ResponseModel({
+      data: arr,
+    });
+  } catch (err) {
+    return new ResponseModel({
+      isError: true,
+      data: err,
+    });
+  }
+};

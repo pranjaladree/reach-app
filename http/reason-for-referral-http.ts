@@ -57,7 +57,6 @@ export const getAllReasonForReferrals = async (token: string) => {
       }
     );
     const resData = await res.json();
-    console.log("RESANNNNN *************", resData);
     let arr: ReasonForReferralModel[] = [];
     resData.content.forEach((element: any) => {
       arr.push(

@@ -918,8 +918,23 @@ export const preparePSDataSync = async (
   schoolId: string
 ) => {
   try {
+    let latitude = "";
+    let longitude = "";
+    const schoolResponse: any = await db.getFirstAsync(
+      `SELECT * FROM schools WHERE id="${schoolId}"`
+    );
+    console.log("SCHOOL *******************", schoolResponse);
+    if (schoolResponse) {
+      if (schoolResponse.latitude) {
+        latitude = schoolResponse.latititude;
+      }
+      if (schoolResponse.longitude) {
+        longitude = schoolResponse.longitude;
+      }
+    }
+
     const response = await db.getAllAsync(
-      `SELECT * FROM screenings JOIN students ON screenings.studentId == students.id WHERE students.schoolId="${schoolId}"`
+      `SELECT * FROM screenings JOIN students ON screenings.studentId == students.id  WHERE students.schoolId="${schoolId}"`
     );
     console.log("Response", response);
     const studentList: any[] = [];
@@ -1007,6 +1022,8 @@ export const preparePSDataSync = async (
       schoolId: schoolId,
       activityType: "PRIMARY_SCREENING",
       sessionId: "1",
+      latitude: latitude,
+      longitude: longitude,
       students: studentList,
     };
     return data;
@@ -1023,13 +1040,28 @@ export const prepareMRDataSync = async (
     const response = await db.getAllAsync(
       `SELECT * FROM mrTags JOIN students ON mrTags.studentId = students.id LEFT JOIN visualAcuity ON visualAcuity.mrId = mrTags.id LEFT JOIN refraction ON refraction.mrId=mrTags.id LEFT JOIN advice ON advice.mrId = mrTags.id LEFT JOIN diagnosis ON diagnosis.mrId = mrTags.id  WHERE students.schoolId="${schoolId}"`
     );
-    console.log("MR TAG DATA", response);
     const studentList: any[] = [];
     if (response) {
       response.map((item: any) => {
-        let diagnosisItems;
+        let diagnosisList;
         if (item.diagnosisItems) {
-          diagnosisItems = JSON.parse(item.diagnosisItems);
+          const output = item.diagnosisItems.split("##").map((item2: any) => {
+            const obj: any = {};
+            item2.split("@@").forEach((pair: any) => {
+              const [key, value] = pair.split(":");
+              obj[key] = value;
+            });
+            return obj;
+          });
+
+          console.log(output);
+
+          diagnosisList = output.map((item3: any) => {
+            return {
+              diagnosisType: item3.id,
+              selectedEye: item3.selectedEye,
+            };
+          });
         }
 
         let spectacleBooking;
@@ -1123,7 +1155,7 @@ export const prepareMRDataSync = async (
             otherComment: item.otherComments,
             remarks: "Follow medication schedule strictly",
           },
-          diagnosis: diagnosisItems,
+          diagnosis: diagnosisList ? diagnosisList : null,
           spectaleBooking: spectacleBooking,
         };
         studentList.push({
@@ -1839,6 +1871,7 @@ export const saveOtherFacilities = async (
 export const findAllOtherFacilities = async (db: SQLiteDatabase) => {
   try {
     const response = await db.getAllAsync(`SELECT * FROM otherFacilities`);
+    console.log("OTHER Facility %%%%%%%%%", response);
     const arr: DropdownModel[] = [];
     if (response) {
       response.map((item: any) => {
@@ -2185,7 +2218,6 @@ export const findAllSphs = async (db: SQLiteDatabase) => {
 // Save Cyls
 export const saveCyls = async (db: SQLiteDatabase, items: CYLModel[]) => {
   try {
-    console.log("IESSSSSS", items);
     const response = await db.withTransactionAsync(async () => {
       items.forEach((item: CYLModel) => {
         db.runSync(
@@ -2848,10 +2880,8 @@ export const findUniqueSections = async (
 
 export const saveUsers = async (db: SQLiteDatabase, items: UserModel[]) => {
   try {
-    console.log("ITEMS***************", items);
     const response = await db.withTransactionAsync(async () => {
       items.forEach((item: UserModel) => {
-        console.log("ITEMS USR *************************", item);
         db.runSync(
           `INSERT OR REPLACE INTO users(id,userName,password,firstName,middleName,lastName,designation,isPartnerAgreement,isUserAgreement,isPIIAgreement,isDevicePreparation,isDataSync,isQualityCheck) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
           item.id,
@@ -2971,7 +3001,7 @@ export const getSpecStudentsBySchoolId = async (
 export const removeSchool = async (db: SQLiteDatabase, schoolId: string) => {
   console.log("SchoolId", schoolId);
   try {
-    const response = await db.withTransactionAsync(async () => {
+    const response: any = await db.withTransactionAsync(async () => {
       db.runSync(
         `DELETE FROM diagnosis WHERE mrId IN (
           SELECT mt.id FROM mrTags mt JOIN students s ON mt.studentId = s.id WHERE s.schoolId="${schoolId}"
@@ -2994,6 +3024,11 @@ export const removeSchool = async (db: SQLiteDatabase, schoolId: string) => {
       );
       db.runSync(
         `DELETE FROM mrTags WHERE studentId IN (
+          SELECT id FROM students WHERE students.schoolId="${schoolId}"
+        )`
+      );
+      db.runSync(
+        `DELETE FROM screenings WHERE studentId IN (
           SELECT id FROM students WHERE students.schoolId="${schoolId}"
         )`
       );

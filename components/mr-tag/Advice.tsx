@@ -296,24 +296,9 @@ const Advice = ({ mrId, isMRTagDone }: Props) => {
     if (response) {
       setSavedDiagnosisItems(response.diagnosisItems);
     }
-
-    //Parse String and Convert to List
-    // diagnosisType:9@@selectedEye:RE##diagnosisType:12@@selectedEye:RE
-
-    // try {
-    //   console.log(JSON.parse(response.diagnosisItems));
-    // } catch (err) {
-    //   console.log(err);
-    // }
-    // if (response) {
-    //   setDiagnosisList(JSON.parse(response));
-    // }
   };
 
   useEffect(() => {
-    // const input =
-    //   "id:1@@diagnosisType:Abnormal@@selectedEye:RE##id:1@@diagnosisType:mypia@@selectedEye:RE";
-
     const output = savedDiagnosisItem.split("##").map((item) => {
       const obj: any = {};
       item.split("@@").forEach((pair) => {

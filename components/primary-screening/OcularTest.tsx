@@ -97,6 +97,7 @@ const OcularTest = () => {
     let isBinacularRequired = false;
     let ocularList = "";
     arr.map((item: any, index: number) => {
+      console.log("other ocular", item);
       if (item.isSelected) {
         if (item.isBinacular) {
           isBinacularRequired = true;

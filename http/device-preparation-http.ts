@@ -1,6 +1,7 @@
 import { baseUrl } from "@/constants/Urls";
 import { SchoolModel } from "@/models/school/SchoolModel";
 import { StudentModel } from "@/models/school/StudentModel";
+import { ResponseModel } from "@/models/utils/ResponseModel";
 
 export const getStudentBySchoolId = async (token: string, schoolId: string) => {
   console.log("Token", token);
@@ -77,4 +78,30 @@ export const getStudentBySchoolId = async (token: string, schoolId: string) => {
     }),
     students: arr,
   };
+};
+
+export const incrementDeviceCount = async (token: string, schoolId: string) => {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/v2/prepare_device/school/${schoolId}`,
+      {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+      }
+    );
+    if (res.status == 200) {
+      return new ResponseModel({
+        data: "Device Count Updated",
+      });
+    }
+  } catch (err) {
+    return new ResponseModel({
+      isError: true,
+      data: err,
+    });
+  }
 };

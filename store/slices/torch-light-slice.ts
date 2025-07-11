@@ -48,11 +48,21 @@ export const torchLightSlice = createSlice({
       });
       state.paginatedTorchLightFindings = arr;
     },
+    uncheckAllTles: (state) => {
+      let arr = state.torchlightFindings.map((item) => {
+        return { ...item, isSelected: false };
+      });
+      state.torchlightFindings = arr;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setAllTorchLights, setTorchLightPage, searchTorchLightBottom } =
-  torchLightSlice.actions;
+export const {
+  setAllTorchLights,
+  setTorchLightPage,
+  searchTorchLightBottom,
+  uncheckAllTles,
+} = torchLightSlice.actions;
 
 export default torchLightSlice.reducer;

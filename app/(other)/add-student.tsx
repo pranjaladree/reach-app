@@ -20,12 +20,14 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  StyleSheet,
 } from "react-native";
 import { Button, Dialog, Portal, TextInput } from "react-native-paper";
 import { nanoid } from "nanoid/non-secure";
 import CustomInput from "@/components/utils/CustomInput";
 import CustomButton from "@/components/utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
+import StyledDropdown from "@/components/new_UI/StyledDropdown";
 
 const AddStudent = () => {
   const db = useSQLiteContext();
@@ -307,13 +309,14 @@ const AddStudent = () => {
           <View style={{ paddingBottom: 30 }}>
             <View>
               <View>
-                <CustomDropdown
+                <StyledDropdown
                   label="School"
                   items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
                   selectedItem={selectedSchool}
                   onChange={selectSchoolHandler}
                   isError={schoolHasError}
                   errorMessage={schoolErrorMessage}
+                  required={true}
                 />
               </View>
             </View>
@@ -325,43 +328,53 @@ const AddStudent = () => {
                 onChangeText={firstNameChangeHandler}
                 isError={firstNameHasError}
                 errorMessage={firstNameErrorMessage}
+                required={true}
               />
             </View>
-            <View>
-              <CustomInput
-                id="middle Name"
-                label="Middle Name"
-                value={middleName}
-                onChangeText={middleNameChangeHandler}
-              />
+            <View style={{ flexDirection: "row" }}>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  id="middle Name"
+                  label="Middle Name"
+                  value={middleName}
+                  onChangeText={middleNameChangeHandler}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  id="lastName"
+                  label="Last Name"
+                  value={lastName}
+                  onChangeText={lastNameChangeHandler}
+                />
+              </View>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="Class"
+                  items={[BLANK_DROPDOWN_MODEL, ...classItems]}
+                  selectedItem={selectedClass}
+                  onChange={selectClassHandler}
+                  isError={classHasError}
+                  errorMessage={classErrorMessage}
+                  required={true}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  id="section"
+                  label="Section"
+                  value={section}
+                  onChangeText={sectionChangeHandler}
+                />
+              </View>
             </View>
             <View>
-              <CustomInput
-                id="lastName"
-                label="Last Name"
-                value={lastName}
-                onChangeText={lastNameChangeHandler}
-              />
-            </View>
-            <View>
-              <CustomDropdown
-                label="Class"
-                items={[BLANK_DROPDOWN_MODEL, ...classItems]}
-                selectedItem={selectedClass}
-                onChange={selectClassHandler}
-                isError={classHasError}
-                errorMessage={classErrorMessage}
-              />
-            </View>
-            <View>
-              <CustomInput
-                id="section"
-                label="Section"
-                value={section}
-                onChangeText={sectionChangeHandler}
-              />
-            </View>
-            <View>
+              <View style={{ flexDirection: "row" }}>
+                <Text>Gender</Text>
+                <Text style={{ color: "red", fontWeight: "bold" }}>*</Text>
+              </View>
               <CustomRadioGroup
                 label="Gender"
                 items={GENDER_RADIO_ITEMS}
@@ -371,67 +384,72 @@ const AddStudent = () => {
                 errorMessage={genderErrorMessage}
               />
             </View>
-            <View>
-              <CustomInput
-                id="age"
-                label="Age"
-                value={age}
-                onChangeText={ageChangeHandler}
-                isError={ageHasError}
-                errorMessage={ageErrorMessage}
-              />
+            <View style={{ flexDirection: "row" }}>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  id="age"
+                  label="Age"
+                  value={age}
+                  onChangeText={ageChangeHandler}
+                  isError={ageHasError}
+                  errorMessage={ageErrorMessage}
+                  required={true}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  id="rollNo"
+                  label="Roll No"
+                  value={rollNo}
+                  onChangeText={rollNoChangeHandler}
+                  isError={rollNoHasError}
+                  errorMessage={rollNoErrorMessage}
+                  required={true}
+                />
+              </View>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <View style={styles.rowItem}>
+                <StyledDropdown
+                  label="Relation"
+                  items={[BLANK_DROPDOWN_MODEL, ...RELATIONS_DROPDOWN_ITEMS]}
+                  selectedItem={relation}
+                  onChange={selectRelationHandler}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  label="Next Of KIN"
+                  value={nextOfKin}
+                  onChangeText={nextOfKinChangeHandler}
+                />
+              </View>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  label="Contact No"
+                  value={contactNo}
+                  onChangeText={contactNoChangeHandler}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <CustomInput
+                  label="Relationship With Student"
+                  value={relationshipWithStudent}
+                  onChangeText={relationshipWithStudentChangeHandler}
+                />
+              </View>
             </View>
             <View>
-              <CustomInput
-                id="rollNo"
-                label="Roll No"
-                value={rollNo}
-                onChangeText={rollNoChangeHandler}
-                isError={rollNoHasError}
-                errorMessage={rollNoErrorMessage}
-              />
-            </View>
-            <View>
-              <CustomDropdown
-                label="Relation"
-                items={[BLANK_DROPDOWN_MODEL, ...RELATIONS_DROPDOWN_ITEMS]}
-                selectedItem={relation}
-                onChange={selectRelationHandler}
-              />
-            </View>
-            <View>
-              <TextInput
-                label="Next Of KIN"
-                value={nextOfKin}
-                onChangeText={nextOfKinChangeHandler}
-                mode="outlined"
-              />
-            </View>
-            <View>
-              <TextInput
-                label="Contact No"
-                value={contactNo}
-                onChangeText={contactNoChangeHandler}
-                mode="outlined"
-              />
-            </View>
-            <View>
-              <TextInput
-                label="Relationship With Student"
-                value={relationshipWithStudent}
-                onChangeText={relationshipWithStudentChangeHandler}
-                mode="outlined"
-              />
-            </View>
-            <View>
-              <CustomDropdown
+              <StyledDropdown
                 label="Special Need"
                 items={[BLANK_DROPDOWN_MODEL, ...specialNeedItems]}
                 selectedItem={specialNeed}
                 onChange={selectSpecialNeedHandler}
               />
             </View>
-            <View>
+            <View style={{ marginTop: 20 }}>
               <CustomButton
                 title="Save"
                 onPress={addStudentHandler}
@@ -443,13 +461,6 @@ const AddStudent = () => {
                   />
                 }
               />
-              {/* <Button
-                onPress={addStudentHandler}
-                mode="contained"
-                loading={isLoading}
-              >
-                Add Student
-              </Button> */}
             </View>
             <Portal>
               <Dialog visible={visible} onDismiss={hideDialog}>
@@ -470,5 +481,13 @@ const AddStudent = () => {
     </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  rowItem: {
+    padding: 5,
+    flexGrow: 1,
+    flexBasis: 1,
+  },
+});
 
 export default AddStudent;

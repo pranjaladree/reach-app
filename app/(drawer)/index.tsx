@@ -132,7 +132,11 @@ const Home = () => {
         unsyncedMRTagCount={unsyncedMRTagCount}
       />
       <Modal visible={isScanQR}>
-        <ReadStudent />
+        <ReadStudent
+          onClose={() => {
+            setIsScanQR(false);
+          }}
+        />
       </Modal>
     </View>
   );

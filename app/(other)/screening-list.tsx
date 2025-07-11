@@ -9,7 +9,6 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, FlatList } from "react-native";
-import { Button, Dialog, Portal } from "react-native-paper";
 import { useSelector } from "react-redux";
 
 const ScreeningList = () => {
@@ -131,6 +130,7 @@ const ScreeningList = () => {
           />
         </View>
       </View>
+
       <View
         style={{ paddingHorizontal: 10, paddingTop: 150, paddingBottom: 100 }}
       >

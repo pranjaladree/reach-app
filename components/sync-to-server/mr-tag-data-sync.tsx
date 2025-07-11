@@ -9,6 +9,7 @@ import {
   getSchoolsDropdownFromDB,
   prepareMRDataSync,
   preparePSDataSync,
+  removeSchool,
 } from "@/database/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "@react-navigation/native";
@@ -59,7 +60,6 @@ const MRTagDataSync = () => {
     }
     setIsLoading(true);
     const response = await prepareMRDataSync(db, selectedSchool.id);
-    console.log("MR PREPARED DATA", JSON.stringify(response));
     const syncResponse = await syncMRTagData(token, response);
     if (syncResponse.isError) {
       setDialogMessage(syncResponse.data);
@@ -67,7 +67,11 @@ const MRTagDataSync = () => {
     } else {
       showDialog();
       setDialogMessage(syncResponse.data);
+
+      //Remove School
+      removeSchool(db, selectedSchool.id);
     }
+
     setIsLoading(false);
   };
 

@@ -17,7 +17,10 @@ import {
 } from "@/constants/BlankModels";
 import { ACTIVITY_TYPE_ITEMS } from "@/constants/Data";
 import { insertBulkStudentsToDB, saveSchool } from "@/database/database";
-import { getStudentBySchoolId } from "@/http/device-preparation-http";
+import {
+  getStudentBySchoolId,
+  incrementDeviceCount,
+} from "@/http/device-preparation-http";
 import { getSchoolActivities } from "@/http/school-http";
 import { StudentModel } from "@/models/school/StudentModel";
 import { setSchools } from "@/store/slices/school-slice";
@@ -102,7 +105,10 @@ const DevicePreparation = () => {
     await saveSchool(db, preparedSchool);
     const res = await insertBulkStudentsToDB(db, students);
     setIsSavingLoading(false);
-    if (res) showDialog();
+    if (res) {
+      showDialog();
+      incrementDeviceCount(token, preparedSchool.id.toString());
+    }
   };
 
   return (

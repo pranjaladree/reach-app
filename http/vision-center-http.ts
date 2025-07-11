@@ -13,7 +13,6 @@ export const getVisionCenters = async (token: string) => {
       },
     });
     const resData = await res.json();
-    console.log("Vision Centers", resData);
 
     let arr: DropdownModel[] = [];
     resData.forEach((element: any) => {

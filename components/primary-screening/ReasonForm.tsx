@@ -64,8 +64,10 @@ const ReasonForm = () => {
   );
   const [selected, setSelected] = useState<DateType>();
   const [facilityItems, setFacilityItems] = useState<DropdownModel[]>([]);
-  const [facilityLabel, setFacilityLabel] = useState("");
-  const [facilityType, setSelectedFaciliType] = useState(BLANK_DROPDOWN_MODEL);
+  const [facilityLabel, setFacilityLabel] = useState("Vision Center");
+  const [facilityType, setSelectedFaciliType] = useState(
+    FACILITY_TYPES_ITEMS[1]
+  );
   const [facilityTypeHasError, setFacilityTypeHasError] = useState(false);
   const [facilityTypeErrorMessage, setFacilityTypeErrorMessage] = useState("");
   const [facilityName, setFacilityName] = useState(BLANK_DROPDOWN_MODEL);
@@ -214,15 +216,18 @@ const ReasonForm = () => {
     const visionCenterResponse = await findAllVisionCenters(db);
     if (visionCenterResponse) {
       setVisionCenterItems(visionCenterResponse);
+      console.log("Facility Names &&&&&&&&&&&", visionCenterResponse);
+      setFacilityItems(visionCenterResponse);
     }
 
     const otherFacilityResponse = await findAllOtherFacilities(db);
     if (otherFacilityResponse) {
       setOtherFacilityItems(otherFacilityResponse);
+      console.log(otherFacilityResponse);
     }
   };
 
-  const [isInitial, setIsInitial] = useState(false);
+  const [isInitial, setIsInitial] = useState(true);
 
   useEffect(() => {
     if (isInitial) {
@@ -237,17 +242,35 @@ const ReasonForm = () => {
     }
   }, [facilityItems]);
 
+  const getStudentHandler = async (id: string) => {
+    console.log("IDDDDD", id);
+    const response: any = await db.getFirstAsync(
+      `SELECT * FROM students JOIN classes ON students.classId = classes.id WHERE id ="${id}"`
+    );
+    console.log("STUDENT ********************", response);
+    if (response) {
+      setQrData({
+        id: response.id,
+        firstName: response.firstName,
+        middleName: response.middleName,
+        lastName: response.lastName,
+        class: response.title,
+        section: response.section,
+      });
+    }
+  };
+
   useEffect(() => {
-    setQrData({
-      id: screeningItem.studentId,
-    });
+    if (screeningItem.studentId) {
+      getStudentHandler(screeningItem.studentId);
+    }
   }, [screeningItem.studentId]);
 
   useFocusEffect(
     useCallback(() => {
       getFacilityHandler();
-      setSelectedFaciliType(FACILITY_TYPES_ITEMS[1]);
-      setIsInitial(true);
+      // setSelectedFaciliType(FACILITY_TYPES_ITEMS[1]);
+      // setIsInitial(true);
       return () => {
         console.log("Screen unfocused");
       };
@@ -348,7 +371,7 @@ const ReasonForm = () => {
           maxLength={10}
           isError={mobileNoHasError}
           errorMessage={mobileNoErrorMessage}
-          required={true}
+          required={screeningItem.psStatus == "REFER" ? true : false}
         />
       </View>
       <View style={{ marginTop: 10 }}>

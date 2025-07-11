@@ -42,13 +42,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       ),
       route: "device-preparation",
     },
-    {
-      label: "Database Test",
-      icon: (color: string) => (
-        <FontAwesome5 name="database" size={20} color={color} />
-      ),
-      route: "database-test",
-    },
+    // {
+    //   label: "Database Test",
+    //   icon: (color: string) => (
+    //     <FontAwesome5 name="database" size={20} color={color} />
+    //   ),
+    //   route: "database-test",
+    // },
     {
       label: "Primary Screening",
       icon: (color: string) => (
