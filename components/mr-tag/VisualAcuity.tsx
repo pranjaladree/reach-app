@@ -27,8 +27,8 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomTabs, { TabItem } from "../utils/CustomTabs";
 
 const TAB_ITEMS = [
-  { title: "With Spectacle", disabled: false },
-  { title: "Without Spectacle", disabled: false },
+  { title: "With Spectacle", disabled: false, isDone: false },
+  { title: "Without Spectacle", disabled: false, isDone: false },
 ];
 //
 interface Props {

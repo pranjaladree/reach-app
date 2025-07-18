@@ -478,7 +478,7 @@ const Advice = ({ mrId, isMRTagDone }: Props) => {
         <View>
           <View style={styles.box}>
             {diagnosisList.map((item) => (
-              <View key={item.id} style={styles.row}>
+              <View key={item.diagnosisType} style={styles.row}>
                 <Text>{item.diagnosisType}</Text>
                 <Text>{item.selectedEye}</Text>
               </View>

@@ -19,6 +19,8 @@ const SpectacleStatus = () => {
           haveSpecNow: "",
           specCondition: "",
           usingSpectacle: val,
+          usingSpecHasError: false,
+          usingSpecErrorMessage: "",
         })
       );
     } else {
@@ -26,6 +28,8 @@ const SpectacleStatus = () => {
         setScreeningItem({
           ...screeningItem,
           usingSpectacle: val,
+          usingSpecHasError: false,
+          usingSpecErrorMessage: "",
         })
       );
     }
@@ -38,6 +42,8 @@ const SpectacleStatus = () => {
           ...screeningItem,
           haveSpecNow: val,
           specCondition: "",
+          haveSpecNowHasError: false,
+          haveSpecNowErrorMessage: "",
         })
       );
     } else {
@@ -45,6 +51,8 @@ const SpectacleStatus = () => {
         setScreeningItem({
           ...screeningItem,
           haveSpecNow: val,
+          haveSpecNowHasError: false,
+          haveSpecNowErrorMessage: "",
         })
       );
     }
@@ -56,6 +64,8 @@ const SpectacleStatus = () => {
         setScreeningItem({
           ...screeningItem,
           specCondition: val,
+          specConditionHasError: false,
+          specConditionErrorMessage: "",
         })
       );
     } else {
@@ -64,6 +74,8 @@ const SpectacleStatus = () => {
           ...screeningItem,
           specCondition: val,
           isNormal: false,
+          specConditionHasError: false,
+          specConditionErrorMessage: "",
         })
       );
     }
@@ -84,6 +96,8 @@ const SpectacleStatus = () => {
             items={YES_NO_RADIO_ITEMS}
             selectedOption={screeningItem.usingSpectacle}
             onChange={usingSpectacleChangeHandler}
+            isError={screeningItem.usingSpecHasError}
+            errorMessage={screeningItem.usingSpecErrorMessage}
           />
         </View>
       </View>
@@ -99,6 +113,8 @@ const SpectacleStatus = () => {
               items={YES_NO_RADIO_ITEMS}
               selectedOption={screeningItem.haveSpecNow}
               onChange={haveSpecNowChangeHandler}
+              isError={screeningItem.haveSpecNowHasError}
+              errorMessage={screeningItem.haveSpecNowErrorMessage}
             />
           </View>
         </View>
@@ -114,6 +130,8 @@ const SpectacleStatus = () => {
               items={GOOD_BAD_RADIO_ITEMS}
               selectedOption={screeningItem.specCondition}
               onChange={spectacleConditionChangeHandler}
+              isError={screeningItem.specConditionHasError}
+              errorMessage={screeningItem.specConditionErrorMessage}
             />
           </View>
         </View>

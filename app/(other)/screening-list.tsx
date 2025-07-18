@@ -51,16 +51,16 @@ const ScreeningList = () => {
       pathname: "/screening-detail",
       params: {
         studentId: item.id,
-        tempId: item.tempId,
-        studentName: `${item.firstName}  ${
-          item.middleName ? item.middleName : ""
-        }  ${item.lastName ? item.lastName : ""}`,
-        classTitle: item.title,
-        section: item.section,
-        gender: item.gender,
-        age: item.age,
+        // tempId: item.tempId,
+        // studentName: `${item.firstName}  ${
+        //   item.middleName ? item.middleName : ""
+        // }  ${item.lastName ? item.lastName : ""}`,
+        // classTitle: item.title,
+        // section: item.section,
+        // gender: item.gender,
+        // age: item.age,
         schoolId: schoolId,
-        isMarkedForQc: item.isMarkedForQc?.toString(),
+        // isMarkedForQc: item.isMarkedForQc?.toString(),
       },
     });
   };

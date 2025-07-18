@@ -156,6 +156,12 @@ const ReasonForm = () => {
       return;
     }
 
+    let nonEditable = false;
+    if (isQCUser == "false" && isQCPopupEligible) {
+      nonEditable = true;
+    }
+    const notEditable = !isQCUser && isQCPopupEligible;
+
     const response = await savePrimaryScreening(
       db,
       new ScreeningModel({
@@ -167,6 +173,7 @@ const ReasonForm = () => {
         otherReason: other,
         instructionForReferralCenter: instructions,
         isQCDone: isQCUser == "true",
+        isNonEditable: nonEditable,
       })
     );
     console.log("Response", response);
@@ -414,7 +421,13 @@ const ReasonForm = () => {
           <Dialog.Actions>
             <Button
               onPress={() => {
-                setIsQRCodeVisible(true);
+                // setIsQRCodeVisible(true);
+                router.replace({
+                  pathname: "/view-qr",
+                  params: {
+                    schoolId: screeningItem.studentId,
+                  },
+                });
               }}
             >
               View QR Code

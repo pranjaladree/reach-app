@@ -7,12 +7,19 @@ import {
 } from "expo-camera";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  BackHandler,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Dialog, Portal } from "react-native-paper";
 import { Button } from "react-native-paper";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import CustomNegativeButton from "../utils/CustomNegativeButton";
 
 interface Props {
   onClose: () => void;
@@ -38,6 +45,13 @@ export default function ReadStudent({ onClose }: Props) {
       showDialog();
       console.log("RAAAA&&&&&&&", scanningResult.raw);
       setScanningData(scanningResult.raw);
+      onClose();
+      router.push({
+        pathname: "/view-qr-student",
+        params: {
+          data: scanningResult.raw,
+        },
+      });
       setIsScanned(true);
     }
   };
@@ -72,42 +86,15 @@ export default function ReadStudent({ onClose }: Props) {
 
   return (
     <View style={styles.container}>
-      {isScanned == false ? (
+      <View style={styles.qrBox}>
         <CameraView
           style={styles.camera}
           onBarcodeScanned={barCodeDataChangeHandler}
         ></CameraView>
-      ) : (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 10,
-          }}
-        >
-          <View style={{ borderWidth: 1, padding: 20, minWidth: 200 }}>
-            <Text>Student ID : {studentId}</Text>
-            <Text>Class : {scanningData?.class}</Text>
-          </View>
-          <View style={{ width: 200, marginTop: 20 }}>
-            <Button mode="contained" onPress={onClose}>
-              Close
-            </Button>
-            <CustomButton
-              title="Save"
-              onPress={() => {}}
-              icon={
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={20}
-                  color="white"
-                />
-              }
-            />
-          </View>
-        </View>
-      )}
+      </View>
+      <View style={{ width: 300, marginTop: 20 }}>
+        <CustomNegativeButton title="Cancel" onPress={onClose} />
+      </View>
     </View>
   );
 }
@@ -116,6 +103,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
   },
   message: {
     textAlign: "center",
@@ -139,5 +127,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "white",
+  },
+  qrBox: {
+    width: 300,
+    height: 300,
   },
 });

@@ -10,7 +10,7 @@ import {
 import { ClassModel } from "@/models/other-masters/ClassModel";
 import { StudentModel } from "@/models/school/StudentModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -268,8 +268,15 @@ const AddStudent = () => {
       })
     );
     if (response) {
-      setDialogMessage("Student Added");
-      showDialog();
+      router.replace({
+        pathname: "/screening-detail",
+        params: {
+          studentId: generatedStudentId,
+          schoolId: selectedSchool.id,
+        },
+      });
+      // setDialogMessage("Student Added");
+      // showDialog();
     }
   };
 

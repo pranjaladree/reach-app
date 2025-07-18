@@ -1,8 +1,5 @@
-import {
-  dropTables,
-  getSchoolsFromDB,
-  getScreeningByIdFromDB,
-} from "@/database/database";
+import { getSchoolsFromDB, getScreeningByIdFromDB } from "@/database/database";
+import { dropTables } from "@/database/migrations-db";
 import { useSQLiteContext } from "expo-sqlite";
 import { View, Text, Button } from "react-native";
 
@@ -10,17 +7,13 @@ const DatabaseTest = () => {
   const db = useSQLiteContext();
 
   const dropTablesHandler = () => {
-    try {
-      const response = db.runSync(
-        `DELETE FROM mrTags WHERE studentId IN (
-        SELECT id FROM students WHERE students.schoolId="9"
-      )`
-      );
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   const response = db.runSync(`DROP TABLE students`);
+    // } catch (err) {
+    //   console.log(err);
+    // }
     // console.log("REDF", response);
-    // dropTables(db);
+    dropTables(db);
   };
   const getStudentData = async () => {
     const response = await getScreeningByIdFromDB(db, 523);

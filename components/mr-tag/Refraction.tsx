@@ -48,8 +48,8 @@ import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomInput from "../utils/CustomInput";
 
 const TAB_ITEMS = [
-  { title: "OD (RE)", disabled: false },
-  { title: "OS (LE)", disabled: false },
+  { title: "OD (RE)", disabled: false, isDone: false },
+  { title: "OS (LE)", disabled: false, isDone: false },
 ];
 //
 interface Props {

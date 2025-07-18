@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 export type TabItem = {
   title: string;
   disabled: boolean;
+  isDone: boolean;
 };
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const CustomTabs = ({ activeTab, items, onPress }: Props) => {
+  console.log("KSKkkkkkS&&&&&&&&&&&&&&&&&&&&&&&&&&&", items);
   return (
     <View style={styles.row}>
       {items.map((item) => (
@@ -27,7 +29,10 @@ const CustomTabs = ({ activeTab, items, onPress }: Props) => {
             <Text
               style={[
                 styles.tabText,
-                activeTab === item.title && styles.activeTabText,
+                item.isDone && activeTab != item.title
+                  ? styles.doneText
+                  : activeTab === item.title && styles.activeTabText,
+                ,
               ]}
             >
               {item.title}
@@ -61,7 +66,7 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     paddingVertical: 10,
-    backgroundColor: "#eaeaea",
+    backgroundColor: "white",
     // alignItems: "center",
     paddingHorizontal: 12,
     justifyContent: "center",
@@ -77,10 +82,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: "#004aad",
   },
+  doneText: {
+    color: "#04691f",
+    fontWeight: "bold",
+  },
   activeTabText: {
     color: "#ffffff",
   },
-
   card: {
     borderWidth: 1,
     borderColor: "#004aad",

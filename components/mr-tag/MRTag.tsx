@@ -14,6 +14,7 @@ import {
   findAllHospitals,
   findAllOtherFacilities,
   findAllVisionCenters,
+  findOneMRTag,
   getMasterDropdownFromDB,
   saveMRTag,
   TABLES,
@@ -181,6 +182,30 @@ const MRTagItem = ({ item, studentId, tempId }: Props) => {
     }
   };
 
+  const [isInitial, setIsInitial] = useState(false);
+
+  const getExistingDataHandler = async () => {
+    const response: any = await findOneMRTag(db, studentId);
+    console.log("TSSHGDGGGDG &&&&&&&&&&&&&&&&", response);
+    if (response) {
+    } else {
+      setSelectedFaciliType(FACILITY_TYPES_ITEMS[2]);
+      setIsInitial(true);
+    }
+  };
+
+  useEffect(() => {
+    if (isInitial) {
+      const foundItem = facilityItems.find(
+        (item) => item.value?.toUpperCase() == "SCHOOL"
+      );
+      if (foundItem) {
+        setFacilityName(foundItem);
+        setIsInitial(false);
+      }
+    }
+  }, [facilityItems]);
+
   useEffect(() => {
     if (item?.id != "0") {
       console.log("Runnning...");
@@ -197,6 +222,7 @@ const MRTagItem = ({ item, studentId, tempId }: Props) => {
     useCallback(() => {
       getFacilityHandler();
       setExistingData();
+      getExistingDataHandler();
       return () => {
         console.log("Screen unfocused");
       };

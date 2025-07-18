@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { RadioItemModel } from "@/models/ui/RadioItemModel";
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
@@ -24,21 +25,12 @@ const CustomRadioGroup = ({
 }: Props) => {
   return (
     <>
-      {/* <RadioButton.Group
-        onValueChange={onChange}
-        value={selectedOption}
-        color="#0a63c9"
-      >
-        <View style={styles.group}>
-          {items.map((item) => (
-            <View key={item.id} style={styles.button}>
-              <RadioButton value={item.value} />
-              <Text>{item.label}</Text>
-            </View>
-          ))}
+      {showLabel && (
+        <View>
+          <Text style={styles.radioLabel}>{label} </Text>
+          <Text style={{ color: Colors.error }}>*</Text>
         </View>
-      </RadioButton.Group> */}
-      {showLabel && <Text style={styles.radioLabel}>{label} </Text>}
+      )}
 
       <View style={styles.radioGroup}>
         {items.map((val) => (

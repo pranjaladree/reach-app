@@ -15,7 +15,13 @@ interface Props {
   isLoading?: boolean;
 }
 
-const CustomButton = ({ title, onPress, icon, disabled, isLoading }: Props) => {
+const CustomButtonOutline = ({
+  title,
+  onPress,
+  icon,
+  disabled,
+  isLoading,
+}: Props) => {
   return (
     <Pressable onPress={disabled ? () => {} : onPress}>
       <View style={disabled ? styles.buttonDisabled : styles.button}>
@@ -37,9 +43,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.primary,
+    backgroundColor: "white",
     padding: 10,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.primary,
   },
   buttonDisabled: {
     flexDirection: "row",
@@ -51,11 +59,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    color: "white",
     fontWeight: "bold",
+    color: Colors.primary,
     textAlign: "center",
     borderRadius: 8,
   },
 });
 
-export default CustomButton;
+export default CustomButtonOutline;

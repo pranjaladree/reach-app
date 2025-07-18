@@ -1,22 +1,31 @@
 import MRStudentItem from "@/components/list-items/MRStudentItem";
 import StudentItem from "@/components/list-items/StudentItem";
+import ReadStudent from "@/components/qr/ReadStudent";
 import InputBox from "@/components/ui/InputBox";
 import CustomInput from "@/components/utils/CustomInput";
 import { getMRTagStudentsBySchoolId } from "@/database/database";
 import { StudentModel } from "@/models/school/StudentModel";
 import { RootState } from "@/store/store";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, Pressable, Modal } from "react-native";
 import { useSelector } from "react-redux";
 
 const MRTagList = () => {
   const router = useRouter();
   const db = useSQLiteContext();
+  const navigation = useNavigation();
   const appliedFilters = useSelector(
     (state: RootState) => state.studentSlice.appliedFilters
   );
+
   const { schoolId } = useLocalSearchParams();
   const [studentList, setStudentList] = useState<any[]>([]);
   const [filteredList, setFilteredList] = useState<any[]>([]);
@@ -52,15 +61,15 @@ const MRTagList = () => {
       pathname: "/mr-tag-detail",
       params: {
         studentId: item.id,
-        tempId: item.tempId,
-        studentName: `${item.firstName}  ${
-          item.middleName ? item.middleName : ""
-        }  ${item.lastName ? item.lastName : ""}`,
-        classTitle: item.title,
-        section: item.section,
-        gender: item.gender,
-        age: item.age,
-        schoolId: schoolId,
+        // tempId: item.tempId,
+        // studentName: `${item.firstName}  ${
+        //   item.middleName ? item.middleName : ""
+        // }  ${item.lastName ? item.lastName : ""}`,
+        // classTitle: item.title,
+        // section: item.section,
+        // gender: item.gender,
+        // age: item.age,
+        // schoolId: schoolId,
       },
     });
   };

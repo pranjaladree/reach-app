@@ -28,8 +28,8 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const db = useSQLiteContext();
   const router = useRouter();
-  const [userName, setUserName] = useState("GEH@admin");
-  const [password, setPassword] = useState("Orbis@123");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -96,46 +96,50 @@ const LoginScreen = () => {
 
   const loginOnlineHandler = async () => {
     setIsLoading(true);
-    console.log("Login ...");
+    console.log("Login online ...");
     const requestBody = {
       userId: userName,
       password: password,
     };
-    console.log("Req", requestBody);
-    const res = await fetch(`${baseUrl}/auth/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify(requestBody),
-    });
-    console.log(res);
-    const resData = await res.json();
-    console.log(resData);
-    console.log("Status", res.status);
-    if (res.status == 200) {
-      const token = res.headers.get("Authorization");
-      console.log("Token", token);
-      if (!resData.isTotpRequired) {
-        dispatch(setLoggedIn(token));
-        if (token) {
-          getProfileHandler(token);
-        }
-      } else {
-        dispatch(setTempAuthenticate(true));
-        if (!resData.isMfaSetUp) {
-          dispatch(setMFARegister(false));
-          dispatch(setTempToken(token));
+    try {
+      const res = await fetch(`${baseUrl}/auth/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(requestBody),
+      });
+      const resData = await res.json();
+      console.log(resData);
+      console.log("Status", res.status);
+      if (res.status == 200) {
+        const token = res.headers.get("Authorization");
+        console.log("Token", token);
+        if (!resData.isTotpRequired) {
+          dispatch(setLoggedIn(token));
+          if (token) {
+            getProfileHandler(token);
+          }
         } else {
-          dispatch(setMFARequired(true));
-          dispatch(setMFARegister(true));
-          dispatch(setTempToken(token));
+          dispatch(setTempAuthenticate(true));
+          if (!resData.isMfaSetUp) {
+            dispatch(setMFARegister(false));
+            dispatch(setTempToken(token));
+          } else {
+            dispatch(setMFARequired(true));
+            dispatch(setMFARegister(true));
+            dispatch(setTempToken(token));
+          }
         }
+        router.navigate("/");
+      } else {
+        console.log("Failed to login");
       }
-      router.navigate("/");
+    } catch (err) {
+      console.log(err);
     }
     setIsLoading(false);
   };

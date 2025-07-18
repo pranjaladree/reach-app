@@ -1,20 +1,17 @@
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 import QRCode from "react-native-qrcode-svg";
-import CustomButton from "../utils/CustomButton";
+import CustomButton from "@/components/utils/CustomButton";
 import { findStudentById } from "@/database/database";
 
-interface Props {
-  studentId: string;
-  onClose: () => void;
-}
-
-const ViewQR = ({ studentId, onClose }: Props) => {
+const ViewQR = () => {
   const db = useSQLiteContext();
   const [studentData, setStudentData] = useState<any>();
+  const { studentId } = useLocalSearchParams();
+  console.log("STUDENT ID ((((((", studentId);
   const [qrData, setQrData] = useState<any>();
 
   // useEffect(() => {
@@ -29,10 +26,9 @@ const ViewQR = ({ studentId, onClose }: Props) => {
     console.log("GETING STUDENTS $$$$$$$$$$$$$$$");
     // const response: any = await findStudentById(db, studentId);
     // console.log("RESPONSE *******", response);
-
     try {
       const response: any = await db.getFirstAsync(
-        `SELECT * FROM students JOIN classes ON students.classId = classes.id  WHERE students.id ="${studentId}"`
+        `SELECT s.id,s.tempId,s.firstName,s.middleName,s.lastName,s.classId,cl.title,s.section,s.schoolId,sc.psStatus,sc.referralReason FROM students s JOIN classes cl ON s.classId = cl.id JOIN screenings sc ON sc.studentId = s.id WHERE s.id ="${studentId}"`
       );
       console.log("STUDENT ********************", response);
       if (response) {
@@ -42,8 +38,12 @@ const ViewQR = ({ studentId, onClose }: Props) => {
           firstName: response.firstName,
           middleName: response.middleName,
           lastName: response.lastName,
+          classId: response.classId,
           class: response.title,
           section: response.section,
+          psStatus: response.psStatus,
+          referralReason: response.referralReason,
+          schoolId: response.schoolId,
         });
       }
     } catch (err) {
@@ -68,32 +68,39 @@ const ViewQR = ({ studentId, onClose }: Props) => {
   );
 
   return (
-    <View style={{ backgroundColor: "white" }}>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <View style={{ borderWidth: 1, width: 300, height: 300 }}>
-          <QRCode value={JSON.stringify(qrData)} size={300} />
-        </View>
-
-        <View style={{ marginTop: 40, flexDirection: "row", flex: 1 }}>
-          <View style={{ padding: 5 }}>
-            <CustomButton title="Close" onPress={onClose} />
-          </View>
-          <View style={{ padding: 5 }}>
-            <CustomButton title="Print QR" onPress={() => {}} />
-          </View>
+    <View style={styles.screen}>
+      <View style={styles.qrBox}>
+        <QRCode value={JSON.stringify(qrData)} size={300} />
+      </View>
+      <View style={styles.action}>
+        <View style={styles.actionItem}>
+          <CustomButton title="Print QR" onPress={() => {}} />
         </View>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  qrBox: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  action: {
+    width: 300,
+    marginTop: 50,
+    flexDirection: "row",
+  },
+  actionItem: {
+    flex: 1,
+    padding: 5,
+  },
+});
 
 export default ViewQR;

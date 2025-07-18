@@ -15,7 +15,7 @@ import {
 import { ClassModel } from "@/models/other-masters/ClassModel";
 import { StudentModel } from "@/models/school/StudentModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -36,7 +36,7 @@ import StyledDropdown from "@/components/new_UI/StyledDropdown";
 
 const updateStudentScreen = () => {
   const db = useSQLiteContext();
-  const { studentId } = useLocalSearchParams();
+  const { studentId, schoolId } = useLocalSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
   const [classes, setClasses] = useState<ClassModel[]>([]);
@@ -45,7 +45,18 @@ const updateStudentScreen = () => {
   const [visible, setVisible] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
   const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
+  const router = useRouter();
+
+  const hideDialog = () => {
+    setVisible(false);
+    router.replace({
+      pathname: "/screening-detail",
+      params: {
+        studentId: studentId,
+        schoolId: schoolId,
+      },
+    });
+  };
 
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
   const [schoolHasError, setSchoolHasError] = useState(false);
@@ -208,8 +219,8 @@ const updateStudentScreen = () => {
     }
     if (age == "") {
       isValid = false;
-      setGenderHasError(true);
-      setGenderErrorMessage("Please select gender");
+      setAgeHasError(true);
+      setAgeErrorMessage("Please select age");
     }
     try {
       const response = db.getFirstSync(
@@ -511,7 +522,7 @@ const updateStudentScreen = () => {
             </View>
             <Portal>
               <Dialog visible={visible} onDismiss={hideDialog}>
-                <Dialog.Title>Alert</Dialog.Title>
+                <Dialog.Title>REACHLite</Dialog.Title>
                 <Dialog.Content>
                   <Text>{dialogMessage}</Text>
                 </Dialog.Content>

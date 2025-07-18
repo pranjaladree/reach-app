@@ -142,6 +142,43 @@ export const checkPSStatus = (
   return { status, reason };
 };
 
+export const PSFieldValidator = (screeningItem: ScreeningModel) => {
+  let valid = true;
+  let item = { ...screeningItem };
+
+  if (item.usingSpectacle == "") {
+    item = {
+      ...screeningItem,
+      usingSpecHasError: true,
+      usingSpecErrorMessage: "* Please select an option !",
+    };
+    valid = false;
+  } else {
+    if (item.usingSpectacle == "YES") {
+      if (item.haveSpecNow == "") {
+        item = {
+          ...screeningItem,
+          haveSpecNowHasError: true,
+          haveSpecNowErrorMessage: "* Please select an option !",
+        };
+        valid = false;
+      } else {
+        if (item.haveSpecNow == "YES") {
+          if (item.specCondition == "") {
+            item = {
+              ...screeningItem,
+              specConditionHasError: true,
+              specConditionErrorMessage: "* Please select an option !",
+            };
+            valid = false;
+          }
+        }
+      }
+    }
+  }
+  return { valid, item };
+};
+
 export const mapScreeningData = (screeningItem: ScreeningModel) => {
   const item = screeningItem;
 
@@ -150,17 +187,3 @@ export const mapScreeningData = (screeningItem: ScreeningModel) => {
   }
   return item;
 };
-
-// Step 1: Convert each string to valid JSON format
-// export const convertStringDiagnosisItems = (items: any[]) => {
-//   const output = items.map((str) => {
-//     // Add double quotes around keys and values using RegEx
-//     const jsonString = str
-//       .replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":') // quote keys
-//       .replace(/:\s*([^",}{\s]+)\s*/g, ': "$1"'); // quote values
-
-//     console.log("JSON", jsonString);
-//     return JSON.parse(jsonString);
-//   });
-//   return output;
-// };

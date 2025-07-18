@@ -34,8 +34,6 @@ const Home = () => {
   const [unsyncedPsCount, setUnsyncedPsCount] = useState(0);
   const [unsyncedMRTagCount, setUnsyncedMRTagCount] = useState(0);
   const db = useSQLiteContext();
-  const navigation = useNavigation();
-  const [isScanQR, setIsScanQR] = useState(false);
 
   const userId = useSelector((state: RootState) => state.userSlice.userId);
 
@@ -96,24 +94,6 @@ const Home = () => {
     }, [])
   );
 
-  useEffect(() => {
-    // Use `setOptions` to update the button that we previously specified
-    // Now the button includes an `onPress` handler to update the count
-    navigation.setOptions({
-      headerRight: () => (
-        <View style={{ padding: 10 }}>
-          <Pressable
-            onPress={() => {
-              setIsScanQR(true);
-            }}
-          >
-            <Ionicons name="qr-code-outline" size={20} />
-          </Pressable>
-        </View>
-      ),
-    });
-  }, [navigation]);
-
   useEffect(() => {}, []);
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
@@ -131,13 +111,6 @@ const Home = () => {
         unsyncedPsCount={unsyncedPsCount}
         unsyncedMRTagCount={unsyncedMRTagCount}
       />
-      <Modal visible={isScanQR}>
-        <ReadStudent
-          onClose={() => {
-            setIsScanQR(false);
-          }}
-        />
-      </Modal>
     </View>
   );
 };

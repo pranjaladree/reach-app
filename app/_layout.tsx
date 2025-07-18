@@ -18,7 +18,7 @@ import { Provider } from "react-redux";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { store } from "@/store/store";
-import { migrateDbIfNeeded } from "@/database/database";
+import { migrateDbIfNeeded } from "@/database/migrations-db";
 import { PaperProvider } from "react-native-paper";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

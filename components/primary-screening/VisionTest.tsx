@@ -46,6 +46,8 @@ const VisionTest = () => {
           setScreeningItem({
             ...screeningItem,
             canReadLogmarLE: foundItem,
+            canReadLogmarLEHasError: false,
+            canReadLogmarLEErrorMessage: "",
           })
         );
       }
@@ -69,6 +71,8 @@ const VisionTest = () => {
           setScreeningItem({
             ...screeningItem,
             canReadLogmarRE: foundItem,
+            canReadLogmarREHasError: false,
+            canReadLogmarREErrorMessage: "",
           })
         );
       }
@@ -165,7 +169,7 @@ const VisionTest = () => {
     <View style={styles.box}>
       <View>
         <Text style={styles.headerTitle}>
-          Vision Test{" "}
+          Vision Test
           {`${
             screeningItem.haveSpecNow == "YES"
               ? "With Spectacle"
@@ -208,6 +212,8 @@ const VisionTest = () => {
                     items={[BLANK_DROPDOWN_MODEL, ...YES_NO_DROPDOWN_ITEMS]}
                     selectedItem={screeningItem.canReadLogmarLE}
                     onChange={canReadLogMARLEChangeHandler}
+                    isError={screeningItem.canReadLogmarLEHasError}
+                    errorMessage={screeningItem.canReadLogmarLEErrorMessage}
                   />
                 </View>
                 <View style={styles.rowItem}>
@@ -216,6 +222,8 @@ const VisionTest = () => {
                     items={[BLANK_DROPDOWN_MODEL, ...YES_NO_DROPDOWN_ITEMS]}
                     selectedItem={screeningItem.canReadLogmarRE}
                     onChange={canReadLogMARREChangeHandler}
+                    isError={screeningItem.canReadLogmarREHasError}
+                    errorMessage={screeningItem.canReadLogmarREErrorMessage}
                   />
                 </View>
               </View>

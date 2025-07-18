@@ -15,7 +15,13 @@ interface Props {
   isLoading?: boolean;
 }
 
-const CustomButton = ({ title, onPress, icon, disabled, isLoading }: Props) => {
+const CustomNegativeButton = ({
+  title,
+  onPress,
+  icon,
+  disabled,
+  isLoading,
+}: Props) => {
   return (
     <Pressable onPress={disabled ? () => {} : onPress}>
       <View style={disabled ? styles.buttonDisabled : styles.button}>
@@ -37,7 +43,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.error,
     padding: 10,
     borderRadius: 5,
   },
@@ -58,4 +64,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomButton;
+export default CustomNegativeButton;

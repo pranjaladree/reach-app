@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { setLoggedOut } from "@/store/slices/user-slice";
 import CustomButton from "../utils/CustomButton";
 import { useRouter } from "expo-router";
+import { Colors } from "@/constants/Colors";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
@@ -59,9 +60,16 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     {
       label: "Detailed Evaluation",
       icon: (color: string) => (
-        <Ionicons name="pricetag-outline" size={20} color={color} />
+        <Ionicons name="recording-outline" size={20} color={color} />
       ),
       route: "mr-tag",
+    },
+    {
+      label: "Spectacle Booking",
+      icon: (color: string) => (
+        <Ionicons name="recording-outline" size={20} color={color} />
+      ),
+      route: "spectacle-booking",
     },
     {
       label: "View QR Code",
@@ -69,17 +77,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Ionicons name="qr-code-outline" size={20} color={color} />
       ),
       route: "qr-codes",
-    },
-    {
-      label: "Spectacle Booking",
-      icon: (color: string) => (
-        <MaterialCommunityIcons
-          name="ticket-confirmation-outline"
-          size={20}
-          color={color}
-        />
-      ),
-      route: "spectacle-booking",
     },
     {
       label: "GPS Data Collection",
@@ -156,19 +153,49 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             </Pressable>
           );
         })}
-        <View style={{ padding: 10, marginTop: 20 }}>
-          <CustomButton title="Logout" onPress={handleLogout} />
+        <View style={{ padding: 10 }}>
+          <Pressable onPress={handleLogout}>
+            <View style={{ flexDirection: "row", marginLeft: 10 }}>
+              <Ionicons name="log-out" size={25} color={Colors.primary} />
+              <Text
+                style={{
+                  fontSize: 16,
+                  marginLeft: 10,
+                  color: Colors.primary,
+                  fontWeight: "600",
+                }}
+              >
+                Log Out
+              </Text>
+            </View>
+          </Pressable>
+          <View
+            style={{ borderWidth: 0.25, borderColor: "#edebe4", marginTop: 20 }}
+          ></View>
+          <View
+            style={{
+              marginTop: 20,
+              flexDirection: "row",
+              paddingLeft: 10,
+            }}
+          >
+            <View style={styles.icon}>
+              <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
+            </View>
+            <Text style={styles.label}>Version 1.0.9</Text>
+          </View>
+          {/* <CustomButton title="Logout" onPress={handleLogout} /> */}
         </View>
       </View>
       {/* Logout Button */}
-      <View style={styles.versionContainer}>
+      {/* <View style={styles.versionContainer}>
         <View style={styles.drawerItem}>
           <View style={styles.icon}>
             <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
           </View>
-          <Text style={styles.label}>V 1.0.6</Text>
+          <Text style={styles.label}>V 1.0.9</Text>
         </View>
-      </View>
+      </View> */}
     </View>
   );
 };

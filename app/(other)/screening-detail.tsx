@@ -7,9 +7,9 @@ import SpectacleStatus from "@/components/primary-screening/SpectacleStatus";
 import TLE from "@/components/primary-screening/TLE";
 import VisionTest from "@/components/primary-screening/VisionTest";
 import CustomButton from "@/components/utils/CustomButton";
+import CustomButtonOutline from "@/components/utils/CustomButtonOutline";
 import {
   BLANK_DROPDOWN_MODEL,
-  BLANK_GRID_DROPDOWN_MODEl,
   BLANK_REACH_CONFIGURATION_MODEL,
   BLANK_SCREENING_MODEL,
 } from "@/constants/BlankModels";
@@ -17,10 +17,11 @@ import {
   NORMAL_ABNORMAL_DROPDOWN_ITEMS,
   YES_NO_DROPDOWN_ITEMS,
 } from "@/constants/Data";
-import { checkPSStatus } from "@/constants/Methods";
+import { checkPSStatus, PSFieldValidator } from "@/constants/Methods";
 import {
   findReachConfigs,
   findScreeningById,
+  findStudentById,
   findUserById,
   savePrimaryScreening,
 } from "@/database/database";
@@ -50,18 +51,12 @@ const ScreeningDetails = () => {
   const [reachConfigs, setReachConfigs] = useState(
     BLANK_REACH_CONFIGURATION_MODEL
   );
+  const [studentData, setStudentData] = useState<any>();
+  console.log("Student Data", studentData);
+
   const [isQCUser, setIsQCUser] = useState(false);
-  const {
-    studentId,
-    studentName,
-    tempId,
-    classTitle,
-    section,
-    age,
-    gender,
-    schoolId,
-    isMarkedForQc,
-  } = useLocalSearchParams();
+  const { studentId, schoolId } = useLocalSearchParams();
+  console.log("STUDE", studentId);
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
   );
@@ -69,12 +64,23 @@ const ScreeningDetails = () => {
   const [isEligibleForColorVision, setIsEligibleForColorVision] =
     useState(false);
 
+  const fieldValidator = () => {
+    const { valid, item } = PSFieldValidator(screeningItem);
+    dispatch(setScreeningItem(item));
+    return valid;
+  };
+
   const saveScreeningHandler = async () => {
+    let nonEditable = false;
+    if (!isQCUser && isQCPopupEligible) {
+      nonEditable = false;
+    }
     const response = await savePrimaryScreening(
       db,
       new ScreeningModel({
         ...screeningItem,
-        isQCDone: isQCUser,
+        isQCDone: isQCPopupEligible,
+        isNonEditable: nonEditable,
         psStatus: "NORMAL",
       })
     );
@@ -96,6 +102,10 @@ const ScreeningDetails = () => {
   };
 
   const addScreeningHandler = () => {
+    if (!fieldValidator()) {
+      return;
+    }
+
     // Check Ps Status
     const response = checkPSStatus(
       screeningItem,
@@ -130,8 +140,11 @@ const ScreeningDetails = () => {
 
   const getAutorefStatusHandler = () => {
     console.log("GETTING AUTOREF.....");
+    if (!studentData) {
+      return;
+    }
     const response: any = db.getFirstSync(
-      `SELECT autoRefAvailable,visionCenterId FROM schools WHERE id=${schoolId}`
+      `SELECT autoRefAvailable,visionCenterId FROM schools WHERE id=${studentData?.schoolId}`
     );
     if (response) {
       setVisionCenterId(response.visionCenterId);
@@ -216,22 +229,6 @@ const ScreeningDetails = () => {
         description: "",
         displayOrder: 1,
       });
-      //   {
-      //     "appointmentDate": "2025-06-26",
-      //     "colorVisionLE": "",
-      //     "colorVisionRE": "",
-      //     "facilityId": 2,
-      //     "facilityType": "VISION CENTER",
-      //     "instructionForReferralCenter": "inst",
-      //     "isEditable": "1",
-      //     "ocularList": "",
-      //     "otherReason": "other",
-      //     "plus2DTestLE": "",
-      //     "plus2DTestRE": "",
-      //     "psStatus": "REFER",
-      //     "referralReason": "Can not read logmar 0.2",
-      //     "torchlightFindings": "",
-      // }
       dispatch(
         setScreeningItem(
           new ScreeningModel({
@@ -240,13 +237,23 @@ const ScreeningDetails = () => {
             schoolId: schoolId?.toString(),
             isNormal: false,
             usingSpectacle: response.usingSpectacle,
+            usingSpecHasError: false,
+            usingSpecErrorMessage: "",
             haveSpecNow: response.haveSpecNow,
+            haveSpecNowHasError: false,
+            haveSpecNowErrorMessage: "",
             specCondition: response.specCondition,
+            specConditionHasError: false,
+            specConditionErrorMessage: "",
             isVisionTestVisible:
               response.unableToPerformVisionTest != "" ? true : false,
             unableToPerformVisionTest: response.unableToPerformVisionTest,
             canReadLogmarLE: canReadLE ? canReadLE : BLANK_DROPDOWN_MODEL,
             canReadLogmarRE: canReadRE ? canReadRE : BLANK_DROPDOWN_MODEL,
+            canReadLogmarLEHasError: false,
+            canReadLogmarLEErrorMessage: "",
+            canReadLogmarREHasError: false,
+            canReadLogmarREErrorMessage: "",
             isAutoRefVisible: false,
             visionAutoRefLE: visonAutoLE ? visonAutoLE : BLANK_DROPDOWN_MODEL,
             visionAutoRefRE: visionAutoRE ? visionAutoRE : BLANK_DROPDOWN_MODEL,
@@ -287,9 +294,9 @@ const ScreeningDetails = () => {
             isBinacularTestRequired: false,
             isColorVisionTestRequired: false,
             isTleRefer: false,
-            isQCDone: false,
-            isPsDone: false,
-            isEditable: false,
+            isQCDone: response.isQCDone,
+            isPsDone: response.isPsDone,
+            isNonEditable: response.isEditable,
           })
         )
       );
@@ -325,18 +332,28 @@ const ScreeningDetails = () => {
 
   useEffect(() => {
     console.log("USER TYpe is QC", isQCUser);
-    console.log("IS MArked", isMarkedForQc?.toString());
-    if (!isQCUser && isMarkedForQc == "1") {
+    console.log("IS MArked", studentData?.isMarkedForQc?.toString());
+    if (!isQCUser && studentData?.isMarkedForQc == "1") {
       setIsQCPopupEligible(true);
     } else {
       setIsQCPopupEligible(false);
     }
-  }, [isQCUser, isMarkedForQc]);
+  }, [isQCUser, studentData?.isMarkedForQc]);
 
   const getReachConfigsHandler = async () => {
     const response: any = await findReachConfigs(db);
     if (response) {
       setReachConfigs(response);
+    }
+  };
+
+  const getStudentDataHandler = async () => {
+    if (studentId) {
+      const response = await findStudentById(db, studentId.toString());
+      console.log("Reso", response);
+      if (response) {
+        setStudentData(response);
+      }
     }
   };
 
@@ -346,10 +363,14 @@ const ScreeningDetails = () => {
     }
   }, [userId]);
 
-  useEffect(() => {}, [isQCUser]);
+  useEffect(() => {
+    if (!isQCUser) {
+    }
+  }, [isQCUser]);
 
   useFocusEffect(
     useCallback(() => {
+      getStudentDataHandler();
       getExistingData();
       getAutorefStatusHandler();
       getReachConfigsHandler();
@@ -394,15 +415,17 @@ const ScreeningDetails = () => {
       <ScrollView style={styles.screen}>
         <View style={styles.headerBox}>
           <View>
-            <Text style={styles.title}>{tempId}</Text>
-            <Text style={styles.title}>{studentName}</Text>
+            <Text style={styles.title}>{studentData?.tempId}</Text>
+            <Text style={styles.title}>{`${studentData?.firstName}  ${
+              studentData?.middleName ? studentData?.middleName : ""
+            }  ${studentData?.lastName ? studentData?.lastName : ""}`}</Text>
           </View>
           <View>
             <Text style={styles.title}>
-              {gender}/{age}
+              {studentData?.gender}/{studentData?.age}
             </Text>
             <Text style={styles.title}>
-              {classTitle}/{section}
+              {studentData?.classTitle}/{studentData?.section}
             </Text>
           </View>
         </View>
@@ -452,12 +475,13 @@ const ScreeningDetails = () => {
       </ScrollView>
       <View style={styles.action}>
         <View style={styles.rowItem}>
-          <CustomButton
+          <CustomButtonOutline
             onPress={() => {
               router.push({
                 pathname: "/(other)/update-student",
                 params: {
                   studentId: studentId,
+                  schoolId: schoolId,
                 },
               });
             }}
@@ -466,9 +490,6 @@ const ScreeningDetails = () => {
         </View>
         <View style={styles.rowItem}>
           <CustomButton title="Checkout" onPress={addScreeningHandler} />
-          {/* <Button onPress={addScreeningHandler} mode="contained">
-            Checkout
-          </Button> */}
         </View>
       </View>
       <Portal>
@@ -509,7 +530,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 20,
+    paddingTop: 10,
+    paddingBottom: 50,
     borderTopWidth: 0.2,
   },
   rowItem: {

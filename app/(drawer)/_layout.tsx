@@ -101,9 +101,6 @@ export default function Layout() {
             drawerIcon: ({ color, size }) => (
               <Ionicons name="home-outline" size={size} color={color} />
             ),
-            headerRight: () => {
-              return <Button>Open</Button>;
-            },
           }}
         />
         <Drawer.Screen
@@ -157,6 +154,9 @@ export default function Layout() {
             drawerIcon: ({ color, size }) => (
               <Ionicons name="pricetag-outline" size={size} color={color} />
             ),
+            headerRight: () => {
+              return <Button>Open</Button>;
+            },
           }}
         />
         <Drawer.Screen

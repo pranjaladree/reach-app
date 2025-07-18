@@ -54,6 +54,36 @@ export const GENDER_RADIO_ITEMS = [
   new RadioItemModel({ id: 3, value: "TRANSGENDER", label: "TRANSGENDER" }),
 ];
 
+export const TARGET_GROUP_ITEMS = [
+  new RadioItemModel({ id: 1, value: "All", label: "All" }),
+  new RadioItemModel({ id: 1, value: "New", label: "NEW" }),
+  new RadioItemModel({
+    id: 2,
+    label: "Mapped Follow-up Class",
+    value: "MAP FOLLOWUP",
+  }),
+  new RadioItemModel({
+    id: 3,
+    label: "Failed",
+    value: "FAILED LAST YEAR",
+  }),
+  new RadioItemModel({
+    id: 4,
+    label: "Absent",
+    value: "ABSENT LAST YEAR",
+  }),
+  new RadioItemModel({
+    id: 5,
+    label: "Not Screened Previous Year",
+    value: "NOT SCREEN LAST YEAR",
+  }),
+  new RadioItemModel({
+    id: 6,
+    label: "Screened Previous Year",
+    value: "SCREEN LAST YEAR",
+  }),
+];
+
 export const YES_NO_DROPDOWN_ITEMS = [
   new DropdownModel({ id: "1", value: "YES", label: "YES" }),
   new DropdownModel({ id: "2", value: "NO", label: "NO" }),

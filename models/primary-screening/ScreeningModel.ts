@@ -7,12 +7,22 @@ export class ScreeningModel {
   schoolId: string;
   isNormal: boolean;
   usingSpectacle: string;
+  usingSpecHasError: boolean;
+  usingSpecErrorMessage: string;
   haveSpecNow: string;
+  haveSpecNowHasError: boolean;
+  haveSpecNowErrorMessage: string;
   specCondition: string;
+  specConditionHasError: boolean;
+  specConditionErrorMessage: string;
   isVisionTestVisible: boolean;
   unableToPerformVisionTest: string;
   canReadLogmarLE: DropdownModel;
   canReadLogmarRE: DropdownModel;
+  canReadLogmarLEHasError: boolean;
+  canReadLogmarLEErrorMessage: string;
+  canReadLogmarREHasError: boolean;
+  canReadLogmarREErrorMessage: string;
   isAutoRefVisible: boolean;
   visionAutoRefLE: DropdownModel;
   visionAutoRefRE: DropdownModel;
@@ -55,7 +65,7 @@ export class ScreeningModel {
   isTleRefer: boolean;
   isQCDone: boolean;
   isPsDone: boolean;
-  isEditable: boolean;
+  isNonEditable: boolean;
 
   constructor({
     id,
@@ -63,12 +73,22 @@ export class ScreeningModel {
     schoolId,
     isNormal,
     usingSpectacle,
+    usingSpecHasError,
+    usingSpecErrorMessage,
     haveSpecNow,
+    haveSpecNowHasError,
+    haveSpecNowErrorMessage,
     specCondition,
+    specConditionHasError,
+    specConditionErrorMessage,
     isVisionTestVisible,
     unableToPerformVisionTest,
     canReadLogmarLE,
     canReadLogmarRE,
+    canReadLogmarLEHasError,
+    canReadLogmarLEErrorMessage,
+    canReadLogmarREHasError,
+    canReadLogmarREErrorMessage,
     isAutoRefVisible,
     visionAutoRefLE,
     visionAutoRefRE,
@@ -111,19 +131,29 @@ export class ScreeningModel {
     isTleRefer,
     isQCDone,
     isPsDone,
-    isEditable,
+    isNonEditable,
   }: {
     id: string;
     studentId: string;
     schoolId: string;
     isNormal: boolean;
     usingSpectacle: string;
+    usingSpecHasError: boolean;
+    usingSpecErrorMessage: string;
     haveSpecNow: string;
+    haveSpecNowHasError: boolean;
+    haveSpecNowErrorMessage: string;
     specCondition: string;
+    specConditionHasError: boolean;
+    specConditionErrorMessage: string;
     isVisionTestVisible: boolean;
     unableToPerformVisionTest: string;
     canReadLogmarLE: DropdownModel;
     canReadLogmarRE: DropdownModel;
+    canReadLogmarLEHasError: boolean;
+    canReadLogmarLEErrorMessage: string;
+    canReadLogmarREHasError: boolean;
+    canReadLogmarREErrorMessage: string;
     isAutoRefVisible: boolean;
     visionAutoRefLE: DropdownModel;
     visionAutoRefRE: DropdownModel;
@@ -166,19 +196,29 @@ export class ScreeningModel {
     isTleRefer: boolean;
     isQCDone: boolean;
     isPsDone: boolean;
-    isEditable: boolean;
+    isNonEditable: boolean;
   }) {
     this.id = id;
     this.studentId = studentId;
     this.schoolId = schoolId;
     this.isNormal = isNormal;
     this.usingSpectacle = usingSpectacle;
+    this.usingSpecHasError = usingSpecHasError;
+    this.usingSpecErrorMessage = usingSpecErrorMessage;
     this.haveSpecNow = haveSpecNow;
+    this.haveSpecNowHasError = haveSpecNowHasError;
+    this.haveSpecNowErrorMessage = haveSpecNowErrorMessage;
     this.specCondition = specCondition;
+    this.specConditionHasError = specConditionHasError;
+    this.specConditionErrorMessage = specConditionErrorMessage;
     this.isVisionTestVisible = isVisionTestVisible;
     this.unableToPerformVisionTest = unableToPerformVisionTest;
     this.canReadLogmarLE = canReadLogmarLE;
     this.canReadLogmarRE = canReadLogmarRE;
+    this.canReadLogmarLEHasError = canReadLogmarLEHasError;
+    this.canReadLogmarLEErrorMessage = canReadLogmarLEErrorMessage;
+    this.canReadLogmarREHasError = canReadLogmarREHasError;
+    this.canReadLogmarREErrorMessage = canReadLogmarREErrorMessage;
     this.isAutoRefVisible = isAutoRefVisible;
     this.visionAutoRefLE = visionAutoRefLE;
     this.visionAutoRefRE = visionAutoRefRE;
@@ -221,6 +261,6 @@ export class ScreeningModel {
     this.isTleRefer = isTleRefer;
     this.isQCDone = isQCDone;
     this.isPsDone = isPsDone;
-    this.isEditable = isEditable;
+    this.isNonEditable = isNonEditable;
   }
 }

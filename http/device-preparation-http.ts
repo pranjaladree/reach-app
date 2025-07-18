@@ -52,8 +52,10 @@ export const getStudentBySchoolId = async (token: string, schoolId: string) => {
         facilityType: "",
         facilityName: "",
         isUpdated: false,
-        targetGroup: "",
-        lastPSStatus: "",
+        targetGroup: item.annualFollowupScreeningStatus
+          ? item.annualFollowupScreeningStatus?.targetGroup
+          : "",
+        lastPSStatus: item.annualFollowupScreeningStatus ? item.psStatus : "",
         lastReasonForReferral: "",
         lastReportDate: "",
         lastSpectacleStatus: "",

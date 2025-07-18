@@ -82,6 +82,7 @@ const DevicePreparation = () => {
       dayjs(selected).format("YYYY-MM-DD"),
       selectedActivityType.value
     );
+    console.log(res);
     if (res) dispatch(setSchools(res));
     setIsSchoolLoading(false);
   };

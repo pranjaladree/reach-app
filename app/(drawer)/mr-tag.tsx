@@ -1,4 +1,5 @@
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
+import ReadStudent from "@/components/qr/ReadStudent";
 import CustomButton from "@/components/utils/CustomButton";
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomInput from "@/components/utils/CustomInput";
@@ -22,19 +23,19 @@ import {
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { FilterModel } from "@/models/ui/FilterModel";
 import { RadioItemModel } from "@/models/ui/RadioItemModel";
-import { setSchools } from "@/store/slices/school-slice";
 import { setFilter, setStudents } from "@/store/slices/student-slice";
-import { RootState } from "@/store/store";
-import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
-import { Button } from "react-native-paper";
+import { View, Text, Pressable, Modal } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 const MRTag = () => {
   const db = useSQLiteContext();
   const dispatch = useDispatch();
+  const [isScanQR, setIsScanQR] = useState(false);
+  const navigation = useNavigation();
   const router = useRouter();
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
   const [sectionItems, setSectionItems] = useState<DropdownModel[]>([]);
@@ -190,6 +191,24 @@ const MRTag = () => {
     // getClassesHandler();
   }, []);
 
+  useEffect(() => {
+    // Use `setOptions` to update the button that we previously specified
+    // Now the button includes an `onPress` handler to update the count
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{ padding: 10, marginRight: 10 }}>
+          <Pressable
+            onPress={() => {
+              setIsScanQR(true);
+            }}
+          >
+            <Ionicons name="qr-code-outline" size={25} />
+          </Pressable>
+        </View>
+      ),
+    });
+  }, [navigation]);
+
   return (
     <View style={{ padding: 20 }}>
       <View>
@@ -258,6 +277,14 @@ const MRTag = () => {
       {/* <Button onPress={getStudentsHandler} mode="contained">
         Search
       </Button> */}
+
+      <Modal visible={isScanQR}>
+        <ReadStudent
+          onClose={() => {
+            setIsScanQR(false);
+          }}
+        />
+      </Modal>
     </View>
   );
 };

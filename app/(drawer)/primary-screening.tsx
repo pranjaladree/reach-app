@@ -5,11 +5,16 @@ import CustomButton from "@/components/utils/CustomButton";
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomInput from "@/components/utils/CustomInput";
 import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
-import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import {
+  BLANK_DROPDOWN_MODEL,
+  BLANK_SCHOOL_MODEL,
+} from "@/constants/BlankModels";
+import {
+  ACTIVITY_TYPE_ITEMS,
   GENDER_RADIO_ITEMS,
   RESULT_RADIO_ITEMS,
   STATUS_RADIO_ITEMS,
+  TARGET_GROUP_ITEMS,
 } from "@/constants/Data";
 import {
   findAllClassesDropdowns,
@@ -17,6 +22,7 @@ import {
   findUniqueSections,
   getSchoolsDropdownFromDB,
 } from "@/database/database";
+import { SchoolModel } from "@/models/school/SchoolModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { FilterModel } from "@/models/ui/FilterModel";
 import { RadioItemModel } from "@/models/ui/RadioItemModel";
@@ -37,6 +43,7 @@ const PrimaryScreening = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
+  const [schoolDetail, setSchoolDetail] = useState(BLANK_SCHOOL_MODEL);
 
   const selectSchoolHandler = (val?: string) => {
     if (val == "SELECT") {
@@ -99,6 +106,12 @@ const PrimaryScreening = () => {
     setResult(val);
   };
 
+  const [targetGroup, setTagetGroup] = useState("");
+
+  const targetGroupChangeHandler = (val: string) => {
+    setTagetGroup(val);
+  };
+
   const getStudentsHandler = async () => {
     if (selectedSchool.id == "0") {
       return;
@@ -139,9 +152,35 @@ const PrimaryScreening = () => {
     }
   };
 
+  const getSchoolHandler = async (id: string) => {
+    const response: any = await db.getFirstAsync(
+      `SELECT * FROM schools WHERE id="${id}"`
+    );
+    console.log("FOLLOW %%%%%%%%%%%%", response);
+    if (response) {
+      setSchoolDetail(
+        new SchoolModel({
+          id: response.id,
+          schoolId: response.id,
+          schoolName: response.schoolName,
+          classFromId: "",
+          classUptoId: "",
+          latitude: 0,
+          longitude: 0,
+          visionCenterId: "",
+          projectId: "",
+          isAutorefAvailable: false,
+          activityType: response.activityType,
+          isFollowupSchool: false,
+        })
+      );
+    }
+  };
+
   useEffect(() => {
     if (selectedSchool.id != "0") {
       getUniqueClassesHandler();
+      getSchoolHandler(selectedSchool.id);
     }
   }, [selectedSchool]);
 
@@ -284,6 +323,16 @@ const PrimaryScreening = () => {
           />
         </View>
       </View>
+      {schoolDetail.activityType == ACTIVITY_TYPE_ITEMS[2].value && (
+        <View style={{ paddingHorizontal: 15 }}>
+          <CustomRadioGroup
+            label="Target Groups"
+            items={TARGET_GROUP_ITEMS}
+            selectedOption={targetGroup}
+            onChange={targetGroupChangeHandler}
+          />
+        </View>
+      )}
       <View style={{ padding: 10 }}>
         <CustomButton title="Search" onPress={getStudentsHandler} />
       </View>

@@ -1,4 +1,8 @@
-import { BLANK_USER_MODEL } from "@/constants/BlankModels";
+import {
+  BLANK_SCREENING_MODEL,
+  BLANK_STUDENT_MODEL,
+  BLANK_USER_MODEL,
+} from "@/constants/BlankModels";
 import { AddModel } from "@/models/other-masters/AddModel";
 import { AxisModel } from "@/models/other-masters/AxisModel";
 import { ClassModel } from "@/models/other-masters/ClassModel";
@@ -34,476 +38,7 @@ import { FilterModel } from "@/models/ui/FilterModel";
 import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
 import { UserModel } from "@/models/user/UserModel";
 import { ResponseModel } from "@/models/utils/ResponseModel";
-import { setScreeningItem } from "@/store/slices/student-slice";
 import { SQLiteDatabase } from "expo-sqlite";
-
-export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  await db.execAsync(`
-  PRAGMA journal_mode = 'wal';
-  CREATE TABLE IF NOT EXISTS classes (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  minAge INTEGER,
-  maxAge INTEGER, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-  
-  CREATE TABLE IF NOT EXISTS sphs (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS cyls (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS axis (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS adds (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS dvas (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS frameMaterials (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS lensMaterials (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS lensSurfaceCoatings (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS lensTints (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS lensTypes (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS modeOfWears (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS nvas (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS phs (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS specialInstructions (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS specialityLens (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS hospitals (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-  
-  CREATE TABLE IF NOT EXISTS visionCenters (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS otherFacilities (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-  
-  CREATE TABLE IF NOT EXISTS reachConfigs (
-  id INTEGER PRIMARY KEY NOT NULL,
-  isNpcTest BOOLEAN,
-  isCoverTest BOOLEAN, 
-  isPlus2DTest BOOLEAN,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS reasonForRefferals (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS diagnosisMaster (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-  
-  CREATE TABLE IF NOT EXISTS ocularComplaints (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,description TEXT, 
-  displayOrder INTEGER,
-  isReferCase BOOLEAN, 
-  isBinacular BOOLEAN, 
-  ocularType TEXT,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-  
-  CREATE TABLE IF NOT EXISTS torchlightFindings (
-  id INTEGER PRIMARY KEY NOT NULL,
-  title TEXT,
-  description TEXT, 
-  displayOrder INTEGER,
-  action TEXT,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-
-  CREATE TABLE IF NOT EXISTS schools (
-  id INTEGER PRIMARY KEY NOT NULL,
-  schoolId TEXT, 
-  schoolName TEXT NOT NULL,
-  classFromId INTEGER,
-  classUptoId INTEGER, 
-  latitude REAL,
-  longitude REAL,
-  projectId INTEGER,
-  visionCenterId INTEGER, 
-  autoRefAvailable BOOLEAN, 
-  activityType TEXT,
-  followupSchool BOOLEAN,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')));
-  
-  CREATE TABLE IF NOT EXISTS students (
-  id TEXT PRIMARY KEY NOT NULL, 
-  studentId TEXT NOT NULL,
-  tempId TEXT NOT NULL,
-  firstName TEXT NOT NULL,
-  middleName TEXT,
-  lastName TEXT,
-  classId INTEGER,
-  section TEXT,
-  rollNo INTEGER,
-  age INTEGER, 
-  gender TEXT,
-  specialNeed TEXT,
-  relation TEXT,
-  nextOfKin TEXT,
-  contactNo TEXT,
-  relationshipWithStudent TEXT,
-  schoolId INTEGER,
-  targetGroup TEXT,
-  isUpdated BOOLEAN,
-  isMarkedForQc BOOLEAN,
-  lastPSStatus TEXT,
-  lastReasonForReferral TEXT,
-  lastReportDate TEXT,
-  lastSpectacleStatus TEXT,
-  lastAnySurgeryDone TEXT,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (schoolId) REFERENCES schools(id),
-  FOREIGN KEY (classId) REFERENCES classes(id));
-
-  CREATE TABLE IF NOT EXISTS screenings (
-  id INTEGER PRIMARY KEY NOT NULL,
-  usingSpectacle TEXT,
-  haveSpecNow TEXT, 
-  specCondition TEXT,
-  unableToPerformVisionTest TEXT,
-  canReadLogmarLE TEXT,
-  canReadLogmarRE TEXT,
-  visionAutoRefLE TEXT,
-  visionAutoRefRE TEXT,
-  acceptanceSPHLE TEXT,
-  acceptanceSPHRE TEXT,
-  acceptanceCYLLE TEXT,
-  acceptanceCYLRE TEXT,
-  acceptanceAXISLE TEXT,
-  acceptanceAXISRE TEXT,
-  IPDBoth TEXT,
-  torchlightCheckLE TEXT,
-  torchlightCheckRE TEXT,
-  torchlightFindings TEXT,
-  ocularComplaint TEXT,
-  ocularList TEXT,
-  npcTest TEXT,
-  coverTest TEXT,
-  plus2DTestLE TEXT,
-  plus2DTestRE TEXT,
-  colorVisionLE TEXT,
-  colorVisionRE TEXT,
-  psStatus TEXT,referralReason TEXT,
-  appointmentDate TEXT,
-  mobileNo TEXT,
-  facilityType TEXT,
-  facilityId INTEGER,
-  otherReason TEXT,
-  instructionForReferralCenter TEXT,
-  psUpdatedAt TEXT,
-  screeningDoneBy TEXT,
-  screenerType TEXT,
-  isEditable TEXT,
-  isQcDone BOOLEAN,
-  studentId INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (studentId) REFERENCES students(id));
-
-  CREATE TABLE IF NOT EXISTS mrTags (
-  id TEXT PRIMARY KEY NOT NULL, 
-  mrNo TEXT, 
-  visitDate TEXT,
-  facilityType TEXT,
-  facilityId TEXT,
-  studentId INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (studentId) REFERENCES students(id));
-
-  CREATE TABLE IF NOT EXISTS visualAcuity (
-  id INTEGER PRIMARY KEY NOT NULL, 
-  visualExamWithSpecsDvaLe TEXT,
-  visualExamWithSpecsDvaRe TEXT,
-  visualExamWithSpecsNvaLe TEXT,
-  visualExamWithSpecsNvaRe TEXT,
-  visualExamWithSpecsPhLe TEXT,
-  visualExamWithSpecsPhRe TEXT,
-  visualExamWithoutSpecsDvaLe TEXT,
-  visualExamWithoutSpecsDvaRe TEXT,
-  visualExamWithoutSpecsNvaLe TEXT,
-  visualExamWithoutSpecsNvaRe TEXT,
-  visualExamWithoutSpecsPhLe TEXT,
-  visualExamWithoutSpecsPhRe TEXT,
-  mrId INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (mrId) REFERENCES mrTags(id));
-
-  CREATE TABLE IF NOT EXISTS refraction (
-  id INTEGER PRIMARY KEY NOT NULL, 
-  refractionPgpSphLe TEXT,
-  refractionPgpSphRe TEXT,
-  refractionPgpCylLe TEXT,
-  refractionPgpCylRe TEXT,
-  refractionPgpAxisLe TEXT,
-  refractionPgpAxisRe TEXT,
-  refractionPgpAddLe TEXT,
-  refractionPgpAddRe TEXT,
-  refractionDRYRETINOSphRe TEXT,
-  refractionDRYRETINOSphLe TEXT,
-  refractionDRYRETINOCylRe TEXT,
-  refractionDRYRETINOCylLe TEXT,
-  refractionDRYRETINOAXIS_RE TEXT,
-  refractionDRYRETINOAXIS_LE TEXT,
-  refractionCYCLORETINOSphRe TEXT,
-  refractionCYCLORETINOSphLe TEXT,
-  refractionCYCLORETINOCylRe TEXT,
-  refractionCYCLORETINOCylLe TEXT,
-  refractionCYCLORETINO_AXIS_RE TEXT,
-  refractionCYCLORETINO_AXIS_LE TEXT,
-  refractionAcceptanceSphRe TEXT,
-  refractionAcceptanceSphLe TEXT,
-  refractionAcceptanceCylRe TEXT,
-  refractionAcceptanceCylLe TEXT,
-  refractionAcceptanceAxisRe TEXT,
-  refractionAcceptanceAxisLe TEXT,
-  refractionBCVARe TEXT,
-  refractionBCVALe TEXT,
-  refractionAddSphRe TEXT,
-  refractionAddSphLe TEXT,
-  refractionBCVASphLe TEXT,
-  refractionAddNvaRe TEXT,
-  refractionAddNvaLe TEXT,
-  refractionPapillaryDistSPhRe TEXT,
-  refractionPapillaryDistIPdRe TEXT,
-  refractionPapillaryDistSPhLe TEXT,
-  refractionRemarksRe TEXT,
-  refractionRemarksLe TEXT,
-  refractionLensMaterial TEXT,
-  refractionFrameMaterial TEXT,
-  refractionLensType TEXT,
-  refractionSpecialityLens TEXT,
-  refractionModeOfWear TEXT,
-  refractionLensSurface_Coating TEXT,
-  refractionLensTint TEXT,
-  refractionSpecialInstruction TEXT,
-  refractionRemarks2 TEXT,
-  spectaclesPrescribed BOOLEAN,
-  specialInstruction TEXT,
-  mrId INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (mrId) REFERENCES mrTags(id));
-
-  CREATE TABLE IF NOT EXISTS advice (
-  id TEXT PRIMARY KEY NOT NULL,   
-  isSpectaclePrescribed BOOLEAN,
-  isMedicinePrescribed BOOLEAN,
-  isContinueWithSameGlass BOOLEAN,
-  isNoTreatmentRequired BOOLEAN,
-  isPatientRefer BOOLEAN,
-  referredFacilityType TEXT,
-  referredFacilityId TEXT,
-  referralReason TEXT,
-  isSurgeryRequired BOOLEAN,
-  surgeryType TEXT,
-  otherComments TEXT,
-  mrId INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (mrId) REFERENCES mrTags(id));
-
-  CREATE TABLE IF NOT EXISTS diagnosis (
-  id INTEGER PRIMARY KEY NOT NULL,
-  diagnosisItems TEXT,
-  mrId INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (mrId) REFERENCES mrTags(id));
-
-  CREATE TABLE IF NOT EXISTS spectacleBooking (
-  id TEXT PRIMARY KEY NOT NULL,
-  frameName TEXT,   
-  bookingDate TEXT,
-  mrId INTEGER,
-  createdAt DATETIME DEFAULT (datetime('now')),
-  updatedAt DATETIME DEFAULT (datetime('now')),
-  FOREIGN KEY (mrId) REFERENCES mrTags(id));
-
-  CREATE TABLE IF NOT EXISTS users (
-  id TEXT PRIMARY KEY NOT NULL,
-  userName TEXT,
-  password TEXT,
-  firstName TEXT,
-  middleName TEXT,
-  lastName TEXT,
-  designation TEXT,
-  isPartnerAgreement BOOLEAN,
-  isUserAgreement BOOLEAN,
-  isPIIAgreement BOOLEAN,
-  isDevicePreparation BOOLEAN,
-  isDataSync BOOLEAN,
-  isQualityCheck BOOLEAN
-  );
-`);
-}
-
-export async function dropTables(db: SQLiteDatabase) {
-  try {
-    const response = await db.execAsync(`
-    PRAGMA journal_mode = 'wal';
-    DROP TABLE classes;
-    DROP TABLE sphs;
-    DROP TABLE cyls;
-    DROP TABLE axis;  
-    DROP TABLE adds;
-    DROP TABLE dvas;
-    DROP TABLE frameMaterials;
-    DROP TABLE lensMaterials;
-    DROP TABLE lensSurfaceCoatings;
-    DROP TABLE lensTints;
-    DROP TABLE lensTypes;
-    DROP TABLE modeOfWears;
-    DROP TABLE nvas;
-    DROP TABLE phs;
-    DROP TABLE specialInstructions;
-    DROP TABLE specialityLens;
-    DROP TABLE hospitals;
-    DROP TABLE visionCenters;
-    DROP TABLE otherFacilities;
-    DROP TABLE reasonForRefferals;
-    DROP TABLE ocularComplaints;
-    DROP TABLE torchlightFindings;
-    DROP TABLE schools;
-    DROP TABLE students;
-    DROP TABLE screenings;
-    DROP TABLE mrTags;
-    DROP TABLE users;
-   `);
-    console.log("DB DROPS", response);
-  } catch (err) {
-    console.log(err);
-  }
-}
 
 export const saveSchool = async (
   db: SQLiteDatabase,
@@ -747,11 +282,11 @@ export const updateStudent = async (db: SQLiteDatabase, item: StudentModel) => {
 };
 
 export const findStudentById = async (db: SQLiteDatabase, id: string) => {
+  console.log("IDDD&&&&&&&&&&&&&&&&&&&&&&&&", id);
   try {
     console.log("GET STUDENTS ...");
     const response = await db.getFirstAsync(
-      "SELECT  * FROM students WHERE id=?;",
-      [id]
+      `SELECT  students.*,classes.title as classTitle FROM students JOIN classes ON students.classId = classes.id WHERE students.id="${id}"`
     );
     return response;
   } catch (err) {
@@ -777,7 +312,7 @@ export const savePrimaryScreening = async (
   console.log("screening Item", sceeningItem);
   try {
     const response = db.runSync(
-      "INSERT OR REPLACE INTO screenings (id,usingSpectacle,haveSpecNow,specCondition,unableToPerformVisionTest,canReadLogmarLE,canReadLogmarRE,visionAutoRefLE,visionAutoRefRE,acceptanceSPHLE,acceptanceSPHRE,acceptanceCYLLE,acceptanceCYLRE,acceptanceAXISLE,acceptanceAXISRE,IPDBoth,torchlightCheckLE,torchlightCheckRE,torchlightFindings,ocularComplaint,ocularList,npcTest,coverTest,plus2DTestLE,plus2DTestRE,colorVisionLE,colorVisionRE,psStatus,referralReason,appointmentDate,mobileNo,facilityType,facilityId,otherReason,instructionForReferralCenter,studentId,psUpdatedAt,screeningDoneBy,screenerType,isQCDone,isEditable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+      "INSERT OR REPLACE INTO screenings (id,usingSpectacle,haveSpecNow,specCondition,unableToPerformVisionTest,canReadLogmarLE,canReadLogmarRE,visionAutoRefLE,visionAutoRefRE,acceptanceSPHLE,acceptanceSPHRE,acceptanceCYLLE,acceptanceCYLRE,acceptanceAXISLE,acceptanceAXISRE,IPDBoth,torchlightCheckLE,torchlightCheckRE,torchlightFindings,ocularComplaint,ocularList,npcTest,coverTest,plus2DTestLE,plus2DTestRE,colorVisionLE,colorVisionRE,psStatus,referralReason,appointmentDate,mobileNo,facilityType,facilityId,otherReason,instructionForReferralCenter,studentId,psUpdatedAt,screeningDoneBy,screenerType,isQCDone,isNonEditable) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       sceeningItem.id,
       sceeningItem.usingSpectacle,
       sceeningItem.haveSpecNow,
@@ -852,7 +387,7 @@ export const savePrimaryScreening = async (
       "1",
       "PS",
       sceeningItem.isQCDone,
-      !sceeningItem.isQCDone
+      sceeningItem.isNonEditable
     );
 
     // If mobileNo update
@@ -1329,9 +864,9 @@ export const saveMRTag = async (db: SQLiteDatabase, mrTagItem: MRTagModel) => {
 export const findOneMRTag = async (db: SQLiteDatabase, studentId: string) => {
   try {
     const response: any = await db.getFirstAsync(
-      `SELECT * FROM mrTags WHERE studentId=${studentId}`
+      `SELECT * FROM mrTags WHERE studentId="${studentId}"`
     );
-    console.log("RESpons", response);
+    console.log("RESpons **** NMSKKKKK", response);
     if (response) {
       return new ResponseModel({
         data: new MRTagModel({
@@ -3037,6 +2572,89 @@ export const removeSchool = async (db: SQLiteDatabase, schoolId: string) => {
     });
     console.log("Response", response);
     return response;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const saveQRData = async (db: SQLiteDatabase, data: any) => {
+  console.log("QR  DD &&&&&&&&&&&&&&&&&&&&&&&&", data);
+  let item7 = JSON.parse(data);
+  console.log("Item 7 &&&", item7.id);
+  try {
+    const existingStudent = await db.getFirstAsync(
+      `SELECT * FROM students WHERE id="${item7.id}"`
+    );
+    console.log(existingStudent);
+    if (existingStudent) {
+      console.log(existingStudent);
+      //Upate Details
+      const responseScreening = await db.runAsync(
+        `INSERT OR REPLACE INTO screenings (id,studentId,psStatus,referralReason) VALUES (?,?,?,?)`,
+        item7.id,
+        item7.id,
+        item7.psStatus,
+        item7.referralReason
+      );
+      console.log("SRECCCC", responseScreening);
+      return responseScreening;
+    } else {
+      //Add New Student & Screening
+      saveNewStudent(
+        db,
+        new StudentModel({
+          id: item7.id,
+          studentId: item7.id,
+          tempId: item7.id,
+          firstName: item7.firstName,
+          middleName: item7.middleName,
+          lastName: item7.lastName,
+          classId: item7.classId,
+          classTitle: "",
+          section: "",
+          rollNo: "0",
+          gender: "",
+          age: "0",
+          dob: "",
+          relation: "",
+          nextOfKin: "",
+          specialNeed: "",
+          session: "",
+          contactPersonName: "",
+          contactPersonMobileNo: "",
+          relationshipWithStudent: "",
+          schoolId: item7.schoolId,
+          schoolName: "",
+          isActive: "",
+          psStatus: "",
+          isMarkForQC: false,
+          mrNo: "",
+          facilityType: "",
+          facilityName: "",
+          isUpdated: true,
+          targetGroup: "",
+          lastPSStatus: "",
+          lastReasonForReferral: "",
+          lastReportDate: "",
+          lastSpectacleStatus: "",
+          lastAnySurgeryDone: "",
+        })
+      );
+      console.log("ITEMMMMMMMM 7", item7);
+      const responseScreening = await db.runAsync(
+        `INSERT OR REPLACE INTO screenings (id,studentId,psStatus,referralReason) VALUES (?,?,?,?)`,
+        item7.id,
+        item7.id,
+        item7.psStatus,
+        item7.referralReason
+      );
+      console.log("SRECCCC REE @2", responseScreening);
+      return responseScreening;
+    }
+
+    // const response: any = await db.withTransactionAsync(async () => {
+    //   db.runAsync(`INSERT INTO students VALUES ()`);
+    // });
   } catch (err) {
     console.log(err);
   }

@@ -21,8 +21,8 @@ export const getSchoolActivities = async (
         },
       }
     );
-    console.log(res);
     const resData = await res.json();
+    console.log(resData);
     let arr: SchoolModel[] = [];
     resData.forEach((item: any) => {
       arr.push(

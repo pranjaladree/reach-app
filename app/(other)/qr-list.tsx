@@ -76,6 +76,17 @@ const QRList = () => {
     }
   };
 
+  const openQRHandler = (studentId: string) => {
+    console.log("SQ", studentId);
+    console.log(studentId);
+    router.push({
+      pathname: "/view-qr",
+      params: {
+        studentId: studentId,
+      },
+    });
+  };
+
   useFocusEffect(
     useCallback(() => {
       getStudents();
@@ -100,7 +111,7 @@ const QRList = () => {
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text>Total Student: {studentList.length}</Text>
+            <Text>Total Count: {studentList.length}</Text>
           </View>
           <View style={{ marginTop: 10 }}>
             <CustomInput
@@ -118,7 +129,10 @@ const QRList = () => {
             data={filteredList}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <QRItem item={item} onPress={openModalHandler.bind(this, item)} />
+              <QRItem
+                item={item}
+                onPress={openQRHandler.bind(this, item?.studentId)}
+              />
             )}
           />
         </View>
