@@ -56,31 +56,31 @@ export const GENDER_RADIO_ITEMS = [
 
 export const TARGET_GROUP_ITEMS = [
   new RadioItemModel({ id: 1, value: "All", label: "All" }),
-  new RadioItemModel({ id: 1, value: "New", label: "NEW" }),
-  new RadioItemModel({
-    id: 2,
-    label: "Mapped Follow-up Class",
-    value: "MAP FOLLOWUP",
-  }),
+  new RadioItemModel({ id: 2, value: "New", label: "NEW" }),
   new RadioItemModel({
     id: 3,
-    label: "Failed",
-    value: "FAILED LAST YEAR",
+    value: "Mapped Follow-up Class",
+    label: "MAP FOLLOWUP",
   }),
   new RadioItemModel({
     id: 4,
-    label: "Absent",
-    value: "ABSENT LAST YEAR",
+    value: "Failed",
+    label: "FAILED LAST YEAR",
   }),
   new RadioItemModel({
     id: 5,
-    label: "Not Screened Previous Year",
-    value: "NOT SCREEN LAST YEAR",
+    value: "Absent",
+    label: "ABSENT LAST YEAR",
   }),
   new RadioItemModel({
     id: 6,
-    label: "Screened Previous Year",
-    value: "SCREEN LAST YEAR",
+    value: "Not Screened Previous Year",
+    label: "NOT SCREEN LAST YEAR",
+  }),
+  new RadioItemModel({
+    id: 7,
+    value: "Screened Previous Year",
+    label: "SCREEN LAST YEAR",
   }),
 ];
 

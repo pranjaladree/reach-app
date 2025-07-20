@@ -13,8 +13,6 @@ import {
   findAllSpecialInstructions,
   findAllSpecialityLens,
   findAllSphs,
-  findRefractionByMrId,
-  saveRefraction,
 } from "@/database/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
@@ -46,6 +44,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomInput from "../utils/CustomInput";
+import { findRefractionByMrId, saveRefraction } from "@/database/mr-tag-db";
 
 const TAB_ITEMS = [
   { title: "OD (RE)", disabled: false, isDone: false },

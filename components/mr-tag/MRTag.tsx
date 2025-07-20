@@ -14,10 +14,6 @@ import {
   findAllHospitals,
   findAllOtherFacilities,
   findAllVisionCenters,
-  findOneMRTag,
-  getMasterDropdownFromDB,
-  saveMRTag,
-  TABLES,
 } from "@/database/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { MRTagModel } from "@/models/patient-at-fixed-facilty/MRTagModel";
@@ -28,6 +24,7 @@ import CustomInput from "../utils/CustomInput";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
+import { findOneMRTag, saveMRTag } from "@/database/mr-tag-db";
 
 interface Props {
   item: MRTagModel;

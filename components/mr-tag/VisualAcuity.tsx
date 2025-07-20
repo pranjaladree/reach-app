@@ -1,13 +1,4 @@
-import {
-  findAllDvas,
-  findAllNvas,
-  findAllPhs,
-  findOneMRTag,
-  findOneVisualAcuity,
-  getMasterDataFromDB,
-  saveVisualAcuity,
-  TABLES,
-} from "@/database/database";
+import { findAllDvas, findAllNvas, findAllPhs } from "@/database/database";
 import { DistanceDvaModel } from "@/models/other-masters/DistanceDvaModel";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
@@ -25,6 +16,7 @@ import { useFocusEffect } from "expo-router";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
 import CustomTabs, { TabItem } from "../utils/CustomTabs";
+import { findOneVisualAcuity, saveVisualAcuity } from "@/database/mr-tag-db";
 
 const TAB_ITEMS = [
   { title: "With Spectacle", disabled: false, isDone: false },

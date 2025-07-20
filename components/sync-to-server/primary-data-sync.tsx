@@ -4,11 +4,7 @@ import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { useCallback, useState } from "react";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { Button } from "react-native-paper";
-import {
-  getSchoolsDropdownFromDB,
-  preparePSDataSync,
-  removeSchool,
-} from "@/database/database";
+import {} from "@/database/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "@react-navigation/native";
 import { syncPSData } from "@/http/data-sync-http";
@@ -20,6 +16,11 @@ import CustomButton from "../utils/CustomButton";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { preparePSDataSync } from "@/database/sync-to-server";
+import {
+  findSchoolDropdowns,
+  removeSchool,
+} from "@/database/school-student-db";
 
 const PrimaryDataSync = () => {
   const db = useSQLiteContext();
@@ -84,7 +85,7 @@ const PrimaryDataSync = () => {
   };
 
   const getSchools = async () => {
-    const response = await getSchoolsDropdownFromDB(db);
+    const response = await findSchoolDropdowns(db);
     if (response) {
       setSchoolItems(response);
     }

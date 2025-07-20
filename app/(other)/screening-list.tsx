@@ -1,9 +1,6 @@
 import PSStudentItem from "@/components/list-items/PSStudentItem";
-import StudentItem from "@/components/list-items/StudentItem";
-import InputBox from "@/components/ui/InputBox";
 import CustomInput from "@/components/utils/CustomInput";
-import { getPSStudentsBySchoolId } from "@/database/database";
-import { StudentModel } from "@/models/school/StudentModel";
+import { getPSStudentsBySchoolId } from "@/database/primary-screening-db";
 import { RootState } from "@/store/store";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -19,7 +16,6 @@ const ScreeningList = () => {
     (state: RootState) => state.studentSlice.appliedFilters
   );
   const { schoolId } = useLocalSearchParams();
-  console.log("SCHOOL ID", schoolId);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const [studentList, setStudentList] = useState<any[]>([]);

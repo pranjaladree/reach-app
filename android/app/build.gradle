@@ -87,6 +87,11 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/java'
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
     namespace 'com.bytemagic.reachapp'
     defaultConfig {
         applicationId 'com.bytemagic.reachapp'

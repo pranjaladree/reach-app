@@ -201,4 +201,5 @@ export const BLANK_FILTER_MODEL = new FilterModel({
   gender: "",
   status: "",
   result: "",
+  targetGroup: "",
 });

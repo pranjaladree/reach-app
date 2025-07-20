@@ -4,6 +4,7 @@ export class FilterModel {
   gender: string;
   status: string;
   result: string;
+  targetGroup: string;
 
   constructor({
     classId,
@@ -11,17 +12,20 @@ export class FilterModel {
     gender,
     status,
     result,
+    targetGroup,
   }: {
     classId: string;
     section: string;
     gender: string;
     status: string;
     result: string;
+    targetGroup: string;
   }) {
     this.classId = classId;
     this.section = section;
     this.gender = gender;
     this.status = status;
     this.result = result;
+    this.targetGroup = targetGroup;
   }
 }

@@ -55,11 +55,21 @@ export const getStudentBySchoolId = async (token: string, schoolId: string) => {
         targetGroup: item.annualFollowupScreeningStatus
           ? item.annualFollowupScreeningStatus?.targetGroup
           : "",
-        lastPSStatus: item.annualFollowupScreeningStatus ? item.psStatus : "",
-        lastReasonForReferral: "",
-        lastReportDate: "",
-        lastSpectacleStatus: "",
-        lastAnySurgeryDone: "",
+        lastPSStatus: item.annualFollowupScreeningStatus
+          ? item.annualFollowupScreeningStatus?.psStatus
+          : "",
+        lastReasonForReferral: item.annualFollowupScreeningStatus
+          ? item.annualFollowupScreeningStatus?.reasonForReferral
+          : "",
+        lastReportDate: item.annualFollowupScreeningStatus
+          ? item.annualFollowupScreeningStatus?.reportDate
+          : "",
+        lastSpectacleStatus: item.annualFollowupScreeningStatus
+          ? item.annualFollowupScreeningStatus?.spectacleStatus
+          : "",
+        lastAnySurgeryDone: item.annualFollowupScreeningStatus
+          ? item.annualFollowupScreeningStatus?.surgeryDone
+          : "",
       })
     );
   });

@@ -2,11 +2,7 @@ import CustomDropdown from "@/components/utils/CustomDropdown";
 import CustomRadioGroup from "@/components/utils/CustomRadioGroup";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { GENDER_RADIO_ITEMS, RELATIONS_DROPDOWN_ITEMS } from "@/constants/Data";
-import {
-  findAllClasses,
-  getSchoolsDropdownFromDB,
-  saveNewStudent,
-} from "@/database/database";
+import { findAllClasses } from "@/database/database";
 import { ClassModel } from "@/models/other-masters/ClassModel";
 import { StudentModel } from "@/models/school/StudentModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
@@ -28,6 +24,10 @@ import CustomInput from "@/components/utils/CustomInput";
 import CustomButton from "@/components/utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
+import {
+  findSchoolDropdowns,
+  saveNewStudent,
+} from "@/database/school-student-db";
 
 const AddStudent = () => {
   const db = useSQLiteContext();
@@ -159,7 +159,7 @@ const AddStudent = () => {
   };
 
   const getSchoolsHandler = async () => {
-    const response = await getSchoolsDropdownFromDB(db);
+    const response = await findSchoolDropdowns(db);
     if (response) {
       setSchoolItems(response);
     }

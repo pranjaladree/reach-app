@@ -16,7 +16,6 @@ import {
   BLANK_SCHOOL_MODEL,
 } from "@/constants/BlankModels";
 import { ACTIVITY_TYPE_ITEMS } from "@/constants/Data";
-import { insertBulkStudentsToDB, saveSchool } from "@/database/database";
 import {
   getStudentBySchoolId,
   incrementDeviceCount,
@@ -31,6 +30,7 @@ import DateTimePicker, {
   useDefaultStyles,
 } from "react-native-ui-datepicker";
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
+import { saveBulkStudents, saveSchool } from "@/database/school-student-db";
 
 const DevicePreparation = () => {
   const dispatch = useDispatch();
@@ -104,7 +104,7 @@ const DevicePreparation = () => {
   const saveStudentsHandler = async () => {
     setIsSavingLoading(true);
     await saveSchool(db, preparedSchool);
-    const res = await insertBulkStudentsToDB(db, students);
+    const res = await saveBulkStudents(db, students);
     setIsSavingLoading(false);
     if (res) {
       showDialog();

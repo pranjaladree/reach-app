@@ -1,10 +1,4 @@
-import {
-  findUserById,
-  getMRCounts,
-  getPSCounts,
-  getSchoolCounts,
-  getStudentCounts,
-} from "@/database/database";
+import { findUserById } from "@/database/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
 import {
@@ -25,6 +19,12 @@ import { useNavigation } from "expo-router";
 import ReadStudent from "@/components/qr/ReadStudent";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import {
+  getSchoolCounts,
+  getStudentCounts,
+} from "@/database/school-student-db";
+import { getMRCounts } from "@/database/mr-tag-db";
+import { getPSCounts } from "@/database/primary-screening-db";
 
 const Home = () => {
   const [totalSchoolCount, setTotalSchoolCount] = useState(0);

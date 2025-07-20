@@ -4,13 +4,6 @@ import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { useCallback, useState } from "react";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { Button } from "react-native-paper";
-import {
-  getSchoolByActivityType,
-  getSchoolsDropdownFromDB,
-  prepareMRDataSync,
-  preparePSDataSync,
-  removeSchool,
-} from "@/database/database";
 import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "@react-navigation/native";
 import { syncMRTagData, syncPSData } from "@/http/data-sync-http";
@@ -22,6 +15,11 @@ import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import {
+  getSchoolByActivityType,
+  removeSchool,
+} from "@/database/school-student-db";
+import { prepareMRDataSync } from "@/database/sync-to-server";
 
 const MRTagDataSync = () => {
   const db = useSQLiteContext();

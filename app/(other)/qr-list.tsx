@@ -1,12 +1,7 @@
-import MRStudentItem from "@/components/list-items/MRStudentItem";
 import QRItem from "@/components/list-items/QRItem";
-import StudentItem from "@/components/list-items/StudentItem";
 import ViewQR from "@/components/qr/ViewQR";
-import InputBox from "@/components/ui/InputBox";
 import CustomInput from "@/components/utils/CustomInput";
-import { BLANK_FILTER_MODEL } from "@/constants/BlankModels";
-import { getMRTagStudentsBySchoolId } from "@/database/database";
-import { StudentModel } from "@/models/school/StudentModel";
+import { getMRTagStudentsBySchoolId } from "@/database/mr-tag-db";
 import { RootState } from "@/store/store";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";

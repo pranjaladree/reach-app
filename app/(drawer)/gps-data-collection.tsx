@@ -1,9 +1,5 @@
 import CustomDropdown from "@/components/utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
-import {
-  getSchoolsDropdownFromDB,
-  saveSchoolLocation,
-} from "@/database/database";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -14,6 +10,10 @@ import * as Location from "expo-location";
 import { Colors } from "@/constants/Colors";
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
+import {
+  findSchoolDropdowns,
+  saveSchoolLocation,
+} from "@/database/school-student-db";
 
 const GPSDataCollection = () => {
   const db = useSQLiteContext();
@@ -60,7 +60,7 @@ const GPSDataCollection = () => {
   };
 
   const getSchoolsHandler = async () => {
-    const response = await getSchoolsDropdownFromDB(db);
+    const response = await findSchoolDropdowns(db);
     if (response) {
       setSchoolItems(response);
     }

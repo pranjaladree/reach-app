@@ -5,6 +5,7 @@ import ColorVisionTest from "@/components/primary-screening/ColorVisionTest";
 import OcularTest from "@/components/primary-screening/OcularTest";
 import SpectacleStatus from "@/components/primary-screening/SpectacleStatus";
 import TLE from "@/components/primary-screening/TLE";
+import ViewLastResult from "@/components/primary-screening/ViewLastResult";
 import VisionTest from "@/components/primary-screening/VisionTest";
 import CustomButton from "@/components/utils/CustomButton";
 import CustomButtonOutline from "@/components/utils/CustomButtonOutline";
@@ -13,27 +14,40 @@ import {
   BLANK_REACH_CONFIGURATION_MODEL,
   BLANK_SCREENING_MODEL,
 } from "@/constants/BlankModels";
+import { Colors } from "@/constants/Colors";
 import {
   NORMAL_ABNORMAL_DROPDOWN_ITEMS,
   YES_NO_DROPDOWN_ITEMS,
 } from "@/constants/Data";
 import { checkPSStatus, PSFieldValidator } from "@/constants/Methods";
+import { findReachConfigs, findUserById } from "@/database/database";
 import {
-  findReachConfigs,
   findScreeningById,
-  findStudentById,
-  findUserById,
   savePrimaryScreening,
-} from "@/database/database";
+} from "@/database/primary-screening-db";
+import { findStudentById } from "@/database/school-student-db";
 import { ScreeningModel } from "@/models/primary-screening/ScreeningModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
 import { setNormalCheck, setScreeningItem } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Modal,
+} from "react-native";
 import { Button, Checkbox, Dialog, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -42,6 +56,8 @@ const ScreeningDetails = () => {
   const router = useRouter();
   const db = useSQLiteContext();
   const [visible, setVisible] = useState(false);
+  const [isLastScreeningResult, setIsLastScreeningResult] = useState(false);
+  const [isLastResultModal, setIsLastResultModal] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
   const [dialogMessage, setDialogMessage] = useState("");
@@ -56,6 +72,7 @@ const ScreeningDetails = () => {
 
   const [isQCUser, setIsQCUser] = useState(false);
   const { studentId, schoolId } = useLocalSearchParams();
+  const navigation = useNavigation();
   console.log("STUDE", studentId);
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
@@ -63,6 +80,14 @@ const ScreeningDetails = () => {
   const [status, setStatus] = useState("");
   const [isEligibleForColorVision, setIsEligibleForColorVision] =
     useState(false);
+
+  const openLastScreeningModal = () => {
+    setIsLastResultModal(true);
+  };
+
+  const closeLastScreeningModal = () => {
+    setIsLastResultModal(false);
+  };
 
   const fieldValidator = () => {
     const { valid, item } = PSFieldValidator(screeningItem);
@@ -349,10 +374,15 @@ const ScreeningDetails = () => {
 
   const getStudentDataHandler = async () => {
     if (studentId) {
-      const response = await findStudentById(db, studentId.toString());
+      const response: any = await findStudentById(db, studentId.toString());
       console.log("Reso", response);
       if (response) {
         setStudentData(response);
+        if (response.lastPSStatus != null) {
+          setIsLastScreeningResult(true);
+        } else {
+          setIsLastScreeningResult(false);
+        }
       }
     }
   };
@@ -409,6 +439,30 @@ const ScreeningDetails = () => {
       );
     }
   }, [screeningItem.unableToPerformVisionTest, isAutorefAvailable]);
+
+  useEffect(() => {
+    // Use `setOptions` to update the button that we previously specified
+    // Now the button includes an `onPress` handler to update the count
+    if (isLastScreeningResult) {
+      navigation.setOptions({
+        headerRight: () => (
+          <View>
+            <Pressable onPress={openLastScreeningModal}>
+              <Ionicons
+                name="medkit-outline"
+                size={30}
+                color={Colors.primary}
+              />
+            </Pressable>
+          </View>
+        ),
+      });
+    } else {
+      navigation.setOptions({
+        headerRight: () => null,
+      });
+    }
+  }, [navigation, visible, isLastScreeningResult]);
 
   return (
     <>
@@ -503,6 +557,9 @@ const ScreeningDetails = () => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+      <Modal visible={isLastResultModal} onDismiss={closeLastScreeningModal}>
+        <ViewLastResult onClose={closeLastScreeningModal} item={studentData} />
+      </Modal>
     </>
   );
 };

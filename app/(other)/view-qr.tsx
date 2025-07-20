@@ -2,10 +2,8 @@ import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Button } from "react-native-paper";
 import QRCode from "react-native-qrcode-svg";
 import CustomButton from "@/components/utils/CustomButton";
-import { findStudentById } from "@/database/database";
 
 const ViewQR = () => {
   const db = useSQLiteContext();

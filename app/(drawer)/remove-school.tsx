@@ -1,7 +1,10 @@
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
 import CustomButton from "@/components/utils/CustomButton";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
-import { getSchoolsDropdownFromDB, removeSchool } from "@/database/database";
+import {
+  findSchoolDropdowns,
+  removeSchool,
+} from "@/database/school-student-db";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -46,7 +49,7 @@ const RemoveSchool = () => {
 
   const getSchoolsHandler = async () => {
     setIsLoading(true);
-    const response = await getSchoolsDropdownFromDB(db);
+    const response = await findSchoolDropdowns(db);
     if (response) {
       setSchoolItems(response);
     }

@@ -12,6 +12,7 @@ interface Props {
   isError?: boolean;
   errorMessage?: string;
   showLabel?: boolean;
+  disabled?: boolean;
 }
 
 const CustomRadioGroup = ({
@@ -22,6 +23,7 @@ const CustomRadioGroup = ({
   isError,
   errorMessage,
   showLabel,
+  disabled,
 }: Props) => {
   return (
     <>
@@ -40,6 +42,7 @@ const CustomRadioGroup = ({
               status={selectedOption === val.value ? "checked" : "unchecked"}
               onPress={() => onChange(val.value)}
               color="#0a63c9"
+              disabled={disabled}
             />
             <Text>{val.value === "all" ? "All" : val.value}</Text>
           </View>

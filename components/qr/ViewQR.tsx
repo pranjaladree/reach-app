@@ -5,7 +5,6 @@ import { View, Text, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 import QRCode from "react-native-qrcode-svg";
 import CustomButton from "../utils/CustomButton";
-import { findStudentById } from "@/database/database";
 
 interface Props {
   studentId: string;

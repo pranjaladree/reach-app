@@ -6,13 +6,9 @@ import {
   BLANK_DROPDOWN_MODEL,
   BLANK_FILTER_MODEL,
 } from "@/constants/BlankModels";
-import {
-  findAllClassesDropdowns,
-  findUniqueClasses,
-  findUniqueSections,
-  getMRTagStudentsBySchoolId,
-  getSchoolByActivityType,
-} from "@/database/database";
+import { findUniqueClasses, findUniqueSections } from "@/database/database";
+import { getMRTagStudentsBySchoolId } from "@/database/mr-tag-db";
+import { getSchoolByActivityType } from "@/database/school-student-db";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { FilterModel } from "@/models/ui/FilterModel";
 import { setSchools } from "@/store/slices/school-slice";
@@ -136,6 +132,7 @@ const QRCode = () => {
           gender: "",
           status: "",
           result: "",
+          targetGroup: "",
         })
       )
     );

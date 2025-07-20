@@ -20,8 +20,8 @@ import {
   findAllClassesDropdowns,
   findUniqueClasses,
   findUniqueSections,
-  getSchoolsDropdownFromDB,
 } from "@/database/database";
+import { findSchoolDropdowns } from "@/database/school-student-db";
 import { SchoolModel } from "@/models/school/SchoolModel";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { FilterModel } from "@/models/ui/FilterModel";
@@ -32,7 +32,7 @@ import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Menu } from "react-native-paper";
+import { Checkbox, Menu } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
 const PrimaryScreening = () => {
@@ -44,6 +44,7 @@ const PrimaryScreening = () => {
   const dispatch = useDispatch();
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
   const [schoolDetail, setSchoolDetail] = useState(BLANK_SCHOOL_MODEL);
+  const [isFollowup, setIsFollowup] = useState(true);
 
   const selectSchoolHandler = (val?: string) => {
     if (val == "SELECT") {
@@ -126,7 +127,7 @@ const PrimaryScreening = () => {
   };
 
   const getSchoolsHandler = async () => {
-    const response = await getSchoolsDropdownFromDB(db);
+    const response = await findSchoolDropdowns(db);
     if (response) {
       setSchoolItems(response);
     }
@@ -227,6 +228,7 @@ const PrimaryScreening = () => {
           gender: gender == "All" ? "" : gender,
           status: status == "ALL" ? "" : status,
           result: result == "ALL" ? "" : result,
+          targetGroup: targetGroup == "All" ? "" : targetGroup,
         })
       )
     );
@@ -324,13 +326,25 @@ const PrimaryScreening = () => {
         </View>
       </View>
       {schoolDetail.activityType == ACTIVITY_TYPE_ITEMS[2].value && (
-        <View style={{ paddingHorizontal: 15 }}>
-          <CustomRadioGroup
-            label="Target Groups"
-            items={TARGET_GROUP_ITEMS}
-            selectedOption={targetGroup}
-            onChange={targetGroupChangeHandler}
-          />
+        <View style={{ paddingHorizontal: 10, marginTop: 10 }}>
+          <View style={styles.followupHeader}>
+            <Checkbox
+              status={isFollowup ? "checked" : "unchecked"}
+              onPress={() => {
+                setIsFollowup((prev) => !prev);
+              }}
+            />
+            <Text>FOLLOWUP VISIT</Text>
+          </View>
+          <View style={styles.followupBox}>
+            <CustomRadioGroup
+              label="Target Groups"
+              items={TARGET_GROUP_ITEMS}
+              selectedOption={targetGroup}
+              onChange={targetGroupChangeHandler}
+              disabled={!isFollowup}
+            />
+          </View>
         </View>
       )}
       <View style={{ padding: 10 }}>
@@ -405,5 +419,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     width: "100%",
+  },
+  followupHeader: {
+    padding: 5,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  followupBox: {
+    borderWidth: 1,
+    padding: 10,
   },
 });

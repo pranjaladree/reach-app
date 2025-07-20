@@ -1,12 +1,7 @@
 import MRStudentItem from "@/components/list-items/MRStudentItem";
-import StudentItem from "@/components/list-items/StudentItem";
-import ReadStudent from "@/components/qr/ReadStudent";
-import InputBox from "@/components/ui/InputBox";
 import CustomInput from "@/components/utils/CustomInput";
-import { getMRTagStudentsBySchoolId } from "@/database/database";
-import { StudentModel } from "@/models/school/StudentModel";
+import { getMRTagStudentsBySchoolId } from "@/database/mr-tag-db";
 import { RootState } from "@/store/store";
-import { Ionicons } from "@expo/vector-icons";
 import {
   useFocusEffect,
   useLocalSearchParams,
@@ -15,7 +10,7 @@ import {
 } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList, Pressable, Modal } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import { useSelector } from "react-redux";
 
 const MRTagList = () => {

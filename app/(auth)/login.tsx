@@ -28,8 +28,8 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const db = useSQLiteContext();
   const router = useRouter();
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("GEH@admin");
+  const [password, setPassword] = useState("Orbis@123");
   const [showPassword, setShowPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 

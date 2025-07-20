@@ -1,5 +1,6 @@
-import { getSchoolsFromDB, getScreeningByIdFromDB } from "@/database/database";
 import { dropTables } from "@/database/migrations-db";
+import { getScreeningByIdFromDB } from "@/database/primary-screening-db";
+import { findSchools } from "@/database/school-student-db";
 import { useSQLiteContext } from "expo-sqlite";
 import { View, Text, Button } from "react-native";
 
@@ -7,13 +8,16 @@ const DatabaseTest = () => {
   const db = useSQLiteContext();
 
   const dropTablesHandler = () => {
-    // try {
-    //   const response = db.runSync(`DROP TABLE students`);
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    try {
+      const response = db.getAllSync(
+        `SELECT * FROM students WHERE schoolId="9"`
+      );
+      console.log("RESSSS *******", response);
+    } catch (err) {
+      console.log(err);
+    }
     // console.log("REDF", response);
-    dropTables(db);
+    // dropTables(db);
   };
   const getStudentData = async () => {
     const response = await getScreeningByIdFromDB(db, 523);
@@ -21,7 +25,7 @@ const DatabaseTest = () => {
   };
 
   const getSchoolData = async () => {
-    const response = await getSchoolsFromDB(db);
+    const response = await findSchools(db);
     console.log("Schools", response);
   };
 

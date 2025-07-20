@@ -1,4 +1,3 @@
-import { saveNewStudent } from "@/database/database";
 import {
   CameraView,
   CameraType,

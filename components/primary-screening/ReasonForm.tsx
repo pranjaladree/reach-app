@@ -16,9 +16,6 @@ import {
   findAllHospitals,
   findAllOtherFacilities,
   findAllVisionCenters,
-  getMasterDropdownFromDB,
-  savePrimaryScreening,
-  TABLES,
 } from "@/database/database";
 import dayjs from "dayjs";
 import { ScreeningModel } from "@/models/primary-screening/ScreeningModel";
@@ -34,6 +31,7 @@ import QRCode from "react-native-qrcode-svg";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
 import ViewQR from "../qr/ViewQR";
+import { savePrimaryScreening } from "@/database/primary-screening-db";
 
 const ReasonForm = () => {
   const screeningItem = useSelector(

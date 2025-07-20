@@ -26,18 +26,11 @@ import {
   FACILITY_TYPES_ITEMS,
 } from "@/constants/Data";
 import {
-  findAdviceByMrId,
   findAllDiagnosisMaster,
-  findAllDvas,
   findAllHospitals,
-  findAllNvas,
   findAllOtherFacilities,
-  findAllPhs,
   findAllReasonForReferrals,
   findAllVisionCenters,
-  findDiagnosisByMRId,
-  saveAdvice,
-  saveDiagnosis,
 } from "@/database/database";
 import { Collapsible } from "../Collapsible";
 import { AdviceVisitModel } from "@/models/patient-at-fixed-facilty/AdviceVisitModel";
@@ -47,6 +40,12 @@ import { useFocusEffect } from "expo-router";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  findAdviceByMrId,
+  findDiagnosisByMRId,
+  saveAdvice,
+  saveDiagnosis,
+} from "@/database/mr-tag-db";
 
 interface Props {
   mrId: string;
