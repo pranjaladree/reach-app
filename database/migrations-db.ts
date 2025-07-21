@@ -236,6 +236,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   targetGroup TEXT,
   isUpdated BOOLEAN,
   isMarkedForQc BOOLEAN,
+  previousPSStatus TEXT,
   lastPSStatus TEXT,
   lastReasonForReferral TEXT,
   lastReportDate TEXT,
@@ -286,7 +287,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   screenerType TEXT DEFAULT "PS",
   isNonEditable BOOLEAN DEFAULT false,
   isQcDone BOOLEAN DEFAULT false,
-  studentId INTEGER DEFAULT 0,
+  studentId TEXT,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
   FOREIGN KEY (studentId) REFERENCES students(id));
@@ -297,7 +298,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   visitDate TEXT,
   facilityType TEXT,
   facilityId TEXT,
-  studentId INTEGER,
+  studentId TEXT,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
   FOREIGN KEY (studentId) REFERENCES students(id));
@@ -316,7 +317,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   visualExamWithoutSpecsNvaRe TEXT,
   visualExamWithoutSpecsPhLe TEXT,
   visualExamWithoutSpecsPhRe TEXT,
-  mrId INTEGER,
+  mrId TEXT,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
   FOREIGN KEY (mrId) REFERENCES mrTags(id));
@@ -372,7 +373,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   refractionRemarks2 TEXT,
   spectaclesPrescribed BOOLEAN,
   specialInstruction TEXT,
-  mrId INTEGER,
+  mrId TEXT,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
   FOREIGN KEY (mrId) REFERENCES mrTags(id));
@@ -390,7 +391,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   isSurgeryRequired BOOLEAN,
   surgeryType TEXT,
   otherComments TEXT,
-  mrId INTEGER,
+  mrId TEXT,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
   FOREIGN KEY (mrId) REFERENCES mrTags(id));
@@ -398,7 +399,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   CREATE TABLE IF NOT EXISTS diagnosis (
   id TEXT PRIMARY KEY NOT NULL,
   diagnosisItems TEXT,
-  mrId INTEGER,
+  mrId TEXT,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
   FOREIGN KEY (mrId) REFERENCES mrTags(id));
@@ -407,7 +408,7 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   id TEXT PRIMARY KEY NOT NULL,
   frameName TEXT,   
   bookingDate TEXT,
-  mrId INTEGER,
+  mrId TEXT,
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')),
   FOREIGN KEY (mrId) REFERENCES mrTags(id));

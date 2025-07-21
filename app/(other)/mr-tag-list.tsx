@@ -52,7 +52,7 @@ const MRTagList = () => {
 
   const navigationHandler = (item: any) => {
     setSearchTerm("");
-    router.push({
+    router.replace({
       pathname: "/mr-tag-detail",
       params: {
         studentId: item.id,
