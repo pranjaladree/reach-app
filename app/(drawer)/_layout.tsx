@@ -79,6 +79,7 @@ export default function Layout() {
   const dimensions = useWindowDimensions();
   const isLargeScreen = dimensions.width >= 768;
 
+  console.log("object", dimensions.width);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
@@ -107,14 +108,19 @@ export default function Layout() {
             drawerLabel: "Home",
             title: "Home",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="home-outline" size={size} color={Colors.primary} />
+              <Ionicons
+                name="home-outline"
+                size={size}
+                color={Colors.primary}
+              />
             ),
             headerTitle: () => (
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: "100%", 
+                  width: dimensions.width,
+                  height: 50,
+                  justifyContent: "center",
+                  position: "relative",
                 }}
               >
                 <Text
@@ -122,13 +128,19 @@ export default function Layout() {
                     fontSize: 18,
                     fontWeight: "bold",
                     color: "white",
-                    marginRight: 8,
                   }}
                 >
                   Home
                 </Text>
                 <Image
-                  style={styles.image}
+                  style={{
+                    width: 70,
+                    height: 40,
+                    resizeMode: "contain",
+                    position: "absolute",
+                    left: "50%",
+                    transform: [{ translateX: -90}],
+                  }}
                   source={require("../../assets/images/reach_logo.png")}
                 />
               </View>
@@ -260,9 +272,8 @@ export default function Layout() {
 
 const styles = StyleSheet.create({
   image: {
-    width: 100,
+    width: 120,
     height: 40,
     resizeMode: "contain",
-    marginHorizontal: 70
   },
 });

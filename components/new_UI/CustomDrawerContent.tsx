@@ -47,6 +47,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     }
   };
   const firstLetter = userData?.firstName?.charAt(0).toUpperCase();
+  const lastLetter = userData?.lastName?.charAt(0).toUpperCase();
+
   console.log(firstLetter);
 
   useEffect(() => {
@@ -184,7 +186,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       {/* Profile Section */}
       <View style={styles.profileContainer}>
         <View style={styles.avatar_container}>
-          <Text style={styles.avatar}>{firstLetter}</Text>
+          <Text style={styles.avatar}>{firstLetter}{lastLetter}</Text>
         </View>
         <Text style={styles.name}>
           {userData?.firstName} {userData?.lastName}
