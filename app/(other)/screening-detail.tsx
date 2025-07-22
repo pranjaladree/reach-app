@@ -20,7 +20,11 @@ import {
   YES_NO_DROPDOWN_ITEMS,
 } from "@/constants/Data";
 import { checkPSStatus, PSFieldValidator } from "@/constants/Methods";
-import { findReachConfigs, findUserById } from "@/database/database";
+import {
+  findColorConfigsStatus,
+  findReachConfigs,
+  findUserById,
+} from "@/database/database";
 import {
   findScreeningById,
   savePrimaryScreening,
@@ -64,6 +68,7 @@ const ScreeningDetails = () => {
   const [isAutorefAvailable, setIsAutorefAvailable] = useState(false);
   const [visionCenterId, setVisionCenterId] = useState("");
   const [isQCPopupEligible, setIsQCPopupEligible] = useState(false);
+  const [isColorVisionTest, setIsColorVisionTest] = useState(false);
   const [reachConfigs, setReachConfigs] = useState(
     BLANK_REACH_CONFIGURATION_MODEL
   );
@@ -163,13 +168,36 @@ const ScreeningDetails = () => {
 
   console.log("VC CENE", visionCenterId);
 
+  const getColorVisionStatusHandler = async () => {
+    const response: any = await findColorConfigsStatus(
+      db,
+      studentData?.gender?.toUpperCase(),
+      +studentData?.classId
+    );
+    console.log("Color Response :", response);
+    if (response?.isRequired) {
+      setIsColorVisionTest(true);
+    } else {
+      setIsColorVisionTest(false);
+    }
+  };
+
+  useEffect(() => {
+    if (studentData) {
+      getColorVisionStatusHandler();
+    }
+  }, [studentData]);
+
   const getAutorefStatusHandler = () => {
-    console.log("GETTING AUTOREF.....");
+    console.log(
+      "GETTING AUTOREF.....*************************************************"
+    );
+    console.log("Stude DAT", studentData?.schoolId);
     if (!studentData) {
       return;
     }
     const response: any = db.getFirstSync(
-      `SELECT autoRefAvailable,visionCenterId FROM schools WHERE id=${studentData?.schoolId}`
+      `SELECT autoRefAvailable,visionCenterId FROM schools WHERE id="${studentData?.schoolId}"`
     );
     if (response) {
       setVisionCenterId(response.visionCenterId);
@@ -410,6 +438,15 @@ const ScreeningDetails = () => {
     }, [])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      getAutorefStatusHandler();
+      return () => {
+        console.log("Screen unfocused");
+      };
+    }, [studentData])
+  );
+
   useEffect(() => {
     if (screeningItem.isNormal) {
       if (screeningItem.usingSpectacle == "NO") {
@@ -523,7 +560,9 @@ const ScreeningDetails = () => {
           {screeningItem.isTorchlightVisible && <TLE />}
 
           {/* Color Vision Test */}
-          {screeningItem.isColorVisionTestVisible && <ColorVisionTest />}
+          {screeningItem.isColorVisionTestVisible && isColorVisionTest && (
+            <ColorVisionTest isColorVisionTest={isColorVisionTest} />
+          )}
         </View>
         <View style={{ paddingBottom: 200 }}></View>
       </ScrollView>

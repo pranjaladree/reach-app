@@ -2,10 +2,7 @@ import { baseUrl } from "@/constants/Urls";
 import { ReachConfigurationModel } from "@/models/other-masters/ReachConfigurationModel";
 import { ResponseModel } from "@/models/utils/ResponseModel";
 
-export const getReachConfiguration = async (
-  token: string,
-  partnerId: string
-) => {
+export const getReachConfiguration = async (token: string) => {
   try {
     const res = await fetch(`${baseUrl}/api/reach/configs`, {
       method: "GET",

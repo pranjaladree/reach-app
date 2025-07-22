@@ -27,6 +27,7 @@ import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
 import { UserModel } from "@/models/user/UserModel";
 import { SQLiteDatabase } from "expo-sqlite";
 import { saveNewStudent } from "./school-student-db";
+import { ColorConfigModel } from "@/models/other-masters/ColorConfigModel";
 
 export const insertClassesToDB = async (
   db: SQLiteDatabase,
@@ -1547,6 +1548,47 @@ export const saveQRData = async (db: SQLiteDatabase, data: any) => {
     // });
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const saveColorConfigs = async (
+  db: SQLiteDatabase,
+  items: ColorConfigModel[]
+) => {
+  try {
+    const response = await db.withTransactionAsync(async () => {
+      items.forEach((item) => {
+        db.runSync(
+          `INSERT OR REPLACE INTO colorVisionConfigs (id,classId,gender,required) VALUES (?,?,?,?)`,
+          item.id,
+          item.classId,
+          item.gender,
+          item.isRequired
+        );
+      });
+    });
+    console.log("REsponse", response);
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const findColorConfigsStatus = async (
+  db: SQLiteDatabase,
+  gender: string,
+  classId: number
+) => {
+  try {
+    const response: any = await db.getFirstAsync(
+      `SELECT * FROM colorVisionConfigs WHERE gender="${gender}" AND classId=${classId}`
+    );
+    if (response) {
+      return { isRequired: response.required };
+    }
+  } catch (err) {
+    console.log(err);
+    return { isRequired: false };
   }
 };
 

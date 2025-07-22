@@ -1,7 +1,17 @@
+
 import { Colors } from "@/constants/Colors";
 import { findUserById } from "@/database/database";
 import { setLoggedOut } from "@/store/slices/user-slice";
 import { RootState } from "@/store/store";
+import React, { useCallback, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Pressable,
+  Platform,
+} from "react-native";
 import {
   Feather,
   FontAwesome5,
@@ -14,7 +24,13 @@ import { useSQLiteContext } from "expo-sqlite";
 import React, { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setLoggedOut } from "@/store/slices/user-slice";
+import CustomButton from "../utils/CustomButton";
+import { useFocusEffect, useRouter } from "expo-router";
+import { Colors } from "@/constants/Colors";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   navigation,
@@ -46,6 +62,27 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       getUsers();
     }
   }, [userId]);
+  const [isOnline, setIsOnline] = useState(false);
+
+  const checkInternetHandler = async () => {
+    NetInfo.fetch().then((state) => {
+      console.log("Is connected?", state.isConnected);
+      if (state.isConnected) {
+        setIsOnline(true);
+      } else {
+        setIsOnline(false);
+      }
+    });
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      checkInternetHandler();
+      return () => {
+        console.log("Screen unfocused");
+      };
+    }, [])
+  );
 
   const drawerItems = [
     {
@@ -54,6 +91,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Ionicons name="home-outline" size={20} color={color} />
       ),
       route: "index",
+      isNetRequired: false,
     },
     {
       label: "Device Preparation",
@@ -61,6 +99,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Ionicons name="cloud-download-outline" size={20} color={color} />
       ),
       route: "device-preparation",
+      isNetRequired: true,
     },
     {
       label: "Database Test",
@@ -68,6 +107,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <FontAwesome5 name="database" size={20} color={color} />
       ),
       route: "database-test",
+      isNetRequired: false,
     },
     {
       label: "Primary Screening",
@@ -75,6 +115,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Feather name="search" size={20} color={color} />
       ),
       route: "primary-screening",
+      isNetRequired: false,
     },
     {
       label: "Detailed Evaluation",
@@ -82,6 +123,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Ionicons name="recording-outline" size={20} color={color} />
       ),
       route: "mr-tag",
+      isNetRequired: false,
     },
     {
       label: "Spectacle Booking",
@@ -89,6 +131,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Ionicons name="recording-outline" size={20} color={color} />
       ),
       route: "spectacle-booking",
+      isNetRequired: false,
     },
     {
       label: "View QR Code",
@@ -96,6 +139,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Ionicons name="qr-code-outline" size={20} color={color} />
       ),
       route: "qr-codes",
+      isNetRequired: false,
     },
     {
       label: "GPS Data Collection",
@@ -103,6 +147,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <MaterialCommunityIcons name="crosshairs-gps" size={20} color={color} />
       ),
       route: "gps-data-collection",
+      isNetRequired: false,
     },
     {
       label: "Data Sync",
@@ -110,6 +155,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Ionicons name="cloud-upload-outline" size={20} color={color} />
       ),
       route: "sync-to-server",
+      isNetRequired: true,
     },
     {
       label: "Remove School",
@@ -117,6 +163,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <MaterialCommunityIcons name="bank-remove" size={20} color={color} />
       ),
       route: "remove-school",
+      isNetRequired: false,
     },
     {
       label: "System Update",
@@ -124,6 +171,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <MaterialCommunityIcons name="update" size={20} color={color} />
       ),
       route: "system-update",
+      isNetRequired: true,
     },
   ];
 
@@ -155,23 +203,44 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       <View style={{ flex: 1 }}>
         {drawerItems.map((item, index) => {
           const isActive = item.route === activeRouteName;
-          const itemColor = isActive ? Colors.primary : "#4F4F4F";
-          return (
-            <Pressable
-              key={index}
-              onPress={() => navigation.navigate(item.route)}
-              style={({ hovered, pressed }) => [
-                styles.drawerItem,
-                isActive && styles.activeItem,
-                (hovered || pressed) && styles.feedbackItem,
-              ]}
-            >
-              <View style={styles.icon}>{item.icon(itemColor)}</View>
-              <Text style={[styles.label, { color: itemColor }]}>
-                {item.label}
-              </Text>
-            </Pressable>
-          );
+          const itemColor = isActive ? "#2D9CDB" : "#4F4F4F";
+          if (isOnline) {
+            return (
+              <Pressable
+                key={index}
+                onPress={() => navigation.navigate(item.route)}
+                style={({ hovered, pressed }) => [
+                  styles.drawerItem,
+                  isActive && styles.activeItem,
+                  (hovered || pressed) && styles.feedbackItem,
+                ]}
+              >
+                <View style={styles.icon}>{item.icon(itemColor)}</View>
+                <Text style={[styles.label, { color: itemColor }]}>
+                  {item.label}
+                </Text>
+              </Pressable>
+            );
+          } else {
+            if (!item.isNetRequired) {
+              return (
+                <Pressable
+                  key={index}
+                  onPress={() => navigation.navigate(item.route)}
+                  style={({ hovered, pressed }) => [
+                    styles.drawerItem,
+                    isActive && styles.activeItem,
+                    (hovered || pressed) && styles.feedbackItem,
+                  ]}
+                >
+                  <View style={styles.icon}>{item.icon(itemColor)}</View>
+                  <Text style={[styles.label, { color: itemColor }]}>
+                    {item.label}
+                  </Text>
+                </Pressable>
+              );
+            }
+          }
         })}
         <View style={{ padding: 10 }}>
           <Pressable onPress={handleLogout}>

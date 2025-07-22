@@ -18,6 +18,7 @@ import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import TorchlightList from "./modals/TorchlightList";
 import StyledDropdown from "../new_UI/StyledDropdown";
+import { Colors } from "@/constants/Colors";
 
 const TLE = () => {
   const db = useSQLiteContext();
@@ -165,6 +166,14 @@ const TLE = () => {
     ) {
       setTleFindings("");
       dispatch(uncheckAllTles());
+      if (!screeningItem.isAutoRefVisible) {
+        dispatch(
+          setScreeningItem({
+            ...screeningItem,
+            isColorVisionTestVisible: true,
+          })
+        );
+      }
     }
   }, [screeningItem.torchlightCheckLE, screeningItem.torchlightCheckRE]);
 
@@ -242,13 +251,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: Colors.primary,
   },
   divider: {
     marginTop: 10,
     marginBottom: 10,
     width: "100%",
     borderWidth: 0.3,
+    borderColor: Colors.primary,
   },
   row: {
     flexDirection: "row",

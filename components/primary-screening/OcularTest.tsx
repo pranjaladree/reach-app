@@ -13,6 +13,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import { findAllOcularComplaints, findReachConfigs } from "@/database/database";
 import { setAllOculars, uncheckAllOculars } from "@/store/slices/ocular-slice";
 import { BLANK_REACH_CONFIGURATION_MODEL } from "@/constants/BlankModels";
+import { Colors } from "@/constants/Colors";
 
 const OcularTest = () => {
   const dispatch = useDispatch();
@@ -178,11 +179,16 @@ const OcularTest = () => {
           />
         </View>
         {screeningItem.ocularList !== "" && (
-          <Pressable onPress={openOcularModal}>
-            <View style={{ borderWidth: 0.3, padding: 10, borderRadius: 5 }}>
-              <Text>{screeningItem.ocularList}</Text>
+          <View>
+            <View style={{ padding: 5 }}>
+              <Text>Ocular Complaints</Text>
             </View>
-          </Pressable>
+            <Pressable onPress={openOcularModal}>
+              <View style={{ borderWidth: 0.3, padding: 10, borderRadius: 5 }}>
+                <Text>{screeningItem.ocularList}</Text>
+              </View>
+            </Pressable>
+          </View>
         )}
       </View>
       {screeningItem.ocularComplaint == "YES" && <View></View>}
@@ -205,13 +211,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: Colors.primary,
   },
   divider: {
     marginTop: 10,
     marginBottom: 10,
     width: "100%",
     borderWidth: 0.3,
+    borderColor: Colors.primary,
   },
   row: {
     flexDirection: "row",

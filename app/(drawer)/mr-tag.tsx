@@ -233,17 +233,12 @@ const MRTag = () => {
             selectedItem={selectedSection}
             onChange={selectSectionHandler}
           />
-          {/* <CustomInput
-            id="section"
-            label="Section"
-            value={section}
-            onChangeText={sectionChangeHandler}
-          /> */}
         </View>
       </View>
       <View>
         <CustomRadioGroup
           label="Gender"
+          showLabel={true}
           items={[
             new RadioItemModel({ id: 0, value: "ALL", label: "ALL" }),
             ...GENDER_RADIO_ITEMS,
@@ -255,6 +250,7 @@ const MRTag = () => {
       <View>
         <CustomRadioGroup
           label="Status"
+          showLabel={true}
           items={STATUS_RADIO_ITEMS}
           selectedOption={status}
           onChange={statusChangeHandler}
