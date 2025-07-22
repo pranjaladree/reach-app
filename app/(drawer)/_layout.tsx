@@ -65,7 +65,13 @@ import {
 } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
 import React from "react";
-import { useWindowDimensions } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
 
@@ -102,6 +108,30 @@ export default function Layout() {
             title: "Home",
             drawerIcon: ({ color, size }) => (
               <Ionicons name="home-outline" size={size} color={color} />
+            ),
+            headerTitle: () => (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  width: "100%", 
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "white",
+                    marginRight: 8,
+                  }}
+                >
+                  Home
+                </Text>
+                <Image
+                  style={styles.image}
+                  source={require("../../assets/images/reach_logo.png")}
+                />
+              </View>
             ),
           }}
         />
@@ -227,3 +257,12 @@ export default function Layout() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  image: {
+    width: 100,
+    height: 40,
+    resizeMode: "contain",
+    marginHorizontal: 70
+  },
+});

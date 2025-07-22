@@ -6,18 +6,13 @@ import {
   Feather,
   FontAwesome5,
   Ionicons,
-  MaterialCommunityIcons
+  MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import React, { useEffect } from "react";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -27,13 +22,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-   const userId = useSelector((state: RootState) => state.userSlice.userId);
+  const userId = useSelector((state: RootState) => state.userSlice.userId);
   console.log("user Id", userId);
   const db = useSQLiteContext();
   const [userData, setUserData] = React.useState<any>(null);
   const [loading, setLoading] = React.useState<any>(true);
   console.log("User Data", userData);
-
 
   const getUsers = async () => {
     try {
@@ -149,11 +143,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     <View style={{ flex: 1 }}>
       {/* Profile Section */}
       <View style={styles.profileContainer}>
-        {/* <Image
-          source={{ uri: "https://i.pravatar.cc/100" }}
-          style={styles.avatar}
-        /> */}
-        <Text style={styles.name}> {userData?.firstName} {userData?.lastName}</Text>
+        <View style={styles.avatar_container}>
+          <Text style={styles.avatar}>{firstLetter}</Text>
+        </View>
+        <Text style={styles.name}>
+          {userData?.firstName} {userData?.lastName}
+        </Text>
         <Text style={styles.email}>{userData?.designation}</Text>
       </View>
       {/* Drawer Items */}
@@ -237,11 +232,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 20,
   },
-  avatar: {
+  avatar_container: {
     width: 70,
     height: 70,
     borderRadius: 35,
+    backgroundColor: Colors.secondary,
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 10,
+  },
+  avatar: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: Colors.light.text,
   },
   name: {
     fontSize: 16,
