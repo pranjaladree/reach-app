@@ -54,22 +54,20 @@
 //   );
 // }
 
-import React from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Drawer } from "expo-router/drawer";
-import {
-  Ionicons,
-  MaterialIcons,
-  FontAwesome5,
-  Feather,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
-import { useWindowDimensions } from "react-native";
 import CustomDrawerContent from "@/components/new_UI/CustomDrawerContent";
+import { Colors } from "@/constants/Colors";
+import {
+  Feather,
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+import { Drawer } from "expo-router/drawer";
+import React from "react";
+import { useWindowDimensions } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { Redirect } from "expo-router";
 
 export default function Layout() {
   const dimensions = useWindowDimensions();
@@ -81,16 +79,20 @@ export default function Layout() {
         drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
           // drawerType: isLargeScreen ? "permanent" : "front",
-          drawerActiveTintColor: "#2D9CDB",
+          drawerActiveTintColor: Colors.primary,
           drawerInactiveTintColor: "#4F4F4F",
           drawerLabelStyle: {
             marginLeft: 20,
             fontSize: 16,
           },
           drawerStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: Colors.light.background,
             paddingTop: 0,
           },
+          headerStyle: {
+            backgroundColor: Colors.primary,
+          },
+          headerTintColor: Colors.light.background,
         }}
       >
         <Drawer.Screen
