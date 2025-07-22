@@ -1,30 +1,24 @@
 import { findUserById } from "@/database/database";
-import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  useWindowDimensions,
-  Pressable,
-  Modal,
-} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
-import StatCard from "@/components/new_UI/card";
+import { useSQLiteContext } from "expo-sqlite";
+import { useCallback, useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View
+} from "react-native";
+
 import UnifiedStatCard from "@/components/new_UI/unifiedStatCard";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "expo-router";
-import ReadStudent from "@/components/qr/ReadStudent";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { Colors } from "@/constants/Colors";
+import { getMRCounts } from "@/database/mr-tag-db";
+import { getPSCounts } from "@/database/primary-screening-db";
 import {
   getSchoolCounts,
   getStudentCounts,
 } from "@/database/school-student-db";
-import { getMRCounts } from "@/database/mr-tag-db";
-import { getPSCounts } from "@/database/primary-screening-db";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 const Home = () => {
   const [totalSchoolCount, setTotalSchoolCount] = useState(0);
@@ -101,7 +95,7 @@ const Home = () => {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Activity / Data Status </Text>
+        <Text style={styles.headerTitle}>Activity Status </Text>
       </View>
       <UnifiedStatCard
         totalSchoolCount={totalSchoolCount}
@@ -129,6 +123,7 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingHorizontal: 10,
     fontWeight: "bold",
+    color: Colors.primary
   },
   divider: {
     // marginTop: 15,

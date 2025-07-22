@@ -6,19 +6,16 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { SQLiteProvider } from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import {
-  SQLiteProvider,
-  useSQLiteContext,
-  type SQLiteDatabase,
-} from "expo-sqlite";
 import { Provider } from "react-redux";
 
+import { Colors } from "@/constants/Colors";
+import { migrateDbIfNeeded } from "@/database/migrations-db";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { store } from "@/store/store";
-import { migrateDbIfNeeded } from "@/database/migrations-db";
 import { PaperProvider } from "react-native-paper";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -47,7 +44,17 @@ export default function RootLayout() {
           <ThemeProvider
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
-            <Stack>
+            <Stack
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: Colors.primary,
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                  fontWeight: "bold",
+                },
+              }}
+            >
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen
                 name="(auth)/login"

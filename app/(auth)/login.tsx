@@ -1,4 +1,6 @@
+import CustomButton from "@/components/utils/CustomButton";
 import { baseUrl } from "@/constants/Urls";
+import { getProfile } from "@/http/profile-http";
 import {
   setLoggedIn,
   setLoggedInUser,
@@ -7,21 +9,20 @@ import {
   setTempAuthenticate,
   setTempToken,
 } from "@/store/slices/user-slice";
+import NetInfo from "@react-native-community/netinfo";
 import { useFocusEffect, useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   Image,
   KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { useDispatch } from "react-redux";
-import { TextInput } from "react-native-paper";
-import { getProfile } from "@/http/profile-http";
-import CustomButton from "@/components/utils/CustomButton";
-import { useSQLiteContext } from "expo-sqlite";
 import bcrypt from "react-native-bcrypt";
+import { TextInput } from "react-native-paper";
+import { useDispatch } from "react-redux";
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

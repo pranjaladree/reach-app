@@ -1,3 +1,8 @@
+
+import { Colors } from "@/constants/Colors";
+import { findUserById } from "@/database/database";
+import { setLoggedOut } from "@/store/slices/user-slice";
+import { RootState } from "@/store/store";
 import React, { useCallback, useState } from "react";
 import {
   View,
@@ -8,13 +13,17 @@ import {
   Platform,
 } from "react-native";
 import {
-  Ionicons,
-  MaterialIcons,
-  FontAwesome5,
   Feather,
+  FontAwesome5,
+  Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
+import { useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import React, { useEffect } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setLoggedOut } from "@/store/slices/user-slice";
 import CustomButton from "../utils/CustomButton";
@@ -29,6 +38,30 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const userId = useSelector((state: RootState) => state.userSlice.userId);
+  console.log("user Id", userId);
+  const db = useSQLiteContext();
+  const [userData, setUserData] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState<any>(true);
+  console.log("User Data", userData);
+
+  const getUsers = async () => {
+    try {
+      const response = await findUserById(db, userId);
+      setUserData(response);
+      setLoading(false);
+    } catch (e) {
+      console.error("Error", e);
+    }
+  };
+  const firstLetter = userData?.firstName?.charAt(0).toUpperCase();
+  console.log(firstLetter);
+
+  useEffect(() => {
+    if (userId) {
+      getUsers();
+    }
+  }, [userId]);
   const [isOnline, setIsOnline] = useState(false);
 
   const checkInternetHandler = async () => {
@@ -158,12 +191,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     <View style={{ flex: 1 }}>
       {/* Profile Section */}
       <View style={styles.profileContainer}>
-        {/* <Image
-          source={{ uri: "https://i.pravatar.cc/100" }}
-          style={styles.avatar}
-        /> */}
-        <Text style={styles.name}></Text>
-        <Text style={styles.email}></Text>
+        <View style={styles.avatar_container}>
+          <Text style={styles.avatar}>{firstLetter}</Text>
+        </View>
+        <Text style={styles.name}>
+          {userData?.firstName} {userData?.lastName}
+        </Text>
+        <Text style={styles.email}>{userData?.designation}</Text>
       </View>
       {/* Drawer Items */}
       <View style={{ flex: 1 }}>
@@ -262,16 +296,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2",
   },
   profileContainer: {
-    backgroundColor: "#228ed2",
+    backgroundColor: Colors.primary,
     paddingTop: 50,
     paddingHorizontal: 16,
     paddingBottom: 20,
   },
-  avatar: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+  avatar_container: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: Colors.secondary,
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 10,
+  },
+  avatar: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: Colors.light.text,
   },
   name: {
     fontSize: 16,
