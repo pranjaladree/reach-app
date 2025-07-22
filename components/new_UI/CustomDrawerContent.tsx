@@ -155,7 +155,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       <View style={{ flex: 1 }}>
         {drawerItems.map((item, index) => {
           const isActive = item.route === activeRouteName;
-          const itemColor = isActive ? "#2D9CDB" : "#4F4F4F";
+          const itemColor = isActive ? Colors.primary : "#4F4F4F";
           return (
             <Pressable
               key={index}
@@ -227,15 +227,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2",
   },
   profileContainer: {
-    backgroundColor: "#228ed2",
+    backgroundColor: Colors.primary,
     paddingTop: 50,
     paddingHorizontal: 16,
     paddingBottom: 20,
   },
   avatar_container: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: Colors.secondary,
     justifyContent: "center",
     alignItems: "center",

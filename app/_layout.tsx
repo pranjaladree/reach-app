@@ -12,11 +12,11 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { Provider } from "react-redux";
 
+import { Colors } from "@/constants/Colors";
 import { migrateDbIfNeeded } from "@/database/migrations-db";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { store } from "@/store/store";
 import { PaperProvider } from "react-native-paper";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -44,9 +44,17 @@ export default function RootLayout() {
           <ThemeProvider
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
-            <Stack screenOptions={{headerStyle: {
-              backgroundColor: Colors.primary,
-            }}}>
+            <Stack
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: Colors.primary,
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                  fontWeight: "bold",
+                },
+              }}
+            >
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen
                 name="(auth)/login"

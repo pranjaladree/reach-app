@@ -107,7 +107,7 @@ export default function Layout() {
             drawerLabel: "Home",
             title: "Home",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="home-outline" size={size} color={color} />
+              <Ionicons name="home-outline" size={size} color={Colors.primary} />
             ),
             headerTitle: () => (
               <View
