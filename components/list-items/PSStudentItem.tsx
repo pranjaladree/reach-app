@@ -86,14 +86,16 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: "white",
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 20,
     margin: 5,
     flexDirection: "row",
-    borderRadius: 5,
+    borderRadius: 12,
     elevation: 5,
     borderWidth: 1,
     borderColor: Colors.primary,
     justifyContent: "space-between",
+    alignItems: "center"
   },
 });
 

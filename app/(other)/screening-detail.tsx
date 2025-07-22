@@ -506,17 +506,17 @@ const ScreeningDetails = () => {
       <ScrollView style={styles.screen}>
         <View style={styles.headerBox}>
           <View>
-            <Text style={styles.title}>{studentData?.tempId}</Text>
-            <Text style={styles.title}>{`${studentData?.firstName}  ${
+            <Text style={styles.title}>Name: {`${studentData?.firstName}  ${
               studentData?.middleName ? studentData?.middleName : ""
             }  ${studentData?.lastName ? studentData?.lastName : ""}`}</Text>
+            <Text style={styles.title}>Student ID: {studentData?.tempId}</Text>
           </View>
           <View>
             <Text style={styles.title}>
-              {studentData?.gender}/{studentData?.age}
+              {studentData?.gender} |{studentData?.age}
             </Text>
             <Text style={styles.title}>
-              {studentData?.classTitle}/{studentData?.section}
+              {studentData?.classTitle} |{studentData?.section}
             </Text>
           </View>
         </View>
@@ -637,6 +637,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "bold",
+    fontSize: 16,
   },
 });
 
