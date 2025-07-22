@@ -244,7 +244,12 @@ const PrimaryScreening = () => {
           onDismiss={closeMenu}
           anchor={
             <View style={{ padding: 10 }}>
-              <Ionicons name="settings" size={24} onPress={openMenu} />
+              <Ionicons
+                name="settings"
+                size={24}
+                onPress={openMenu}
+                color="#FFFFFF"
+              />
             </View>
           }
         >

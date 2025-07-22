@@ -23,7 +23,6 @@ import {
 import bcrypt from "react-native-bcrypt";
 import { TextInput } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
@@ -131,13 +130,14 @@ const LoginScreen = () => {
         if (!resData.isTotpRequired) {
           dispatch(setLoggedIn(token));
           if (token) {
-            console.log("EXPIEEW", resData.tokenExpire);
-            const fixedTime = resData.tokenExpire.replace("IST", "+0530");
-            console.log("Fixed Time", fixedTime);
-            const epochTime = new Date(fixedTime);
-            console.log("EPOCH Time", epochTime.getTime());
-            console.log(new Date("Tue Jul 22 16:05:58 +0530 2025").getTime());
-            saveSessionData(token, new Date(fixedTime).getTime().toString());
+            // console.log("EXPIEEW", resData.tokenExpire);
+            // const fixedTime = resData.tokenExpire.replace("IST", "+0530");
+            // console.log("Fixed Time", fixedTime);
+            // const epochTime = new Date(fixedTime);
+            // console.log("EPOCH Time", epochTime.getTime());
+            // console.log(new Date("Tue Jul 22 16:05:58 +0530 2025").getTime());
+            let epochTime = new Date().getTime() + 86400000;
+            saveSessionData(token, epochTime?.toString());
             getProfileHandler(token);
           }
         } else {
@@ -199,7 +199,7 @@ const LoginScreen = () => {
       <View style={styles.screen}>
         <View style={styles.imageBox}>
           <Image
-            source={require("../../assets/images/reach_soft.png")}
+            source={require("../../assets/images/reach_logo.png")}
             style={{
               width: 180,
               height: 120,

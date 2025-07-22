@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "reach-app",
+    "name": "REACHLite",
     "slug": "reach-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/reach_soft.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "reachapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/reach_soft.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -37,7 +37,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/reach_logo.png",
+          "image": "./assets/images/icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

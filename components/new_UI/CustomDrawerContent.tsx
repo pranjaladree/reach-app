@@ -1,9 +1,8 @@
-
 import { Colors } from "@/constants/Colors";
 import { findUserById } from "@/database/database";
 import { setLoggedOut } from "@/store/slices/user-slice";
 import { RootState } from "@/store/store";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -19,16 +18,9 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
-import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import React, { useEffect } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { setLoggedOut } from "@/store/slices/user-slice";
-import CustomButton from "../utils/CustomButton";
 import { useFocusEffect, useRouter } from "expo-router";
-import { Colors } from "@/constants/Colors";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 
