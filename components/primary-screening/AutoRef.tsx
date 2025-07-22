@@ -7,7 +7,7 @@ import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
 import { setScreeningItem } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
 import { useCallback, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import CustomDropdown from "../utils/CustomDropdown";
 import CustomGridDropdown from "../utils/CustomGridDropdown";
@@ -18,6 +18,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import { useFocusEffect } from "expo-router";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomInput from "../utils/CustomInput";
+import { Colors } from "@/constants/Colors";
 
 const AutoRef = () => {
   const dispatch = useDispatch();
@@ -214,10 +215,11 @@ const AutoRef = () => {
   );
 
   return (
-    <View>
+    <View style={styles.box}>
       <View>
-        <Text>Vision With Autoref</Text>
+        <Text style={styles.headerTitle}>Vision With Autoref</Text>
       </View>
+      <View style={styles.divider}></View>
 
       {/* Row 1 */}
       <View>
@@ -341,4 +343,31 @@ const AutoRef = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  box: {
+    marginTop: 10,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: Colors.primary,
+  },
+  divider: {
+    marginTop: 10,
+    marginBottom: 10,
+    width: "100%",
+    borderWidth: 0.3,
+    borderColor: Colors.primary,
+  },
+  row: {
+    flexDirection: "row",
+  },
+  rowItem: {
+    flexBasis: 1,
+    flexGrow: 1,
+    padding: 5,
+  },
+});
+
 export default AutoRef;

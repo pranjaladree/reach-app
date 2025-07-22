@@ -5,10 +5,10 @@ import { useCallback, useEffect, useState } from "react";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { useSQLiteContext } from "expo-sqlite";
-import { getSchoolsDropdownFromDB } from "@/database/database";
 import { useFocusEffect } from "expo-router";
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
 import CustomButton from "@/components/utils/CustomButton";
+import { findSchoolDropdowns } from "@/database/school-student-db";
 
 const AutorefConfiguration = () => {
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
@@ -44,7 +44,7 @@ const AutorefConfiguration = () => {
   };
 
   const getSchoolsHandler = async () => {
-    const response = await getSchoolsDropdownFromDB(db);
+    const response = await findSchoolDropdowns(db);
     if (response) {
       setSchoolItems(response);
     }

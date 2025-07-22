@@ -269,7 +269,7 @@ const PrimaryScreening = () => {
 
   return (
     <View style={{ paddingHorizontal: 5, paddingVertical: 10, paddingTop: 20 }}>
-      <View>
+      <View style={{ flexGrow: 1, padding: 5 }}>
         <StyledDropdown
           label="School"
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
@@ -300,6 +300,7 @@ const PrimaryScreening = () => {
         <View>
           <CustomRadioGroup
             label="Gender"
+            showLabel={true}
             items={[
               new RadioItemModel({ id: 0, value: "All", label: "All" }),
               ...GENDER_RADIO_ITEMS,
@@ -311,6 +312,7 @@ const PrimaryScreening = () => {
         <View>
           <CustomRadioGroup
             label="Status"
+            showLabel={true}
             items={STATUS_RADIO_ITEMS}
             selectedOption={status}
             onChange={statusChangeHandler}
@@ -319,6 +321,7 @@ const PrimaryScreening = () => {
         <View>
           <CustomRadioGroup
             label="Result"
+            showLabel={true}
             items={RESULT_RADIO_ITEMS}
             selectedOption={result}
             onChange={resultChangeHandler}
@@ -347,21 +350,9 @@ const PrimaryScreening = () => {
           </View>
         </View>
       )}
-      <View style={{ padding: 10 }}>
+      <View style={{ padding: 10, marginTop: 20 }}>
         <CustomButton title="Search" onPress={getStudentsHandler} />
       </View>
-      {/* <Button
-        onPress={getStudentsHandler}
-        mode="contained"
-        style={{
-          paddingVertical: 5,
-          borderRadius: 30,
-          marginTop: 20,
-          width: "100%",
-        }}
-      >
-        Search
-      </Button> */}
     </View>
   );
 };
@@ -426,7 +417,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   followupBox: {
-    borderWidth: 1,
+    borderWidth: 0.5,
+    borderRadius: 5,
     padding: 10,
   },
 });

@@ -123,6 +123,18 @@ export const checkPSStatus = (
         } else {
           // If Torchlight Examination is NORMAL && Check if color vision test required
           if (screeningItem.isColorVisionTestRequired) {
+            if (
+              +screeningItem.colorVisionLE.value > 2 &&
+              +screeningItem.colorVisionRE > 2
+            ) {
+              status = "NORMAL";
+              reason = "";
+              return { status, reason };
+            } else {
+              status = "ADVISE";
+              reason = "Color Vision Test Failed !";
+              return { status, reason };
+            }
           } else {
             // Color Vision Test Not Required
             if (screeningItem.specCondition == "BAD") {

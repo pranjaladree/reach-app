@@ -23,13 +23,14 @@ import CustomButton from "@/components/utils/CustomButton";
 import { useSQLiteContext } from "expo-sqlite";
 import bcrypt from "react-native-bcrypt";
 import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
   const db = useSQLiteContext();
   const router = useRouter();
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("GEH@admin");
+  const [password, setPassword] = useState("Orbis@123");
   const [showPassword, setShowPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,7 +60,15 @@ const LoginScreen = () => {
 
   const [isOnline, setIsOnline] = useState(false);
 
-  const saveSessionData = () => {};
+  const saveSessionData = async (token: string, expiry: string) => {
+    try {
+      await AsyncStorage.setItem("token", token);
+      await AsyncStorage.setItem("expiry", expiry);
+    } catch (e) {
+      console.log(e);
+      // saving error
+    }
+  };
 
   const loginOfflineHandler = async () => {
     setIsLoading(true);
@@ -121,6 +130,13 @@ const LoginScreen = () => {
         if (!resData.isTotpRequired) {
           dispatch(setLoggedIn(token));
           if (token) {
+            console.log("EXPIEEW", resData.tokenExpire);
+            const fixedTime = resData.tokenExpire.replace("IST", "+0530");
+            console.log("Fixed Time", fixedTime);
+            const epochTime = new Date(fixedTime);
+            console.log("EPOCH Time", epochTime.getTime());
+            console.log(new Date("Tue Jul 22 16:05:58 +0530 2025").getTime());
+            saveSessionData(token, new Date(fixedTime).getTime().toString());
             getProfileHandler(token);
           }
         } else {
@@ -242,6 +258,7 @@ const styles = StyleSheet.create({
     padding: 10,
     flex: 1,
     justifyContent: "center",
+    backgroundColor: "white",
   },
   imageBox: {
     flexDirection: "row",

@@ -5,7 +5,7 @@ import {
 } from "@/constants/Data";
 import { setScreeningItem } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
-import { View, Text, Alert, NativeModules } from "react-native";
+import { View, Text, Alert, NativeModules, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import CustomDropdown from "../utils/CustomDropdown";
 import StyledDropdown from "../new_UI/StyledDropdown";
@@ -166,24 +166,6 @@ const BinacularTest = () => {
               })
             );
           }
-
-          // handleInputChange(odValue, "withoutSpcOdRe");
-          // handleInputChange(osValue, "withoutSpcOsLe");
-          // if (odValue == "Yes" && osValue == "Yes") {
-          //   setOccularTestVisible(true);
-          // } else {
-          //   setOccularTestVisible(false);
-          // }
-
-          // handleInputChange("", "ocularComplaintData");
-          // handleInputChange([], "ocularComplaintList");
-          // if (odValue == "No" || osValue == "No") {
-          //   setNormalCase(false);
-          //   setIsTle(false);
-          //   setIsColorVisionTest(false);
-          //   handleInputChange("", "colorVisionRe");
-          //   handleInputChange("", "colorVisionLe");
-          // }
         } else {
         }
       } catch (error) {
@@ -195,35 +177,33 @@ const BinacularTest = () => {
   };
 
   return (
-    <View>
+    <View style={styles.box}>
       <View>
-        <View>
-          <StyledDropdown
-            items={[BLANK_DROPDOWN_MODEL, ...NORMAL_ABNORMAL_DROPDOWN_ITEMS]}
-            label="Cover Test"
-            selectedItem={screeningItem.coverTest}
-            onChange={coverTestChangeHandler}
-          />
-        </View>
+        <StyledDropdown
+          items={[BLANK_DROPDOWN_MODEL, ...NORMAL_ABNORMAL_DROPDOWN_ITEMS]}
+          label="Cover Test"
+          selectedItem={screeningItem.coverTest}
+          onChange={coverTestChangeHandler}
+        />
       </View>
       <View>
-        <View>
-          <StyledDropdown
-            items={[BLANK_DROPDOWN_MODEL, ...NORMAL_ABNORMAL_DROPDOWN_ITEMS]}
-            label="NPC"
-            selectedItem={screeningItem.npcTest}
-            onChange={npcTestChangeHandler}
-          />
-        </View>
+        <StyledDropdown
+          items={[BLANK_DROPDOWN_MODEL, ...NORMAL_ABNORMAL_DROPDOWN_ITEMS]}
+          label="NPC"
+          selectedItem={screeningItem.npcTest}
+          onChange={npcTestChangeHandler}
+        />
       </View>
       <View>
-        <View>
-          <Text>Can Student Read using +2.0D lens</Text>
-        </View>
-        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-          <Button mode="outlined" onPress={openOccularApp}>
-            Ocular Check
-          </Button>
+        <View style={styles.row}>
+          <View>
+            <Text>Can Student Read using +2.0D lens</Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+            <Button mode="outlined" onPress={openOccularApp}>
+              Ocular Check
+            </Button>
+          </View>
         </View>
         <View style={{ flexDirection: "row" }}>
           <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
@@ -247,5 +227,17 @@ const BinacularTest = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  box: {
+    marginTop: 20,
+  },
+  row: {
+    marginTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+});
 
 export default BinacularTest;

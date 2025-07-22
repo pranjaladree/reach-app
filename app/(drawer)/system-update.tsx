@@ -31,6 +31,7 @@ import {
   saveSpecialInstructions,
   saveReasonForReferrals,
   saveDiagnosisMaster,
+  saveColorConfigs,
 } from "@/database/database";
 import { getVisionCenters } from "@/http/vision-center-http";
 import { getAllHospitals } from "@/http/hospital-http";
@@ -63,6 +64,7 @@ import { getAllSpecialInstructions } from "@/http/special-instructions-http";
 import { getAllReasonForReferrals } from "@/http/reason-for-referral-http";
 import { getAllDiagnosis } from "@/http/diagnosis-http";
 import CustomButton from "@/components/utils/CustomButton";
+import { getAllColorVisionConfigs } from "@/http/color-vision-http";
 
 type UpdateKey =
   | "Classes"
@@ -71,6 +73,7 @@ type UpdateKey =
   | "OtherFacilities"
   | "OcularComplaints"
   | "ReachConfigs"
+  | "ColorVisionConfigs"
   | "DVAs"
   | "NVAs"
   | "PHs"
@@ -96,9 +99,6 @@ type StatusType = "pending" | "loading" | "success" | "failed";
 const SystemUpdate = () => {
   const db = useSQLiteContext();
   const token = useSelector((state: RootState) => state.userSlice.token);
-  const partnerId = useSelector(
-    (state: RootState) => state.userSlice.partnerId
-  );
   const [isLoading, setIsLoading] = useState(false);
   const [visiable, setVisiable] = useState<boolean>(false);
   const [status, setStatus] = useState<Record<UpdateKey, StatusType>>({
@@ -108,6 +108,7 @@ const SystemUpdate = () => {
     OtherFacilities: "pending",
     OcularComplaints: "pending",
     ReachConfigs: "pending",
+    ColorVisionConfigs: "pending",
     DVAs: "pending",
     NVAs: "pending",
     PHs: "pending",
@@ -197,7 +198,7 @@ const SystemUpdate = () => {
     ReachConfigs: async () => {
       updateStatus("ReachConfigs", "loading");
       try {
-        const res = await getReachConfiguration(token, partnerId.toString());
+        const res = await getReachConfiguration(token);
         console.log(
           "CONFIGS ****************************************",
           res.data
@@ -208,6 +209,18 @@ const SystemUpdate = () => {
         } else throw new Error("Reach error");
       } catch {
         updateStatus("ReachConfigs", "failed");
+      }
+    },
+    ColorVisionConfigs: async () => {
+      updateStatus("ColorVisionConfigs", "loading");
+      try {
+        const res = await getAllColorVisionConfigs(token);
+        if (!res?.isError) {
+          saveColorConfigs(db, res.data);
+          updateStatus("ColorVisionConfigs", "success");
+        } else throw new Error("Reach error");
+      } catch {
+        updateStatus("ColorVisionConfigs", "failed");
       }
     },
     DVAs: async () => {

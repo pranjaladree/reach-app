@@ -10,6 +10,7 @@ import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { Button } from "react-native-paper";
 import { useEffect } from "react";
 import StyledDropdown from "../new_UI/StyledDropdown";
+import { Colors } from "@/constants/Colors";
 
 const { IntentLauncher } = NativeModules;
 
@@ -168,14 +169,7 @@ const VisionTest = () => {
   return (
     <View style={styles.box}>
       <View>
-        <Text style={styles.headerTitle}>
-          Vision Test
-          {`${
-            screeningItem.haveSpecNow == "YES"
-              ? "With Spectacle"
-              : "Without Spectacle"
-          }`}
-        </Text>
+        <Text style={styles.headerTitle}>Vision Test</Text>
       </View>
       <View style={styles.divider}></View>
       <View>
@@ -196,13 +190,31 @@ const VisionTest = () => {
         <>
           {/* View 2 */}
           <View>
-            <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-              <Button mode="outlined" onPress={openOccularApp}>
-                Ocular Check
-              </Button>
-            </View>
-            <View>
-              <Text>Can Read LogMar 0.2 ( RE ) ?</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View>
+                <Text>
+                  Can Read LogMar 0.2 ( RE )
+                  {` ${
+                    screeningItem.haveSpecNow == "YES"
+                      ? "With Spectacle"
+                      : "Without Spectacle"
+                  } `}
+                  ?
+                </Text>
+              </View>
+              <View
+                style={{ flexDirection: "row", justifyContent: "flex-end" }}
+              >
+                <Button mode="outlined" onPress={openOccularApp}>
+                  Ocular Check
+                </Button>
+              </View>
             </View>
             <View>
               <View style={styles.row}>
@@ -241,13 +253,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: Colors.primary,
   },
   divider: {
     marginTop: 10,
     marginBottom: 10,
     width: "100%",
     borderWidth: 0.3,
+    borderColor: Colors.primary,
   },
   row: {
     flexDirection: "row",

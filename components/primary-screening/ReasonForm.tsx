@@ -1,7 +1,7 @@
 import { RootState } from "@/store/store";
 import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
 import { Button, Dialog, Portal, TextInput } from "react-native-paper";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CustomDropdown from "../utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { FACILITY_TYPES_ITEMS } from "@/constants/Data";
@@ -26,18 +26,18 @@ import {
   useNavigation,
 } from "expo-router";
 import CustomInput from "../utils/CustomInput";
-import { DateSelector } from "../new_UI/date-picker";
-import QRCode from "react-native-qrcode-svg";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
 import ViewQR from "../qr/ViewQR";
 import { savePrimaryScreening } from "@/database/primary-screening-db";
+import { setScreeningItem } from "@/store/slices/student-slice";
 
 const ReasonForm = () => {
   const screeningItem = useSelector(
     (state: RootState) => state.studentSlice.screeningItem
   );
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
   const [qrData, setQrData] = useState<any>();

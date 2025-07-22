@@ -4,6 +4,7 @@ import { RootState } from "@/store/store";
 import { GOOD_BAD_RADIO_ITEMS, YES_NO_RADIO_ITEMS } from "@/constants/Data";
 import CustomRadioGroup from "../utils/CustomRadioGroup";
 import { setScreeningItem } from "@/store/slices/student-slice";
+import { Colors } from "@/constants/Colors";
 
 const SpectacleStatus = () => {
   const screeningItem = useSelector(
@@ -87,8 +88,9 @@ const SpectacleStatus = () => {
       </View>
       <View style={styles.divider}></View>
       <View>
-        <View>
-          <Text>Do you use spectacles</Text>
+        <View style={styles.labelBox}>
+          <Text style={styles.label}>Do you use spectacles ? </Text>
+          <Text style={styles.mandatoryIcon}>*</Text>
         </View>
         <View>
           <CustomRadioGroup
@@ -146,10 +148,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: "100%",
     borderWidth: 0.3,
+    borderColor: Colors.primary,
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: Colors.primary,
+  },
+  labelBox: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  label: {
+    fontSize: 16,
+    padding: 5,
+  },
+  mandatoryIcon: {
+    color: Colors.error,
   },
 });
 

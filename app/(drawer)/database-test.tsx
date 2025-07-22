@@ -9,9 +9,7 @@ const DatabaseTest = () => {
 
   const dropTablesHandler = () => {
     try {
-      const response = db.getAllSync(
-        `SELECT * FROM students WHERE schoolId="9"`
-      );
+      const response = db.getAllSync(`SELECT * FROM colorVisionConfigs`);
       console.log("RESSSS *******", response);
     } catch (err) {
       console.log(err);

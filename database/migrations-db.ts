@@ -164,6 +164,15 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   createdAt DATETIME DEFAULT (datetime('now')),
   updatedAt DATETIME DEFAULT (datetime('now')));
 
+  CREATE TABLE IF NOT EXISTS colorVisionConfigs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  classId INTEGER, 
+  gender TEXT,
+  required BOOLEAN,
+  createdAt DATETIME DEFAULT (datetime('now')),
+  updatedAt DATETIME DEFAULT (datetime('now')),
+  FOREIGN KEY (classId) REFERENCES classes(id));
+
   CREATE TABLE IF NOT EXISTS reasonForRefferals (
   id INTEGER PRIMARY KEY NOT NULL,
   title TEXT,

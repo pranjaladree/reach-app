@@ -1,8 +1,9 @@
 import { getProfile } from "@/http/profile-http";
 import { setLoggedInUser } from "@/store/slices/user-slice";
 import { RootState } from "@/store/store";
-import { Redirect } from "expo-router";
-import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Redirect, useFocusEffect } from "expo-router";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const AuthContext = () => {
@@ -18,6 +19,28 @@ const AuthContext = () => {
     (state: RootState) => state.userSlice.isMFARegistered
   );
   console.log("Is MFARegister", isAuthenticated);
+
+  const autoLoginHandler = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const expiry = await AsyncStorage.getItem("expiry");
+      console.log("Token &&&&&&&&&&&&&&&&&&&&&& :", token);
+      console.log("Expiry &&&&&&&&&&&&&&&&&&&&& :", expiry);
+      if (token !== null && expiry !== null) {
+        // value previously stored
+      }
+    } catch (e) {
+      console.log(e);
+      // error reading value
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      autoLoginHandler();
+      return () => {};
+    }, [])
+  );
 
   if (!isAuthenticated && !isTempAuthenticated) {
     return <Redirect href="/login" />;
