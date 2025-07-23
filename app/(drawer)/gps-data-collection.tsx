@@ -101,7 +101,7 @@ const GPSDataCollection = () => {
   );
 
   return (
-    <View style={{ padding: 20 }}>
+    <View style={{ padding: 10, paddingVertical: 40,  borderWidth: 1, borderColor: Colors.primary, margin: 20, borderRadius:3 }}>
       <View>
         <StyledDropdown
           label="School"
@@ -134,6 +134,11 @@ const GPSDataCollection = () => {
             Longitude : {location ? location.coords?.longitude : ""}
           </Text>
         </Text>
+      </View>
+      <View>
+        <Text style={styles.italicText}>
+            % of accuracy : {location ? location.coords?.accuracy: ""}
+          </Text>
       </View>
       {/* <View
         style={{
@@ -246,6 +251,12 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontSize: 16,
   },
+  italicText: {
+    fontStyle: "italic",
+    color: Colors.primary,
+    marginTop: 15,
+    fontWeight: "200",
+  }
 });
 
 export default GPSDataCollection;

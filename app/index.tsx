@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const AuthContext = () => {
+  const [loading, setLoading] = useState(true)
   const isAuthenticated = useSelector(
     (state: RootState) => state.userSlice.isAuthenticated
   );
@@ -20,18 +21,23 @@ const AuthContext = () => {
   console.log("Is MFARegister", isAuthenticated);
 
   const getProfileHandler = async (token: string) => {
-    const response = await getProfile(token);
-    dispatch(
-      setLoggedInUser({
-        userId: response.data.id,
-        fullName: response.data.fullName,
-        partnerId: response.data.partnerId,
-        userType: response.data.userType,
-        partnerName: response.data.partnerName,
-        isUserAgreement: response.data.isUserAgreement,
-        isPartnerAgreement: response.data.isPartnerAgreement,
-      })
-    );
+    try {
+      const response = await getProfile(token);
+      console.log("PROfile", response);
+      dispatch(
+        setLoggedInUser({
+          userId: response.data.id,
+          fullName: response.data.fullName,
+          partnerId: response.data.partnerId,
+          userType: response.data.userType,
+          partnerName: response.data.partnerName,
+          isUserAgreement: response.data.isUserAgreement,
+          isPartnerAgreement: response.data.isPartnerAgreement,
+        })
+      );
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const autoLoginHandler = async () => {
@@ -39,31 +45,34 @@ const AuthContext = () => {
       const token = await AsyncStorage.getItem("token");
       const expiry = await AsyncStorage.getItem("expiry");
       console.log("Token &&&&&&&&&&&&&&&&&&&&&& :", token);
+
       console.log("Expiry &&&&&&&&&&&&&&&&&&&&& :", expiry);
       console.log(new Date().getTime());
       if (token !== null && expiry !== null) {
         // value previously stored
         if (new Date().getTime() < +expiry) {
-          console.log("Loading....");
           dispatch(setLoggedIn(token));
-          getProfileHandler(token);
+         await getProfileHandler(token);
         }
       }
     } catch (e) {
       console.log(e);
       // error reading value
+    }finally{
+      setLoading(false)
+      console.log(loading, "loading")
     }
   };
-
-  console.log("IS Authericated", isAuthenticated);
-  console.log("IS MFA", isMFARegistered);
-
   useFocusEffect(
     useCallback(() => {
       autoLoginHandler();
       return () => {};
     }, [])
   );
+  
+  if(loading){
+    return null
+  }
 
   if (!isAuthenticated && !isTempAuthenticated) {
     return <Redirect href="/login" />;

@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useRouter } from "expo-router";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import { ScrollView } from "react-native-gesture-handler";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   navigation,
@@ -31,10 +32,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const dispatch = useDispatch();
   const router = useRouter();
   const userId = useSelector((state: RootState) => state.userSlice.userId);
-  const designation = useSelector(
-    (state: RootState) => state.userSlice.designation
-  );
-  console.log("user Id", userId);
+  const userDetails = useSelector((state: RootState) => state.userSlice);
+  console.log("User Details", userDetails);
+
+
   const db = useSQLiteContext();
   const [userData, setUserData] = React.useState<any>(null);
   const [loading, setLoading] = React.useState<any>(true);
@@ -52,13 +53,17 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const firstLetter = userData?.firstName?.charAt(0).toUpperCase();
   const lastLetter = userData?.lastName?.charAt(0).toUpperCase();
 
-  console.log(firstLetter);
+  const data = userDetails?.fullName?.trim().split(" ");
+  const firstInitial = data[0]?.charAt(0).toUpperCase();
+  const secondInitial = data[2]?.charAt(0).toUpperCase();
 
   useEffect(() => {
     if (userId) {
       getUsers();
     }
   }, [userId]);
+
+
   const [isOnline, setIsOnline] = useState(false);
 
   const checkInternetHandler = async () => {
@@ -190,8 +195,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       <View style={styles.profileContainer}>
         <View style={styles.avatar_container}>
           <Text style={styles.avatar}>
-            {firstLetter}
-            {lastLetter}
+            {/* {firstLetter}
+            {lastLetter} */}
+            {firstInitial}{secondInitial}
+
           </Text>
         </View>
         <Text style={styles.name}>
@@ -200,7 +207,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         <Text style={styles.email}>{designation}</Text>
       </View>
       {/* Drawer Items */}
-      <View style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
         {drawerItems.map((item, index) => {
           const isActive = item.route === activeRouteName;
           const itemColor = isActive ? "#2D9CDB" : "#4F4F4F";
@@ -275,7 +282,16 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
           </View>
           {/* <CustomButton title="Logout" onPress={handleLogout} /> */}
         </View>
-      </View>
+      </ScrollView>
+      {/* Logout Button */}
+      {/* <View style={styles.versionContainer}>
+        <View style={styles.drawerItem}>
+          <View style={styles.icon}>
+            <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
+          </View>
+          <Text style={styles.label}>V 1.0.9</Text>
+        </View>
+      </View> */}
     </View>
   );
 };

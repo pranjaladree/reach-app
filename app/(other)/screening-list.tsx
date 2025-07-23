@@ -1,11 +1,13 @@
 import PSStudentItem from "@/components/list-items/PSStudentItem";
 import CustomInput from "@/components/utils/CustomInput";
+import CustomInput1 from "@/components/utils/CustomInput1";
+import { Colors } from "@/constants/Colors";
 import { getPSStudentsBySchoolId } from "@/database/primary-screening-db";
 import { RootState } from "@/store/store";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
 
 const ScreeningList = () => {
@@ -92,33 +94,34 @@ const ScreeningList = () => {
   );
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <View
         style={{
           padding: 10,
           position: "absolute",
-          zIndex: 100,
-          backgroundColor: "white",
+          zIndex: 1,
+          backgroundColor: "#fff",
           width: "100%",
         }}
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text>Total Student: {studentList.length}</Text>
-          <Text>Done: {doneCount}</Text>
-          <Text>Not Done : {notDoneCount}</Text>
+          <Text style={styles.header}>Total Student: {studentList.length}</Text>
+          <Text style={styles.header}>Done: {doneCount}</Text>
+          <Text style={styles.header}>Not Done : {notDoneCount}</Text>
         </View>
-        <View style={{ marginTop: 10 }}>
-          <CustomInput
+        <View style={{ marginTop: 20,  }}>
+          <CustomInput1
             id="search"
-            label="Seach Student"
+            label=""
             value={searchTerm}
+            placeholder="Search Student"
             onChangeText={searchTermChangeHandler}
           />
         </View>
       </View>
 
       <View
-        style={{ paddingHorizontal: 10, paddingTop: 150, paddingBottom: 100 }}
+        style={{ paddingHorizontal: 10, marginTop: 120,paddingTop: 10, paddingBottom: 10, backgroundColor: Colors.light.background }}
       >
         <FlatList
           data={filteredList}
@@ -136,3 +139,9 @@ const ScreeningList = () => {
 };
 
 export default ScreeningList;
+
+const styles = StyleSheet.create({
+  header: {
+    fontWeight: "800",
+  },
+});
