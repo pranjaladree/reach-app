@@ -31,6 +31,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const dispatch = useDispatch();
   const router = useRouter();
   const userId = useSelector((state: RootState) => state.userSlice.userId);
+  const designation = useSelector(
+    (state: RootState) => state.userSlice.designation
+  );
   console.log("user Id", userId);
   const db = useSQLiteContext();
   const [userData, setUserData] = React.useState<any>(null);
@@ -186,12 +189,15 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       {/* Profile Section */}
       <View style={styles.profileContainer}>
         <View style={styles.avatar_container}>
-          <Text style={styles.avatar}>{firstLetter}{lastLetter}</Text>
+          <Text style={styles.avatar}>
+            {firstLetter}
+            {lastLetter}
+          </Text>
         </View>
         <Text style={styles.name}>
           {userData?.firstName} {userData?.lastName}
         </Text>
-        <Text style={styles.email}>{userData?.designation}</Text>
+        <Text style={styles.email}>{designation}</Text>
       </View>
       {/* Drawer Items */}
       <View style={{ flex: 1 }}>
@@ -265,20 +271,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             <View style={styles.icon}>
               <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
             </View>
-            <Text style={styles.label}>Version 1.0.9</Text>
+            <Text style={styles.label}>Version 1.1.1</Text>
           </View>
           {/* <CustomButton title="Logout" onPress={handleLogout} /> */}
         </View>
       </View>
-      {/* Logout Button */}
-      {/* <View style={styles.versionContainer}>
-        <View style={styles.drawerItem}>
-          <View style={styles.icon}>
-            <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
-          </View>
-          <Text style={styles.label}>V 1.0.9</Text>
-        </View>
-      </View> */}
     </View>
   );
 };

@@ -110,6 +110,12 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
+                name="(other)/view-qr"
+                options={{
+                  headerTitle: "View QR Code",
+                }}
+              />
+              <Stack.Screen
                 name="(other)/spectacle-list"
                 options={{
                   headerTitle: "Spectacle Booking",

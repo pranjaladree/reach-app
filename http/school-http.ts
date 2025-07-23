@@ -1,5 +1,6 @@
 import { baseUrl } from "@/constants/Urls";
 import { SchoolModel } from "@/models/school/SchoolModel";
+import { ResponseModel } from "@/models/utils/ResponseModel";
 
 export const getSchoolActivities = async (
   token: string,
@@ -21,30 +22,41 @@ export const getSchoolActivities = async (
         },
       }
     );
-    const resData = await res.json();
-    console.log(resData);
-    let arr: SchoolModel[] = [];
-    resData.forEach((item: any) => {
-      arr.push(
-        new SchoolModel({
-          id: item.schoolId,
-          schoolId: item.schoolId,
-          schoolName: item.schoolName,
-          classFromId: item.classFromId,
-          classUptoId: item.classUptoId,
-          latitude: item.longitude,
-          longitude: item.latitude,
-          visionCenterId: item.visionCenterId,
-          projectId: item.projectId,
-          isAutorefAvailable: item.isAutorefAvailable,
-          activityType: item.activityType,
-          isFollowupSchool: item.isFollowupSchool,
-        })
-      );
-    });
-    return arr;
+    if (res.status == 200) {
+      const resData = await res.json();
+      console.log(resData);
+      let arr: SchoolModel[] = [];
+      resData.forEach((item: any) => {
+        arr.push(
+          new SchoolModel({
+            id: item.schoolId,
+            schoolId: item.schoolId,
+            schoolName: item.schoolName,
+            classFromId: item.classFromId,
+            classUptoId: item.classUptoId,
+            latitude: item.longitude,
+            longitude: item.latitude,
+            visionCenterId: item.visionCenterId,
+            projectId: item.projectId,
+            isAutorefAvailable: item.isAutorefAvailable,
+            activityType: item.activityType,
+            isFollowupSchool: item.isFollowupSchool,
+          })
+        );
+      });
+      return new ResponseModel({
+        data: arr,
+      });
+    } else {
+      return new ResponseModel({
+        isError: true,
+        data: "Activity Not Found",
+      });
+    }
   } catch (err) {
-    console.log(err);
-    return [];
+    return new ResponseModel({
+      isError: true,
+      data: "Activity Not Found",
+    });
   }
 };

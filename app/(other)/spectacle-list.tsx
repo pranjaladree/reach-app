@@ -1,6 +1,9 @@
 import SpecStudentItem from "@/components/list-items/SpecStudentItem";
+import BookSpectacle from "@/components/spectacle/BookSpectacle";
 import InputBox from "@/components/ui/InputBox";
+import CustomButton from "@/components/utils/CustomButton";
 import CustomInput from "@/components/utils/CustomInput";
+import CustomNotification from "@/components/utils/CustomNotification";
 import {
   getSpecStudentsBySchoolId,
   saveSpecBooking,
@@ -11,12 +14,10 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
 import { View, Text, FlatList } from "react-native";
-import { Button, Dialog, Portal } from "react-native-paper";
+import { Button, Dialog, Modal, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
 const SpectacleList = () => {
-  const router = useRouter();
-  const dispatch = useDispatch();
   const appliedFilters = useSelector(
     (state: RootState) => state.studentSlice.appliedFilters
   );
@@ -24,11 +25,16 @@ const SpectacleList = () => {
   const { schoolId } = useLocalSearchParams();
   const [studentList, setStudentList] = useState<any[]>([]);
   const [filteredList, setFilteredList] = useState<any[]>([]);
-  console.log("Student Lis", studentList);
-  // const filteredStudents = useSelector(
-  //   (state: RootState) => state.studentSlice.filteredStudents
-  // );
-  // console.log("Filter Students", filteredStudents.length);
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+  };
   const [searchTerm, setSearchTerm] = useState("");
 
   const searchTermChangeHandler = (val: string) => {
@@ -49,22 +55,23 @@ const SpectacleList = () => {
     setFilteredList(filterArr);
   };
 
-  const [diaglogMessage, setDialogMessage] = useState("");
-
   const [selectedStudent, setSelectedStudent] = useState<any>();
 
-  const [visible, setVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [frameName, setFramename] = useState("");
 
-  const frameNameChangeHandler = (val: string) => {
-    setFramename(val);
+  const openModalHandler = (item: any) => {
+    setSelectedStudent(item);
+    setIsModalOpen(true);
   };
 
-  const showDialog = (item: any) => {
-    setSelectedStudent(item);
-    console.log("ITEM", item);
-    setVisible(true);
+  const closeModalHandler = () => {
+    setIsModalOpen(false);
+  };
+
+  const frameNameChangeHandler = (val: string) => {
+    setFramename(val);
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -74,21 +81,21 @@ const SpectacleList = () => {
     const response = await saveSpecBooking(db, selectedStudent.id, frameName);
     console.log(response);
     if (response) {
-      setVisible(false);
+      setIsModalOpen(false);
+      openNotificationHandler();
+      setNotificationMessage("Spectacle Booked !");
     }
     setIsLoading(false);
     getStudents();
   };
 
   const getStudents = async () => {
-    console.log("GETTING Students....");
     if (schoolId) {
       const response: any = await getSpecStudentsBySchoolId(
         db,
         schoolId?.toString(),
         appliedFilters
       );
-      console.log("RESPONS", response);
       if (response) {
         setStudentList(response);
         setFilteredList(response);
@@ -117,7 +124,7 @@ const SpectacleList = () => {
         }}
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text>Total Student: {studentList.length}</Text>
+          <Text>Total Count: {studentList.length}</Text>
         </View>
         <View style={{ marginTop: 10 }}>
           <CustomInput
@@ -137,42 +144,29 @@ const SpectacleList = () => {
           renderItem={({ item }) => (
             <SpecStudentItem
               item={item}
-              onPress={showDialog.bind(this, item)}
+              onPress={openModalHandler.bind(this, item)}
             />
           )}
         />
       </View>
 
       <Portal>
-        <Dialog
-          visible={visible}
-          onDismiss={() => {
-            setVisible(false);
-          }}
-        >
-          <Dialog.Title>{selectedStudent?.firstName}</Dialog.Title>
-          <Dialog.Content>
-            <Text>Book Spectacle</Text>
-            <View>
-              <CustomInput
-                id="frame"
-                label="Frame Model"
-                value={frameName}
-                onChangeText={frameNameChangeHandler}
-              />
-            </View>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={saveBookingHandler}
-              loading={isLoading}
-              mode="contained"
-            >
-              Book Now
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+        <Modal visible={isModalOpen} onDismiss={closeModalHandler}>
+          <BookSpectacle
+            frameModel={frameName}
+            onChangeText={frameNameChangeHandler}
+            isLoading={isLoading}
+            onBook={saveBookingHandler}
+          />
+        </Modal>
       </Portal>
+
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant="success"
+      />
     </View>
   );
 };

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import CustomButton from "@/components/utils/CustomButton";
+import { Ionicons } from "@expo/vector-icons";
 
 const ViewQR = () => {
   const db = useSQLiteContext();
@@ -72,7 +73,11 @@ const ViewQR = () => {
       </View>
       <View style={styles.action}>
         <View style={styles.actionItem}>
-          <CustomButton title="Print QR" onPress={() => {}} />
+          <CustomButton
+            title="Print QR"
+            onPress={() => {}}
+            icon={<Ionicons name="print-outline" size={25} color="#fff" />}
+          />
         </View>
       </View>
     </View>

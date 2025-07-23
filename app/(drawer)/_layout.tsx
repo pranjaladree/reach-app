@@ -1,59 +1,3 @@
-// import { GestureHandlerRootView } from "react-native-gesture-handler";
-// import { Drawer } from "expo-router/drawer";
-
-// export default function Layout() {
-//   return (
-//     <GestureHandlerRootView style={{ flex: 1 }}>
-//       <Drawer>
-
-//         <Drawer.Screen
-//           name="index" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Home",
-//             title: "Home",
-//           }}
-//         />
-//         <Drawer.Screen
-
-//           name="device-preparation" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Device Preparation",
-//             title: "Device Preparation",
-//           }}
-//         />
-//         <Drawer.Screen
-//           name="database-test" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Database Test",
-//             title: "Database Test",
-//           }}
-//         />
-//         <Drawer.Screen
-//           name="primary-screening" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Primary Screening",
-//             title: "Primary Screening",
-//           }}
-//         />
-//         <Drawer.Screen
-//           name="sync-to-server" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "Sync To Server",
-//             title: "Sync To Server",
-//           }}
-//         />
-//         <Drawer.Screen
-//           name="mr-tag" // This is the name of the page and must match the url from root
-//           options={{
-//             drawerLabel: "MR Tag",
-//             title: "MR Tag",
-//           }}
-//         />
-//       </Drawer>
-//     </GestureHandlerRootView>
-//   );
-// }
-
 import CustomDrawerContent from "@/components/new_UI/CustomDrawerContent";
 import { Colors } from "@/constants/Colors";
 import {
@@ -139,7 +83,7 @@ export default function Layout() {
                     resizeMode: "contain",
                     position: "absolute",
                     left: "50%",
-                    transform: [{ translateX: -90}],
+                    transform: [{ translateX: -90 }],
                   }}
                   source={require("../../assets/images/reach_logo.png")}
                 />

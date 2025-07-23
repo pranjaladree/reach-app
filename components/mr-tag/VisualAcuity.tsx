@@ -1,5 +1,4 @@
 import { findAllDvas, findAllNvas, findAllPhs } from "@/database/database";
-import { DistanceDvaModel } from "@/models/other-masters/DistanceDvaModel";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
@@ -17,6 +16,7 @@ import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
 import CustomTabs, { TabItem } from "../utils/CustomTabs";
 import { findOneVisualAcuity, saveVisualAcuity } from "@/database/mr-tag-db";
+import CustomNotification from "../utils/CustomNotification";
 
 const TAB_ITEMS = [
   { title: "With Spectacle", disabled: false, isDone: false },
@@ -26,9 +26,10 @@ const TAB_ITEMS = [
 interface Props {
   mrId: string;
   isMRTagDone: boolean;
+  onNext: () => void;
 }
 
-const VisualAcuity = ({ mrId, isMRTagDone }: Props) => {
+const VisualAcuity = ({ mrId, isMRTagDone, onNext }: Props) => {
   console.log("MR ID", mrId);
   const [activeTab, setActiveTab] = useState(TAB_ITEMS[0]);
   const db = useSQLiteContext();
@@ -38,6 +39,18 @@ const VisualAcuity = ({ mrId, isMRTagDone }: Props) => {
   const [phItems, setPhItems] = useState<GridDropdownModel[]>([]);
   const [nvaItems, setNvaItems] = useState<GridDropdownModel[]>([]);
   const dispatch = useDispatch();
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+    onNext();
+  };
   // Without Specs
   const [distanceDvaWithoutSpecLE, setDistanceDvaWithouSpecLE] = useState(
     BLANK_GRID_DROPDOWN_MODEl
@@ -187,13 +200,15 @@ const VisualAcuity = ({ mrId, isMRTagDone }: Props) => {
       })
     );
     if (response) {
-      showDialog();
-      setDialogMessage("Visual Acuity Saved !");
+      // showDialog();
+      openNotificationHandler();
+      setNotificationMessage("Visual Acuity Saved !");
     }
   };
 
   const getDistanceDvaHandler = async () => {
     const response: any = await findAllDvas(db);
+    console.log("RSE ********************* DVA", response);
     if (response) {
       setDistanceDvaItems(response);
     }
@@ -325,7 +340,10 @@ const VisualAcuity = ({ mrId, isMRTagDone }: Props) => {
 
   const showDialog = () => setVisible(true);
 
-  const hideDialog = () => setVisible(false);
+  const hideDialog = () => {
+    setVisible(false);
+    onNext();
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -482,25 +500,12 @@ const VisualAcuity = ({ mrId, isMRTagDone }: Props) => {
           disabled={!isMRTagDone}
         />
       </View>
-      {/* <View style={styles.action}>
-        <Button onPress={saveVisualAcuityHandler} mode="contained">
-          Save
-        </Button>
-      </View> */}
-
-      <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>REACHLite</Dialog.Title>
-          <Dialog.Content>
-            <Text>{diaglogMessage}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog} loading={isLoading}>
-              Done
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant="success"
+      />
     </View>
   );
 };

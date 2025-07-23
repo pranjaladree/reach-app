@@ -25,6 +25,12 @@ const MRTagDetail = () => {
     setActiveTab(item);
   };
 
+  const onNextTabHandler = (tabIndex: number) => {
+    if (tabIndex) {
+      setActiveTab(TAB_ITEMS[tabIndex]);
+    }
+  };
+
   const db = useSQLiteContext();
   const [mrTagItem, setMrTagItem] = useState(BLANK_MR_TAG_MODEL);
   const [isMrTagDone, setIsMrTagDone] = useState(false);
@@ -122,7 +128,11 @@ const MRTagDetail = () => {
       <View style={styles.headerBox}>
         <View>
           <Text style={styles.title}>{studentData?.tempId}</Text>
-          <Text style={styles.title}>{studentData?.studentName}</Text>
+          <Text style={styles.title}>
+            {`${studentData?.firstName}${
+              studentData?.middleName ? studentData?.middleName : " "
+            }${studentData?.lastName ? studentData?.lastName : " "}`}
+          </Text>
         </View>
         <View>
           <Text style={styles.title}>
@@ -149,6 +159,8 @@ const MRTagDetail = () => {
             studentId={studentId?.toString()}
             tempId={studentData?.tempId?.toString()}
             item={mrTagItem}
+            onDone={getMRTagHandler}
+            onNext={onNextTabHandler.bind(this, 1)}
           />
         </View>
       )}
@@ -157,12 +169,17 @@ const MRTagDetail = () => {
           <VisualAcuity
             mrId={studentId?.toString()}
             isMRTagDone={isMrTagDone}
+            onNext={onNextTabHandler.bind(this, 2)}
           />
         </View>
       )}
       {activeTab.title == TAB_ITEMS[2].title && (
         <View>
-          <Refraction mrId={studentId?.toString()} isMRTagDone={isMrTagDone} />
+          <Refraction
+            mrId={studentId?.toString()}
+            isMRTagDone={isMrTagDone}
+            onNext={onNextTabHandler.bind(this, 3)}
+          />
         </View>
       )}
       {activeTab.title == TAB_ITEMS[3].title && (

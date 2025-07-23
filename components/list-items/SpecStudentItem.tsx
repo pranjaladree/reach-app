@@ -1,6 +1,3 @@
-import { getScreeningByIdFromDB } from "@/database/database";
-import { StudentModel } from "@/models/school/StudentModel";
-import { setScreeningItem } from "@/store/slices/student-slice";
 import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { View, Text, StyleSheet, Pressable } from "react-native";

@@ -21,6 +21,7 @@ export const getProfile = async (token: string) => {
         partnerName: response.partnerName,
         isUserAgreement: response.isUserAgreement,
         isPartnerAgreement: response.isPartnerAgreement,
+        designation: response.designation,
       },
     });
   } else {

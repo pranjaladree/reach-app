@@ -107,7 +107,7 @@ export const savePrimaryScreening = async (
 export const findScreeningById = async (db: SQLiteDatabase, id: string) => {
   try {
     const response = await db.getFirstAsync(
-      `SELECT * from screenings LEFT JOIN students ON screenings.studentId = students.id WHERE screenings.studentId=${id}`
+      `SELECT * from screenings LEFT JOIN students ON screenings.studentId = students.id WHERE screenings.studentId="${id}"`
     );
     console.log("RES *****************************", response);
     if (response) {

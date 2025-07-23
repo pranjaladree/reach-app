@@ -199,7 +199,7 @@ const MRTag = () => {
               setIsScanQR(true);
             }}
           >
-            <Ionicons name="qr-code-outline" size={25} />
+            <Ionicons name="qr-code-outline" size={25} color="#ffffff" />
           </Pressable>
         </View>
       ),

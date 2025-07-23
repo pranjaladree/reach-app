@@ -8,14 +8,14 @@ const DatabaseTest = () => {
   const db = useSQLiteContext();
 
   const dropTablesHandler = () => {
-    try {
-      const response = db.getAllSync(`SELECT * FROM colorVisionConfigs`);
-      console.log("RESSSS *******", response);
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   const response = db.getAllSync(`SELECT * FROM colorVisionConfigs`);
+    //   console.log("RESSSS *******", response);
+    // } catch (err) {
+    //   console.log(err);
+    // }
     // console.log("REDF", response);
-    // dropTables(db);
+    dropTables(db);
   };
   const getStudentData = async () => {
     const response = await getScreeningByIdFromDB(db, 523);

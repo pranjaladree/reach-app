@@ -25,14 +25,17 @@ import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
 import { findOneMRTag, saveMRTag } from "@/database/mr-tag-db";
+import CustomNotification from "../utils/CustomNotification";
 
 interface Props {
   item: MRTagModel;
   studentId: string;
   tempId: string;
+  onDone: () => void;
+  onNext: () => void;
 }
 
-const MRTagItem = ({ item, studentId, tempId }: Props) => {
+const MRTagItem = ({ item, studentId, tempId, onDone, onNext }: Props) => {
   console.log("Item", item);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -40,6 +43,18 @@ const MRTagItem = ({ item, studentId, tempId }: Props) => {
   const [mrNo, setMrNo] = useState("");
   const [mrNoHasError, setMrNoHasError] = useState(false);
   const [mrNoErrorMessage, setMrNoErrorMessage] = useState("");
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+    onNext();
+  };
 
   const [hospitalItems, setHospitalItems] = useState<DropdownModel[]>([]);
   console.log("Hospital Items", hospitalItems);
@@ -122,7 +137,9 @@ const MRTagItem = ({ item, studentId, tempId }: Props) => {
       })
     );
     if (response) {
-      showDialog();
+      onDone();
+      openNotificationHandler();
+      setNotificationMessage("MR Tag Saved !");
     }
   };
 
@@ -132,7 +149,9 @@ const MRTagItem = ({ item, studentId, tempId }: Props) => {
 
   const showDialog = () => setVisible(true);
 
-  const hideDialog = () => setVisible(false);
+  const hideDialog = () => {
+    setVisible(false);
+  };
 
   useEffect(() => {
     if (facilityType.value?.toUpperCase() == "VISION CENTER") {
@@ -279,7 +298,14 @@ const MRTagItem = ({ item, studentId, tempId }: Props) => {
           </Button> */}
         </View>
       </View>
-      <Portal>
+
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant="success"
+      />
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
@@ -291,7 +317,7 @@ const MRTagItem = ({ item, studentId, tempId }: Props) => {
             </Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
     </>
   );
 };

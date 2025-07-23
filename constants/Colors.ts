@@ -47,5 +47,6 @@ export const Colors = {
   },
   primary: "#004aad",
   secondary: "#f0f0f0",
-  error: "#b8240d",
+  error: "#d66565",
+  success: "#5db374",
 };

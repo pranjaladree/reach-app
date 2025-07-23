@@ -31,10 +31,22 @@ import DateTimePicker, {
 } from "react-native-ui-datepicker";
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
 import { saveBulkStudents, saveSchool } from "@/database/school-student-db";
+import CustomNotification from "@/components/utils/CustomNotification";
 
 const DevicePreparation = () => {
   const dispatch = useDispatch();
   const db = useSQLiteContext();
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [variant, setVariant] = useState("success");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+  };
   const token = useSelector((state: RootState) => state.userSlice.token);
   const schoolItems = useSelector(
     (state: RootState) => state.schoolSlice.schoolItems
@@ -51,11 +63,8 @@ const DevicePreparation = () => {
   const [isSchoolLoading, setIsSchoolLoading] = useState(false);
   const [isStudentLoading, setIsStudentLoading] = useState(false);
   const [isSavingLoading, setIsSavingLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
 
   const defaultStyles = useDefaultStyles();
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
 
   const selectActivityTypeHandler = (val?: string) => {
     if (!val) return setSelectedActivityType(BLANK_DROPDOWN_MODEL);
@@ -82,8 +91,13 @@ const DevicePreparation = () => {
       dayjs(selected).format("YYYY-MM-DD"),
       selectedActivityType.value
     );
-    console.log(res);
-    if (res) dispatch(setSchools(res));
+    if (!res.isError) {
+      dispatch(setSchools(res.data));
+    } else {
+      openNotificationHandler();
+      setNotificationMessage(res.data);
+      setVariant("error");
+    }
     setIsSchoolLoading(false);
   };
 
@@ -107,7 +121,10 @@ const DevicePreparation = () => {
     const res = await saveBulkStudents(db, students);
     setIsSavingLoading(false);
     if (res) {
-      showDialog();
+      // showDialog();
+      openNotificationHandler();
+      setNotificationMessage("Student Saved Successfully !");
+      setVariant("success");
       incrementDeviceCount(token, preparedSchool.id.toString());
     }
   };
@@ -128,6 +145,9 @@ const DevicePreparation = () => {
       />
 
       {/* Date + Get School Row */}
+      <View style={{ padding: 5 }}>
+        <Text>Activity Date</Text>
+      </View>
       <View style={styles.row}>
         <View style={styles.dateBox}>
           <Pressable
@@ -153,43 +173,45 @@ const DevicePreparation = () => {
       </View>
 
       {/* Boxed Section for School to Save */}
-      <View style={styles.cardBox}>
-        {/* School Dropdown */}
-        <StyledDropdown
-          label="Select School"
-          items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
-          selectedItem={selectedSchool}
-          onChange={selectSchoolHandler}
-        />
-        {/* Get Student Button */}
-        <Button
-          onPress={devicePreparationHandler}
-          mode="contained"
-          icon="check-circle"
-          loading={isStudentLoading}
-          style={styles.fullButton}
-          contentStyle={styles.iconRight}
-        >
-          Get Student Data
-        </Button>
+      {schoolItems.length != 0 && (
+        <View style={styles.cardBox}>
+          {/* School Dropdown */}
+          <StyledDropdown
+            label="Select School"
+            items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
+            selectedItem={selectedSchool}
+            onChange={selectSchoolHandler}
+          />
+          {/* Get Student Button */}
+          <Button
+            onPress={devicePreparationHandler}
+            mode="contained"
+            icon="check-circle"
+            loading={isStudentLoading}
+            style={styles.fullButton}
+            contentStyle={styles.iconRight}
+          >
+            Get Student Data
+          </Button>
 
-        {/* Student Count Text */}
-        <Text style={styles.studentText}>
-          No of Students Record Found : {students.length}
-        </Text>
+          {/* Student Count Text */}
+          <Text style={styles.studentText}>
+            No of Students Record Found : {students.length}
+          </Text>
 
-        {/* Save Button */}
-        <Button
-          onPress={saveStudentsHandler}
-          mode="contained"
-          icon="download"
-          loading={isSavingLoading}
-          style={styles.fullButton}
-          contentStyle={styles.iconRight}
-        >
-          Save Data on Device
-        </Button>
-      </View>
+          {/* Save Button */}
+          <Button
+            onPress={saveStudentsHandler}
+            mode="contained"
+            icon="download"
+            loading={isSavingLoading}
+            style={styles.fullButton}
+            contentStyle={styles.iconRight}
+          >
+            Save Data on Device
+          </Button>
+        </View>
+      )}
 
       {/* Date Picker Modal */}
       <Modal visible={isModalOpen}>
@@ -201,8 +223,15 @@ const DevicePreparation = () => {
         />
       </Modal>
 
+      {/* Notification */}
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant={variant}
+      />
       {/* Success Dialog */}
-      <Portal>
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>Alert</Dialog.Title>
           <Dialog.Content>
@@ -212,7 +241,7 @@ const DevicePreparation = () => {
             <Button onPress={hideDialog}>Done</Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
     </ScrollView>
   );
 };
