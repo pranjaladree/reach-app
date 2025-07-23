@@ -1,16 +1,7 @@
-import { DistanceDvaModel } from "@/models/other-masters/DistanceDvaModel";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import CustomGridDropdown from "../utils/CustomGridDropdown";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { setVisualAcuity } from "@/store/slices/visual-acuity-slice";
-import {
-  BLANK_DROPDOWN_MODEL,
-  BLANK_GRID_DROPDOWN_MODEl,
-} from "@/constants/BlankModels";
-import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
+import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import {
   Button,
   Checkbox,
@@ -18,7 +9,6 @@ import {
   Portal,
   TextInput,
 } from "react-native-paper";
-import { SegmentedButtons } from "react-native-paper";
 import CustomDropdown from "../utils/CustomDropdown";
 import {
   ACTIVITY_TYPE_ITEMS,
@@ -46,6 +36,7 @@ import {
   saveAdvice,
   saveDiagnosis,
 } from "@/database/mr-tag-db";
+import CustomNotification from "../utils/CustomNotification";
 
 interface Props {
   mrId: string;
@@ -54,6 +45,17 @@ interface Props {
 
 const Advice = ({ mrId, isMRTagDone }: Props) => {
   const db = useSQLiteContext();
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+  };
 
   const [diagnosisDropdownItems, setDiagnosisDropdownItems] = useState<
     DropdownModel[]
@@ -128,16 +130,6 @@ const Advice = ({ mrId, isMRTagDone }: Props) => {
     new DropdownModel({ id: "2", value: "Surgery 2", label: "Surgery 2" }),
   ]);
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [diaglogMessage, setDialogMessage] = useState("");
-
-  const [visible, setVisible] = useState(false);
-
-  const showDialog = () => setVisible(true);
-
-  const hideDialog = () => setVisible(false);
-
   const saveDiagnosisHandler = async () => {
     console.log("Saved Diagnosis Items", savedDiagnosisItem);
     let newItem = `${
@@ -156,8 +148,9 @@ const Advice = ({ mrId, isMRTagDone }: Props) => {
       })
     );
     if (response) {
-      showDialog();
-      setDialogMessage("Diagnosis Data Saved !");
+      // showDialog();
+      openNotificationHandler();
+      setNotificationMessage("Diagnosis Data Saved !");
       getExistingDiagnosisHandler();
     }
   };
@@ -182,8 +175,9 @@ const Advice = ({ mrId, isMRTagDone }: Props) => {
       })
     );
     if (response) {
-      showDialog();
-      setDialogMessage("Adviced Saved !");
+      // showDialog();
+      openNotificationHandler();
+      setNotificationMessage("Adviced Saved !");
     }
   };
 
@@ -622,7 +616,7 @@ const Advice = ({ mrId, isMRTagDone }: Props) => {
         </View>
       </Collapsible>
 
-      <Portal>
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
@@ -634,7 +628,13 @@ const Advice = ({ mrId, isMRTagDone }: Props) => {
             </Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant="success"
+      />
     </View>
   );
 };

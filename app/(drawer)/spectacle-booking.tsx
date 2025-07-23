@@ -1,7 +1,5 @@
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
 import CustomButton from "@/components/utils/CustomButton";
-import CustomDropdown from "@/components/utils/CustomDropdown";
-import CustomInput from "@/components/utils/CustomInput";
 import {
   BLANK_DROPDOWN_MODEL,
   BLANK_FILTER_MODEL,
@@ -10,20 +8,17 @@ import {
   findAllClassesDropdowns,
   findUniqueClasses,
   findUniqueSections,
-  getMRTagStudentsBySchoolId,
-  getSchoolByActivityType,
 } from "@/database/database";
+import { getMRTagStudentsBySchoolId } from "@/database/mr-tag-db";
+import { getSchoolByActivityType } from "@/database/school-student-db";
 import { DropdownModel } from "@/models/ui/DropdownModel";
 import { FilterModel } from "@/models/ui/FilterModel";
-import { setSchools } from "@/store/slices/school-slice";
 import { setFilter, setStudents } from "@/store/slices/student-slice";
-import { RootState } from "@/store/store";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import { Button } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const SpectacleBooking = () => {
   const db = useSQLiteContext();
@@ -155,6 +150,7 @@ const SpectacleBooking = () => {
           gender: "",
           status: "",
           result: "",
+          targetGroup: "",
         })
       )
     );
@@ -190,12 +186,6 @@ const SpectacleBooking = () => {
           />
         </View>
         <View style={{ flexGrow: 1, flexBasis: 1, padding: 5 }}>
-          {/* <CustomInput
-            id="section"
-            label="Section"
-            value={section}
-            onChangeText={sectionChangeHandler}
-          /> */}
           <StyledDropdown
             label="Section"
             items={[BLANK_DROPDOWN_MODEL, ...sectionItems]}
@@ -207,9 +197,6 @@ const SpectacleBooking = () => {
       <View style={{ padding: 10 }}>
         <CustomButton title="Search" onPress={getStudentsHandler} />
       </View>
-      {/* <Button onPress={getStudentsHandler} mode="contained">
-        Search
-      </Button> */}
     </View>
   );
 };

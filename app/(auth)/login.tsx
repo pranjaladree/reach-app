@@ -24,6 +24,8 @@ import bcrypt from "react-native-bcrypt";
 import { TextInput } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -44,7 +46,6 @@ const LoginScreen = () => {
 
   const getProfileHandler = async (token: string) => {
     const response = await getProfile(token);
-    console.log("PROfile", response);
     dispatch(
       setLoggedInUser({
         userId: response.data.id,
@@ -54,6 +55,7 @@ const LoginScreen = () => {
         partnerName: response.data.partnerName,
         isUserAgreement: response.data.isUserAgreement,
         isPartnerAgreement: response.data.isPartnerAgreement,
+        designation: response.data.designation,
       })
     );
   };
@@ -201,8 +203,8 @@ const LoginScreen = () => {
           <Image
             source={require("../../assets/images/reach_logo.png")}
             style={{
-              width: 180,
-              height: 120,
+              width: 230,
+              height: 130,
             }}
           />
         </View>
@@ -239,14 +241,14 @@ const LoginScreen = () => {
           </View>
           <View style={styles.actions}>
             <CustomButton
-              title="Login"
+              title="LOGIN"
               onPress={loginHandler}
               isLoading={isLoading}
               disabled={isLoading}
+              icon={
+                <Ionicons name="lock-open-outline" size={20} color="#ffffff" />
+              }
             />
-            {/* <Button mode="contained" onPress={loginHandler}>
-              LOGIN
-            </Button> */}
           </View>
         </View>
       </View>
@@ -272,6 +274,8 @@ const styles = StyleSheet.create({
   },
   loginTitle: {
     fontSize: 22,
+    fontWeight: "bold",
+    color: Colors.primary,
   },
   box: {
     marginTop: 10,

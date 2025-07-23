@@ -16,6 +16,7 @@ export interface UserState {
   userType: string;
   isPIIAgreement: boolean;
   isAdministrator: boolean;
+  designation: string;
 }
 const initialState: UserState = {
   userId: "",
@@ -33,6 +34,7 @@ const initialState: UserState = {
   userType: "",
   isPIIAgreement: false,
   isAdministrator: false,
+  designation: "",
 };
 
 export const userSlice = createSlice({
@@ -42,6 +44,8 @@ export const userSlice = createSlice({
     setLoggedIn: (state, action) => {
       state.isAuthenticated = true;
       state.token = action.payload;
+      console.log("PAyload", action.payload);
+      console.log("AUTH", state.isAuthenticated);
     },
     setMFARegister: (state, action) => {
       state.isMFARegistered = action.payload;
@@ -63,6 +67,7 @@ export const userSlice = createSlice({
       state.partnerName = action.payload.partnerName;
       state.isUserAgreement = action.payload.isUserAgreement;
       state.isPartnerAgreement = action.payload.isPartnerAgreement;
+      state.designation = action.payload.designation;
     },
     setLoggedOut: (state) => {
       console.log("Log Out method");

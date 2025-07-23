@@ -53,12 +53,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const firstLetter = userData?.firstName?.charAt(0).toUpperCase();
   const lastLetter = userData?.lastName?.charAt(0).toUpperCase();
 
-
-
   const data = userDetails?.fullName?.trim().split(" ");
   const firstInitial = data[0]?.charAt(0).toUpperCase();
   const secondInitial = data[2]?.charAt(0).toUpperCase();
-
 
   useEffect(() => {
     if (userId) {
@@ -201,12 +198,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             {/* {firstLetter}
             {lastLetter} */}
             {firstInitial}{secondInitial}
+
           </Text>
         </View>
         <Text style={styles.name}>
           {userData?.firstName} {userData?.lastName}
         </Text>
-        <Text style={styles.email}>{userData?.designation}</Text>
+        <Text style={styles.email}>{designation}</Text>
       </View>
       {/* Drawer Items */}
       <ScrollView style={{ flex: 1 }}>
@@ -280,7 +278,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             <View style={styles.icon}>
               <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
             </View>
-            <Text style={styles.label}>Version 1.0.9</Text>
+            <Text style={styles.label}>Version 1.1.1</Text>
           </View>
           {/* <CustomButton title="Logout" onPress={handleLogout} /> */}
         </View>

@@ -45,6 +45,7 @@ import { Colors } from "@/constants/Colors";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomInput from "../utils/CustomInput";
 import { findRefractionByMrId, saveRefraction } from "@/database/mr-tag-db";
+import CustomNotification from "../utils/CustomNotification";
 
 const TAB_ITEMS = [
   { title: "OD (RE)", disabled: false, isDone: false },
@@ -54,9 +55,10 @@ const TAB_ITEMS = [
 interface Props {
   mrId: string;
   isMRTagDone: boolean;
+  onNext: () => void;
 }
 
-const Refraction = ({ mrId, isMRTagDone }: Props) => {
+const Refraction = ({ mrId, isMRTagDone, onNext }: Props) => {
   const db = useSQLiteContext();
   const [activeTab, setActiveTab] = useState(TAB_ITEMS[0]);
   const tabChangeHandler = (item: TabItem) => {
@@ -68,6 +70,18 @@ const Refraction = ({ mrId, isMRTagDone }: Props) => {
   const [addItems, setAddItems] = useState<DropdownModel[]>([]);
   const [nvaItems, setNvaItems] = useState<GridDropdownModel[]>([]);
   const [distanceItems, setDistanceItems] = useState<GridDropdownModel[]>([]);
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+    onNext();
+  };
 
   const [refraction_PGP_SPH_RE, setRefraction_PGP_SPH_RE] = useState(
     BLANK_GRID_DROPDOWN_MODEl
@@ -778,8 +792,8 @@ const Refraction = ({ mrId, isMRTagDone }: Props) => {
       })
     );
     if (response) {
-      showDialog();
-      setDialogMessage("Refraction Saved !");
+      openNotificationHandler();
+      setNotificationMessage("Refraction Saved !");
     }
   };
 
@@ -790,7 +804,10 @@ const Refraction = ({ mrId, isMRTagDone }: Props) => {
 
   const showDialog = () => setVisible(true);
 
-  const hideDialog = () => setVisible(false);
+  const hideDialog = () => {
+    setVisible(false);
+    onNext();
+  };
 
   // useEffect(() => {
   //   getSPHHandler();
@@ -1421,6 +1438,15 @@ const Refraction = ({ mrId, isMRTagDone }: Props) => {
                 />
               </View>
             </View>
+            <View style={styles.row}>
+              <Checkbox
+                status={isPrescribed ? "checked" : "unchecked"}
+                onPress={() => {
+                  setIsPrescribed(!isPrescribed);
+                }}
+              />
+              <Text>Spectacle Prescribed</Text>
+            </View>
           </View>
         )}
 
@@ -1617,6 +1643,16 @@ const Refraction = ({ mrId, isMRTagDone }: Props) => {
                 />
               </View>
             </View>
+
+            <View style={styles.row}>
+              <Checkbox
+                status={isPrescribed ? "checked" : "unchecked"}
+                onPress={() => {
+                  setIsPrescribed(!isPrescribed);
+                }}
+              />
+              <Text>Spectacle Prescribed</Text>
+            </View>
           </View>
         )}
       </Collapsible>
@@ -1701,15 +1737,6 @@ const Refraction = ({ mrId, isMRTagDone }: Props) => {
             </View>
           </View>
           {/* Row 5 */}
-          <View style={styles.row}>
-            <Checkbox
-              status={isPrescribed ? "checked" : "unchecked"}
-              onPress={() => {
-                setIsPrescribed(!isPrescribed);
-              }}
-            />
-            <Text>Spectacle Prescribed</Text>
-          </View>
         </View>
       </Collapsible>
 
@@ -1724,7 +1751,13 @@ const Refraction = ({ mrId, isMRTagDone }: Props) => {
         />
       </View>
 
-      <Portal>
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant="success"
+      />
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
@@ -1736,7 +1769,7 @@ const Refraction = ({ mrId, isMRTagDone }: Props) => {
             </Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
     </View>
   );
 };
@@ -1772,7 +1805,8 @@ const styles = StyleSheet.create({
   },
   action: {
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 40,
+    paddingBottom: 40,
   },
   headerItem: {
     backgroundColor: "#e3e3e3",

@@ -11,12 +11,10 @@ const AuthContext = () => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.userSlice.isAuthenticated
   );
-  console.log("Is Auth", isAuthenticated);
   const isTempAuthenticated = useSelector(
     (state: RootState) => state.userSlice.isTempAuthenticated
   );
   const dispatch = useDispatch();
-  console.log("Is Temp Auth", isTempAuthenticated);
   const isMFARegistered = useSelector(
     (state: RootState) => state.userSlice.isMFARegistered
   );
@@ -49,6 +47,7 @@ const AuthContext = () => {
       console.log("Token &&&&&&&&&&&&&&&&&&&&&& :", token);
 
       console.log("Expiry &&&&&&&&&&&&&&&&&&&&& :", expiry);
+      console.log(new Date().getTime());
       if (token !== null && expiry !== null) {
         // value previously stored
         if (new Date().getTime() < +expiry) {
