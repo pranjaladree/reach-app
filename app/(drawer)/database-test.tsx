@@ -1,3 +1,4 @@
+import { findUserById } from "@/database/database";
 import { dropTables } from "@/database/migrations-db";
 import { getScreeningByIdFromDB } from "@/database/primary-screening-db";
 import { findSchools } from "@/database/school-student-db";
@@ -8,14 +9,14 @@ const DatabaseTest = () => {
   const db = useSQLiteContext();
 
   const dropTablesHandler = () => {
-    // try {
-    //   const response = db.getAllSync(`SELECT * FROM colorVisionConfigs`);
-    //   console.log("RESSSS *******", response);
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    try {
+      const response = db.getAllSync(`SELECT * FROM colorVisionConfigs`);
+      console.log("RESSSS *******", response);
+    } catch (err) {
+      console.log(err);
+    }
     // console.log("REDF", response);
-    dropTables(db);
+    // dropTables(db);
   };
   const getStudentData = async () => {
     const response = await getScreeningByIdFromDB(db, 523);
@@ -23,7 +24,7 @@ const DatabaseTest = () => {
   };
 
   const getSchoolData = async () => {
-    const response = await findSchools(db);
+    const response = await findUserById(db, "3");
     console.log("Schools", response);
   };
 
@@ -31,7 +32,7 @@ const DatabaseTest = () => {
     <View>
       <Text>Local Database Testing</Text>
       <View>
-        <Button title="Drop Tables" onPress={dropTablesHandler} />
+        <Button title="Drop Tables" onPress={getSchoolData} />
       </View>
     </View>
   );
