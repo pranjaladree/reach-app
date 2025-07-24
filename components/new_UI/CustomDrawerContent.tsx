@@ -21,7 +21,7 @@ import { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { useSQLiteContext } from "expo-sqlite";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useRouter } from "expo-router";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -32,9 +32,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const dispatch = useDispatch();
   const router = useRouter();
   const userId = useSelector((state: RootState) => state.userSlice.userId);
+  const designation = useSelector(
+    (state: RootState) => state.userSlice.designation
+  );
+  console.log("DESIGNATION *******************", designation);
   const userDetails = useSelector((state: RootState) => state.userSlice);
   console.log("User Details", userDetails);
-
 
   const db = useSQLiteContext();
   const [userData, setUserData] = React.useState<any>(null);
@@ -62,7 +65,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       getUsers();
     }
   }, [userId]);
-
 
   const [isOnline, setIsOnline] = useState(false);
 
@@ -103,14 +105,14 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       route: "device-preparation",
       isNetRequired: true,
     },
-    {
-      label: "Database Test",
-      icon: (color: string) => (
-        <FontAwesome5 name="database" size={20} color={color} />
-      ),
-      route: "database-test",
-      isNetRequired: false,
-    },
+    // {
+    //   label: "Database Test",
+    //   icon: (color: string) => (
+    //     <FontAwesome5 name="database" size={20} color={color} />
+    //   ),
+    //   route: "database-test",
+    //   isNetRequired: false,
+    // },
     {
       label: "Primary Screening",
       icon: (color: string) => (
@@ -183,6 +185,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     console.log("Logging Out....");
     try {
       dispatch(setLoggedOut());
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("expiry");
     } catch (err) {
       console.log(err);
     }
@@ -197,8 +201,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
           <Text style={styles.avatar}>
             {/* {firstLetter}
             {lastLetter} */}
-            {firstInitial}{secondInitial}
-
+            {firstInitial}
+            {secondInitial}
           </Text>
         </View>
         <Text style={styles.name}>
@@ -278,7 +282,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             <View style={styles.icon}>
               <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
             </View>
-            <Text style={styles.label}>Version 1.1.1</Text>
+            <Text style={styles.label}>Version 1.1.2</Text>
           </View>
           {/* <CustomButton title="Logout" onPress={handleLogout} /> */}
         </View>

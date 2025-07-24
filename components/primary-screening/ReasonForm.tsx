@@ -31,6 +31,7 @@ import CustomButton from "../utils/CustomButton";
 import ViewQR from "../qr/ViewQR";
 import { savePrimaryScreening } from "@/database/primary-screening-db";
 import { setScreeningItem } from "@/store/slices/student-slice";
+import CustomReasonNotification from "./CustomReasonNotification";
 
 const ReasonForm = () => {
   const screeningItem = useSelector(
@@ -38,6 +39,19 @@ const ReasonForm = () => {
   );
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [variant, setVariant] = useState("success");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+    navigateHandler();
+  };
 
   const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
   const [qrData, setQrData] = useState<any>();
@@ -178,11 +192,15 @@ const ReasonForm = () => {
     console.log("QC RESPONSE", isQCPopupEligible);
     console.log(isQCPopupEligible == "true");
     if (response && isQCPopupEligible == "true") {
-      setDialogMessage("Please send this child for Quality Check");
+      setNotificationMessage("Please Send this Child for Quality Check !");
+      setVariant("success");
     } else {
-      setDialogMessage(`Successfully Checked-out : ${screeningItem.psStatus}`);
+      setNotificationMessage(
+        `Successfully Checked-out : ${screeningItem.psStatus}`
+      );
+      setVariant("success");
     }
-    showDialog();
+    openNotificationHandler();
   };
 
   const navigateHandler = async () => {
@@ -410,7 +428,7 @@ const ReasonForm = () => {
         />
       </Modal>
 
-      <Portal>
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={saveScreeningHandler}>
           <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
@@ -433,7 +451,24 @@ const ReasonForm = () => {
             <Button onPress={navigateHandler}>Done</Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
+
+      {/* Notification */}
+      <CustomReasonNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant={variant}
+        onViewQr={() => {
+          // setIsQRCodeVisible(true);
+          router.replace({
+            pathname: "/view-qr",
+            params: {
+              schoolId: screeningItem.studentId,
+            },
+          });
+        }}
+      />
 
       <Modal visible={isQRCodeVisible}>
         <View
@@ -451,22 +486,6 @@ const ReasonForm = () => {
               setIsQRCodeVisible(false);
             }}
           />
-
-          {/* <View style={{ marginTop: 40, flexDirection: "row" }}>
-            <View style={{ padding: 5 }}>
-              <Button
-                mode="outlined"
-                onPress={() => {
-                  setIsQRCodeVisible(false);
-                }}
-              >
-                Close
-              </Button>
-            </View>
-            <View style={{ padding: 5 }}>
-              <Button mode="outlined">Print QR</Button>
-            </View>
-          </View> */}
         </View>
       </Modal>
     </View>

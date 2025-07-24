@@ -1,18 +1,25 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Modal, Portal } from "react-native-paper";
-import CustomNegativeButton from "./CustomNegativeButton";
-import CustomButton from "./CustomButton";
+import CustomNegativeButton from "../utils/CustomNegativeButton";
+import CustomButton from "../utils/CustomButton";
 import { Colors } from "@/constants/Colors";
-import CustomSuccessButton from "./CustomSuccessButton";
+import CustomSuccessButton from "../utils/CustomSuccessButton";
 
 interface Props {
   visible: boolean;
   onClose: () => void;
+  onViewQr: () => void;
   message: string;
   variant: string;
 }
 
-const CustomNotification = ({ visible, onClose, message, variant }: Props) => {
+const CustomReasonNotification = ({
+  visible,
+  onClose,
+  message,
+  variant,
+  onViewQr,
+}: Props) => {
   return (
     <Portal>
       <Modal
@@ -32,6 +39,9 @@ const CustomNotification = ({ visible, onClose, message, variant }: Props) => {
             </View>
           </View>
           <View style={styles.action}>
+            <View style={styles.actionItem}>
+              <CustomButton title="View QR Code" onPress={onViewQr} />
+            </View>
             <View style={styles.actionItem}>
               {variant == "success" ? (
                 <CustomSuccessButton title="OK" onPress={onClose} />
@@ -96,7 +106,8 @@ const styles = StyleSheet.create({
   },
   actionItem: {
     width: 200,
+    margin: 5,
   },
 });
 
-export default CustomNotification;
+export default CustomReasonNotification;

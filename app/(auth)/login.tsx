@@ -46,6 +46,7 @@ const LoginScreen = () => {
 
   const getProfileHandler = async (token: string) => {
     const response = await getProfile(token);
+    console.log("PROFILE RESPONSE **************************", response);
     dispatch(
       setLoggedInUser({
         userId: response.data.id,
