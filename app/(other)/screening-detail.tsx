@@ -9,6 +9,7 @@ import ViewLastResult from "@/components/primary-screening/ViewLastResult";
 import VisionTest from "@/components/primary-screening/VisionTest";
 import CustomButton from "@/components/utils/CustomButton";
 import CustomButtonOutline from "@/components/utils/CustomButtonOutline";
+import CustomNotification from "@/components/utils/CustomNotification";
 import {
   BLANK_DROPDOWN_MODEL,
   BLANK_REACH_CONFIGURATION_MODEL,
@@ -75,6 +76,19 @@ const ScreeningDetails = () => {
   const [studentData, setStudentData] = useState<any>();
   console.log("Student Data", studentData);
 
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [variant, setVariant] = useState("success");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+    navigateHandler();
+  };
+
   const [isQCUser, setIsQCUser] = useState(false);
   const { studentId, schoolId } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -92,6 +106,7 @@ const ScreeningDetails = () => {
 
   const closeLastScreeningModal = () => {
     setIsLastResultModal(false);
+    navigateHandler();
   };
 
   const fieldValidator = () => {
@@ -115,11 +130,13 @@ const ScreeningDetails = () => {
       })
     );
     if (response && isQCPopupEligible) {
-      setDialogMessage("Send this Child for Quality Check");
+      setNotificationMessage("Please Send this Child for Quality Check !");
+      setVariant("success");
     } else {
-      setDialogMessage("Successfully Checked-out : Normal");
+      setNotificationMessage("Successfully Checked-out : Normal");
+      setVariant("success");
     }
-    showDialog();
+    openNotificationHandler();
   };
 
   const navigateHandler = () => {
@@ -506,9 +523,12 @@ const ScreeningDetails = () => {
       <ScrollView style={styles.screen}>
         <View style={styles.headerBox}>
           <View>
-            <Text style={styles.title}>Name: {`${studentData?.firstName}  ${
-              studentData?.middleName ? studentData?.middleName : ""
-            }  ${studentData?.lastName ? studentData?.lastName : ""}`}</Text>
+            <Text style={styles.title}>
+              Name:{" "}
+              {`${studentData?.firstName}  ${
+                studentData?.middleName ? studentData?.middleName : ""
+              }  ${studentData?.lastName ? studentData?.lastName : ""}`}
+            </Text>
             <Text style={styles.title}>Student ID: {studentData?.tempId}</Text>
           </View>
           <View>
@@ -585,7 +605,7 @@ const ScreeningDetails = () => {
           <CustomButton title="Checkout" onPress={addScreeningHandler} />
         </View>
       </View>
-      <Portal>
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={saveScreeningHandler}>
           <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
@@ -595,10 +615,18 @@ const ScreeningDetails = () => {
             <Button onPress={navigateHandler}>Done</Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
       <Modal visible={isLastResultModal} onDismiss={closeLastScreeningModal}>
         <ViewLastResult onClose={closeLastScreeningModal} item={studentData} />
       </Modal>
+
+      {/* Notification */}
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant={variant}
+      />
     </>
   );
 };

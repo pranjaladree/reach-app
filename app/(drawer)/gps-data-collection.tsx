@@ -14,6 +14,7 @@ import {
   findSchoolDropdowns,
   saveSchoolLocation,
 } from "@/database/school-student-db";
+import CustomNotification from "@/components/utils/CustomNotification";
 
 const GPSDataCollection = () => {
   const db = useSQLiteContext();
@@ -30,11 +31,26 @@ const GPSDataCollection = () => {
   const hideDialog = () => setVisible(false);
   const [diaglogMessage, setDialogMessage] = useState("");
 
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [variant, setVariant] = useState("success");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+  };
+
   async function getCurrentLocation() {
     console.log(selectedSchool.value);
     if (selectedSchool.value == "SELECT") {
-      setDialogMessage("Please Select School !");
-      showDialog();
+      openNotificationHandler();
+      setNotificationMessage("Please Select School !");
+      setVariant("error");
+      // setDialogMessage("Please Select School !");
+      // showDialog();
       return;
     }
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -68,14 +84,20 @@ const GPSDataCollection = () => {
 
   const saveLocationHandler = async () => {
     if (selectedSchool.value == "SELECT") {
-      setDialogMessage("Please Select School !");
-      showDialog();
+      // setDialogMessage("Please Select School !");
+      // showDialog();
+      openNotificationHandler();
+      setNotificationMessage("Please Select School !");
+      setVariant("error");
       return;
     }
 
     if (!location) {
-      setDialogMessage("No Location Data found !");
-      showDialog();
+      // setDialogMessage("No Location Data found !");
+      // showDialog();
+      openNotificationHandler();
+      setNotificationMessage("Please Select School !");
+      setVariant("error");
       return;
     }
 
@@ -86,8 +108,11 @@ const GPSDataCollection = () => {
       location.coords?.latitude
     );
     if (response) {
-      setDialogMessage("Location Data Saved !");
-      showDialog();
+      // setDialogMessage("Location Data Saved !");
+      // showDialog();
+      openNotificationHandler();
+      setNotificationMessage("Please Select School !");
+      setVariant("success");
     }
   };
 
@@ -101,7 +126,16 @@ const GPSDataCollection = () => {
   );
 
   return (
-    <View style={{ padding: 10, paddingVertical: 40,  borderWidth: 1, borderColor: Colors.primary, margin: 20, borderRadius:3 }}>
+    <View
+      style={{
+        padding: 10,
+        paddingVertical: 40,
+        borderWidth: 1,
+        borderColor: Colors.primary,
+        margin: 20,
+        borderRadius: 3,
+      }}
+    >
       <View>
         <StyledDropdown
           label="School"
@@ -137,26 +171,9 @@ const GPSDataCollection = () => {
       </View>
       <View>
         <Text style={styles.italicText}>
-            % of accuracy : {location ? location.coords?.accuracy: ""}
-          </Text>
+          % of accuracy : {location ? location.coords?.accuracy : ""}
+        </Text>
       </View>
-      {/* <View
-        style={{
-          marginTop: 20,
-        }}
-      >
-        <Text style={{ fontWeight: "bold" }}>
-          Latitude : {location ? location.coords?.latitude : ""}
-        </Text>
-        <Text style={{ fontWeight: "bold" }}>
-          Longitude : {location ? location.coords?.longitude : ""}
-        </Text>
-      </View> */}
-      {/* <View style={{ marginTop: 20 }}>
-        <Button onPress={saveLocationHandler} mode="contained">
-          Save Geo Location
-        </Button>
-      </View> */}
       <Button
         mode="contained"
         style={[styles.button, { marginTop: 20 }]}
@@ -166,7 +183,14 @@ const GPSDataCollection = () => {
         Save Geo location on Device
       </Button>
 
-      <Portal>
+      {/* Notification */}
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant={variant}
+      />
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
@@ -178,7 +202,7 @@ const GPSDataCollection = () => {
             </Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
     </View>
   );
 };
@@ -256,7 +280,7 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     marginTop: 15,
     fontWeight: "200",
-  }
+  },
 });
 
 export default GPSDataCollection;
