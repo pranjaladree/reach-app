@@ -305,19 +305,6 @@ const MRTagItem = ({ item, studentId, tempId, onDone, onNext }: Props) => {
         message={notificationMessage}
         variant="success"
       />
-      {/* <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>REACHLite</Dialog.Title>
-          <Dialog.Content>
-            <Text>MR Tag Saved !</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog} loading={isLoading}>
-              Done
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal> */}
     </>
   );
 };

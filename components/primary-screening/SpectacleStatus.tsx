@@ -106,8 +106,9 @@ const SpectacleStatus = () => {
       {/* Row 2 */}
       {screeningItem.usingSpectacle == "YES" && (
         <View>
-          <View>
-            <Text>Do you have the spectacles now ?</Text>
+          <View style={styles.labelBox}>
+            <Text style={styles.label}>Do you have the spectacles now ?</Text>
+            <Text style={styles.mandatoryIcon}>*</Text>
           </View>
           <View>
             <CustomRadioGroup
@@ -123,8 +124,9 @@ const SpectacleStatus = () => {
       )}
       {screeningItem.haveSpecNow == "YES" && (
         <View>
-          <View>
-            <Text>Spectacles Condition</Text>
+          <View style={styles.labelBox}>
+            <Text style={styles.label}>Spectacles Condition</Text>
+            <Text style={styles.mandatoryIcon}>*</Text>
           </View>
           <View>
             <CustomRadioGroup

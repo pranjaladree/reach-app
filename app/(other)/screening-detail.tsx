@@ -524,7 +524,7 @@ const ScreeningDetails = () => {
         <View style={styles.headerBox}>
           <View>
             <Text style={styles.title}>
-              Name:{" "}
+              Name:
               {`${studentData?.firstName}  ${
                 studentData?.middleName ? studentData?.middleName : ""
               }  ${studentData?.lastName ? studentData?.lastName : ""}`}

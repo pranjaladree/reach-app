@@ -20,6 +20,7 @@ import {
   removeSchool,
 } from "@/database/school-student-db";
 import { prepareMRDataSync } from "@/database/sync-to-server";
+import CustomNotification from "../utils/CustomNotification";
 
 const MRTagDataSync = () => {
   const db = useSQLiteContext();
@@ -30,6 +31,18 @@ const MRTagDataSync = () => {
   const [schoolHasError, setSchoolHasError] = useState(false);
   const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
   const [diaglogMessage, setDialogMessage] = useState("");
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [variant, setVariant] = useState("success");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+  };
 
   const [visible, setVisible] = useState(false);
 
@@ -60,15 +73,18 @@ const MRTagDataSync = () => {
     const response = await prepareMRDataSync(db, selectedSchool.id);
     const syncResponse = await syncMRTagData(token, response);
     if (syncResponse.isError) {
-      setDialogMessage(syncResponse.data);
-      showDialog();
+      setNotificationMessage(syncResponse.data);
+      setVariant("error");
+      // showDialog();
     } else {
-      showDialog();
-      setDialogMessage(syncResponse.data);
+      // showDialog();
+      setNotificationMessage(syncResponse.data);
+      setVariant("success");
 
       //Remove School
       removeSchool(db, selectedSchool.id);
     }
+    openNotificationHandler();
 
     setIsLoading(false);
   };
@@ -174,7 +190,15 @@ const MRTagDataSync = () => {
           isLoading={isLoading}
         />
       </View>
-      <Portal>
+
+      {/* Notification */}
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant={variant}
+      />
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>Alert</Dialog.Title>
           <Dialog.Content>
@@ -186,7 +210,7 @@ const MRTagDataSync = () => {
             </Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
     </View>
   );
 };

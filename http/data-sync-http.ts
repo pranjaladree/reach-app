@@ -40,6 +40,7 @@ export const syncMRTagData = async (token: string, requestBody: any) => {
     body: JSON.stringify(requestBody),
   });
   const resData = await res.json();
+  console.log("MR RESPONSE ***********************", resData);
   if (res.status == 200) {
     return new ResponseModel({
       data: "Data Synced Successfully",
