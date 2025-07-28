@@ -49,6 +49,8 @@ const TLE = () => {
         setScreeningItem({
           ...screeningItem,
           torchlightCheckLE: BLANK_DROPDOWN_MODEL,
+          torchLightLEHasError: false,
+          torchLightLEErrorMessage: "",
         })
       );
     } else {
@@ -60,6 +62,8 @@ const TLE = () => {
           setScreeningItem({
             ...screeningItem,
             torchlightCheckLE: foundItem,
+            torchLightLEHasError: false,
+            torchLightLEErrorMessage: "",
           })
         );
       }
@@ -73,6 +77,8 @@ const TLE = () => {
         setScreeningItem({
           ...screeningItem,
           torchlightCheckRE: BLANK_DROPDOWN_MODEL,
+          torchLightREHasError: false,
+          torchLightREErrorMessage: "",
         })
       );
     } else {
@@ -84,6 +90,8 @@ const TLE = () => {
           setScreeningItem({
             ...screeningItem,
             torchlightCheckRE: foundItem,
+            torchLightREHasError: false,
+            torchLightREErrorMessage: "",
           })
         );
       }
@@ -205,6 +213,9 @@ const TLE = () => {
                 ]}
                 selectedItem={screeningItem.torchlightCheckLE}
                 onChange={torchLightCheckLEChangeHandler}
+                isError={screeningItem.torchLightLEHasError}
+                errorMessage={screeningItem.torchLightLEErrorMessage}
+                required={true}
               />
             </View>
             <View style={styles.rowItem}>
@@ -216,6 +227,9 @@ const TLE = () => {
                 ]}
                 selectedItem={screeningItem.torchlightCheckRE}
                 onChange={torchLightCheckREChangeHandler}
+                isError={screeningItem.torchLightREHasError}
+                errorMessage={screeningItem.torchLightREErrorMessage}
+                required={true}
               />
             </View>
           </View>
