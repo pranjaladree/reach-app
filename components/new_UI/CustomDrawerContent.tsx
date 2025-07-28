@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { findUserById } from "@/database/database";
-import { setLoggedOut } from "@/store/slices/user-slice";
+import { setLoggedOut, setUser } from "@/store/slices/user-slice";
 import { RootState } from "@/store/store";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -24,6 +24,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { ScrollView } from "react-native-gesture-handler";
+import { getProfile } from "@/http/profile-http";
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   navigation,
@@ -31,57 +32,106 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const userId = useSelector((state: RootState) => state.userSlice.userId);
-  const designation = useSelector(
-    (state: RootState) => state.userSlice.designation
-  );
-  console.log("DESIGNATION *******************", designation);
+  const userID = useSelector((state: RootState) => state.userSlice.userId);
+
   const userDetails = useSelector((state: RootState) => state.userSlice);
-  console.log("User Details", userDetails);
+
+  const { designation, fullName, userId } = useSelector(
+    (state: RootState) => state.userSlice
+  );
+
+  const [offlineUserInfo, setOfflineUserInfo] = React.useState<any>(true);
+  const [loading, setLoading] = React.useState<any>(true);
 
   const db = useSQLiteContext();
-  const [userData, setUserData] = React.useState<any>(null);
-  const [loading, setLoading] = React.useState<any>(true);
-  console.log("User Data", userData);
+  // const [userData, setUserData] = React.useState<any>(null);
+  // console.log("User Data from API", userData);
 
-  const getUsers = async () => {
-    try {
-      const response = await findUserById(db, userId);
-      setUserData(response);
-      setLoading(false);
-    } catch (e) {
-      console.error("Error", e);
-    }
-  };
-  const firstLetter = userData?.firstName?.charAt(0).toUpperCase();
-  const lastLetter = userData?.lastName?.charAt(0).toUpperCase();
+  // const getUsers = async () => {
+  //   try {
+  //     const response = await findUserById(db, userID);
+  //     setUserData(response);
+  //     setLoading(false);
+  //   } catch (e) {
+  //     console.error("Error", e);
+  //   }
+  // };
+  // const firstLetter = userData?.firstName?.charAt(0).toUpperCase();
+  // const lastLetter = userData?.lastName?.charAt(0).toUpperCase();
 
-  const data = userDetails?.fullName?.trim().split(" ");
-  const firstInitial = data[0]?.charAt(0).toUpperCase();
-  const secondInitial = data[2]?.charAt(0).toUpperCase();
-
-  useEffect(() => {
-    if (userId) {
-      getUsers();
-    }
-  }, [userId]);
+  // useEffect(() => {
+  //   if (userID) {
+  //     getUsers();
+  //   }
+  // }, [userId]);
 
   const [isOnline, setIsOnline] = useState(false);
 
+  const loginOfflineHandler = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem("OfflineUserInfo");
+      console.log("Offline", userInfo);
+      if (userInfo) {
+        const parsedData = JSON.parse(userInfo);
+        console.log("parsedData", parsedData);
+        setOfflineUserInfo(parsedData);
+      }
+    } catch (e) {
+      console.log("Error from CDC offline handler", e);
+    }
+  };
+
+
   const checkInternetHandler = async () => {
-    NetInfo.fetch().then((state) => {
+    NetInfo.fetch().then(async (state) => {
       console.log("Is connected?", state.isConnected);
-      if (state.isConnected) {
+      if (state.isConnected && userId) {
+        try {
+          const token = await AsyncStorage.getItem("token");
+          if (token) {
+            const profileResponse = getProfile(token);
+            if (!(await profileResponse).isError) {
+              const responseData = (await profileResponse).data;
+              dispatch(
+                setUser({
+                  userId: responseData.id,
+                  designation: responseData.designation,
+                  fullName: responseData.fullName,
+                })
+              );
+              await AsyncStorage.setItem(
+                "OfflineUserInfo",
+                JSON.stringify({
+                  userId: responseData.id,
+                  designation: responseData.designation,
+                  fullName: responseData.fullName,
+                })
+              );
+            }
+          }
+        } catch (e) {
+          console.log(e);
+        }
         setIsOnline(true);
       } else {
         setIsOnline(false);
+        loginOfflineHandler();
+        console.log("This is running from offline");
       }
     });
   };
 
+  const displayName = fullName || offlineUserInfo.fullName || "";
+  const displayDesignation = designation || offlineUserInfo.designation || "";
+
+  const data = displayName?.trim().split(" ");
+  const firstInitial = data[0]?.charAt(0).toUpperCase();
+  const secondInitial = data[2]?.charAt(0).toUpperCase();
+
   useFocusEffect(
     useCallback(() => {
       checkInternetHandler();
+      // getUsers();
       return () => {
         console.log("Screen unfocused");
       };
@@ -105,14 +155,14 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       route: "device-preparation",
       isNetRequired: true,
     },
-    // {
-    //   label: "Database Test",
-    //   icon: (color: string) => (
-    //     <FontAwesome5 name="database" size={20} color={color} />
-    //   ),
-    //   route: "database-test",
-    //   isNetRequired: false,
-    // },
+    {
+      label: "Database Test",
+      icon: (color: string) => (
+        <FontAwesome5 name="database" size={20} color={color} />
+      ),
+      route: "database-test",
+      isNetRequired: false,
+    },
     {
       label: "Primary Screening",
       icon: (color: string) => (
@@ -185,8 +235,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     console.log("Logging Out....");
     try {
       dispatch(setLoggedOut());
+
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("expiry");
+      await AsyncStorage.removeItem("OfflineUserInfo")
+      console.log("from logged out",await AsyncStorage.getItem("OfflineUserInfo"))
     } catch (err) {
       console.log(err);
     }
@@ -205,10 +258,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             {secondInitial}
           </Text>
         </View>
-        <Text style={styles.name}>
-          {userData?.firstName} {userData?.lastName}
-        </Text>
-        <Text style={styles.email}>{designation}</Text>
+        <Text style={styles.name}>{displayName}</Text>
+        <Text style={styles.email}>{displayDesignation}</Text>
       </View>
       {/* Drawer Items */}
       <ScrollView style={{ flex: 1 }}>

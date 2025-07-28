@@ -87,6 +87,11 @@ export const userSlice = createSlice({
       state.isPIIAgreement = false;
       state.isAdministrator = false;
     },
+    setUser(state, action) {
+      state.userId = action.payload.userId;
+      state.fullName = action.payload.fullName;
+      state.designation = action.payload.designation;
+    },
   },
 });
 
@@ -99,6 +104,7 @@ export const {
   setTempToken,
   setLoggedInUser,
   setLoggedOut,
+  setUser,
 } = userSlice.actions;
 
 export default userSlice.reducer;
