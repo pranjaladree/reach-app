@@ -1,13 +1,15 @@
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import CustomButton from "@/components/utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
+import * as Print from "expo-print";
 
 const ViewQR = () => {
   const db = useSQLiteContext();
+  const qrRef = useRef<any>(null);
   const [studentData, setStudentData] = useState<any>();
   const { studentId } = useLocalSearchParams();
   console.log("STUDENT ID ((((((", studentId);
@@ -57,6 +59,52 @@ const ViewQR = () => {
     // }
   };
 
+  const printQR = async () => {
+    console.log("QR REF", qrRef);
+    console.log("Print QR");
+    qrRef.current.toDataURL(async (base64: string) => {
+      const htmlContent = `
+        <html>
+          <head>
+            <style>
+              body {
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 90vh;
+                margin: 0px;
+                padding: 0px;  }
+              img { max-width: 300px;
+                margin: 20px auto;}
+              h1 { font-size: 24px; }
+              p { font-size: 16px; }
+            </style>
+          </head>
+          <body>
+            <h1>Student QR Code Data</h1>
+            <img src="data:image/png;base64,${base64}" alt="QR Code" />
+            <p><strong>Name:</strong> ${qrData.firstName} ${
+        qrData.middleName || ""
+      } ${qrData.lastName}</p>
+            <p><strong>Class:</strong> ${qrData.class}</p>
+          
+          </body>
+        </html>
+      `;
+
+      try {
+        await Print.printAsync({
+          html: htmlContent,
+        });
+        console.log("Print Sent Successfully");
+      } catch (e) {
+        console.log("Error from Print QR", e);
+      }
+    });
+  };
+  console.log("QR DATA", qrData);
   useFocusEffect(
     useCallback(() => {
       getStudentDataHandler();
@@ -69,13 +117,17 @@ const ViewQR = () => {
   return (
     <View style={styles.screen}>
       <View style={styles.qrBox}>
-        <QRCode value={JSON.stringify(qrData)} size={300} />
+        <QRCode
+          value={JSON.stringify(qrData)}
+          size={300}
+          getRef={(ref) => (qrRef.current = ref)}
+        />
       </View>
       <View style={styles.action}>
         <View style={styles.actionItem}>
           <CustomButton
             title="Print QR"
-            onPress={() => {}}
+            onPress={printQR}
             icon={<Ionicons name="print-outline" size={25} color="#fff" />}
           />
         </View>

@@ -2,11 +2,16 @@ import { findUserById } from "@/database/database";
 import { dropTables } from "@/database/migrations-db";
 import { getScreeningByIdFromDB } from "@/database/primary-screening-db";
 import { findSchools } from "@/database/school-student-db";
+import { getProfile } from "@/http/profile-http";
+import { RootState } from "@/store/store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSQLiteContext } from "expo-sqlite";
 import { View, Text, Button } from "react-native";
+import { useSelector } from "react-redux";
 
 const DatabaseTest = () => {
   const db = useSQLiteContext();
+  const userId = useSelector((state: RootState) => state.userSlice.userId);
 
   const dropTablesHandler = () => {
     try {
@@ -24,7 +29,9 @@ const DatabaseTest = () => {
   };
 
   const getSchoolData = async () => {
-    const response = await findUserById(db, "3");
+    const resToken = await AsyncStorage.getItem("token");
+    // const response = await findSchools(db);
+    const response = await findUserById(db, userId);
     console.log("Schools", response);
   };
 
@@ -32,7 +39,7 @@ const DatabaseTest = () => {
     <View>
       <Text>Local Database Testing</Text>
       <View>
-        <Button title="Drop Tables" onPress={getSchoolData} />
+        <Button title="Profile data" onPress={getSchoolData} />
       </View>
     </View>
   );
