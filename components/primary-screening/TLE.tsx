@@ -5,13 +5,11 @@ import { RootState } from "@/store/store";
 import { useCallback, useEffect, useState } from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import CustomDropdown from "../utils/CustomDropdown";
 import { TorchLightModel } from "@/models/other-masters/TorchLightModel";
 import {
   setAllTorchLights,
   uncheckAllTles,
 } from "@/store/slices/torch-light-slice";
-import { getAllTorchLights } from "@/http/torchlight-http";
 import { Checkbox, Modal, Portal } from "react-native-paper";
 import { findAllTorchlightFindings } from "@/database/database";
 import { useFocusEffect } from "expo-router";

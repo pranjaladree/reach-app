@@ -81,7 +81,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     }
   };
 
-
   const checkInternetHandler = async () => {
     NetInfo.fetch().then(async (state) => {
       console.log("Is connected?", state.isConnected);
@@ -155,14 +154,14 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       route: "device-preparation",
       isNetRequired: true,
     },
-    {
-      label: "Database Test",
-      icon: (color: string) => (
-        <FontAwesome5 name="database" size={20} color={color} />
-      ),
-      route: "database-test",
-      isNetRequired: false,
-    },
+    // {
+    //   label: "Database Test",
+    //   icon: (color: string) => (
+    //     <FontAwesome5 name="database" size={20} color={color} />
+    //   ),
+    //   route: "database-test",
+    //   isNetRequired: false,
+    // },
     {
       label: "Primary Screening",
       icon: (color: string) => (
@@ -238,8 +237,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("expiry");
-      await AsyncStorage.removeItem("OfflineUserInfo")
-      console.log("from logged out",await AsyncStorage.getItem("OfflineUserInfo"))
+      await AsyncStorage.removeItem("OfflineUserInfo");
+      console.log(
+        "from logged out",
+        await AsyncStorage.getItem("OfflineUserInfo")
+      );
     } catch (err) {
       console.log(err);
     }
