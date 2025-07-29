@@ -190,22 +190,23 @@ export const PSFieldValidator = (screeningItem: ScreeningModel) => {
     }
   }
   if (item.isVisionTestVisible) {
-    console.log("VISION TEST VISIBLE");
-    if (item.canReadLogmarLE.id == "0") {
-      item = {
-        ...item,
-        canReadLogmarLEHasError: true,
-        canReadLogmarLEErrorMessage: "* Please select an option !",
-      };
-      valid = false;
-    }
-    if (item.canReadLogmarRE.id == "0") {
-      item = {
-        ...item,
-        canReadLogmarREHasError: true,
-        canReadLogmarREErrorMessage: "* Please select an option !",
-      };
-      valid = false;
+    if (item.unableToPerformVisionTest == "NO") {
+      if (item.canReadLogmarLE.id == "0") {
+        item = {
+          ...item,
+          canReadLogmarLEHasError: true,
+          canReadLogmarLEErrorMessage: "* Please select an option !",
+        };
+        valid = false;
+      }
+      if (item.canReadLogmarRE.id == "0") {
+        item = {
+          ...item,
+          canReadLogmarREHasError: true,
+          canReadLogmarREErrorMessage: "* Please select an option !",
+        };
+        valid = false;
+      }
     }
   }
 
