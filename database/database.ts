@@ -2,6 +2,7 @@ import { BLANK_USER_MODEL } from "@/constants/BlankModels";
 import { AddModel } from "@/models/other-masters/AddModel";
 import { AxisModel } from "@/models/other-masters/AxisModel";
 import { ClassModel } from "@/models/other-masters/ClassModel";
+import { ColorConfigModel } from "@/models/other-masters/ColorConfigModel";
 import { CYLModel } from "@/models/other-masters/CYLModel";
 import { DiagnosisModel } from "@/models/other-masters/DiagnosisModel";
 import { DistanceDvaModel } from "@/models/other-masters/DistanceDvaModel";
@@ -27,7 +28,6 @@ import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
 import { UserModel } from "@/models/user/UserModel";
 import { SQLiteDatabase } from "expo-sqlite";
 import { saveNewStudent } from "./school-student-db";
-import { ColorConfigModel } from "@/models/other-masters/ColorConfigModel";
 
 export const insertClassesToDB = async (
   db: SQLiteDatabase,
@@ -1460,7 +1460,7 @@ export const getSpecStudentsBySchoolId = async (
   );
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.section,s.studentId,sb.bookingDate,cl.title FROM students s JOIN classes cl ON s.classId = cl.id  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON s.id = sb.studentId  WHERE ${whereCondition}`
+      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.section,s.studentId,sb.bookingDate,cl.title FROM students s JOIN classes cl ON s.classId = cl.id  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON s.id = s.studentId  WHERE ${whereCondition}`
     );
     return response;
   } catch (err) {
