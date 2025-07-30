@@ -21,6 +21,7 @@ import {
   findSchoolDropdowns,
   removeSchool,
 } from "@/database/school-student-db";
+import CustomNotification from "../utils/CustomNotification";
 
 const PrimaryDataSync = () => {
   const db = useSQLiteContext();
@@ -31,6 +32,18 @@ const PrimaryDataSync = () => {
   const [schoolHasError, setSchoolHasError] = useState(false);
   const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
   const [diaglogMessage, setDialogMessage] = useState("");
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [variant, setVariant] = useState("success");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+  };
 
   const [visible, setVisible] = useState(false);
 
@@ -62,11 +75,13 @@ const PrimaryDataSync = () => {
     console.log("PREPARED DATA******************", JSON.stringify(response));
     const syncResponse = await syncPSData(token, response);
     if (syncResponse.isError) {
-      setDialogMessage(syncResponse.data);
-      showDialog();
+      setNotificationMessage(syncResponse.data);
+      setVariant("error");
+      // setDialogMessage(syncResponse.data);
+      // showDialog();
     } else {
-      showDialog();
-      setDialogMessage(syncResponse.data);
+      setNotificationMessage(syncResponse.data);
+      setVariant("success");
 
       //If School Activity is Primary Screening Then Remove School
       const schoolResponse: any = await db.getFirstAsync(
@@ -81,6 +96,7 @@ const PrimaryDataSync = () => {
         }
       }
     }
+    openNotificationHandler();
     setIsLoading(false);
   };
 
@@ -181,39 +197,14 @@ const PrimaryDataSync = () => {
           }
           isLoading={isLoading}
         />
-        {/* <Button
-          mode="contained"
-          onPress={syncPrimaryScreeningHandler}
-          loading={isLoading}
-          style={{
-            paddingVertical: 5,
-            borderRadius: 30,
-
-            width: "100%",
-          }}
-        >
-          Sync Data
-        </Button> */}
-        {/* <AppButton
-          title="Sync Data"
-          onPress={syncPrimaryScreeningHandler}
-          loading={isLoading}
-          disabled={isLoading}
-        /> */}
       </View>
-      <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>Alert</Dialog.Title>
-          <Dialog.Content>
-            <Text>{diaglogMessage}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog} loading={isLoading}>
-              Done
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      {/* Notification */}
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant={variant}
+      />
     </View>
   );
 };

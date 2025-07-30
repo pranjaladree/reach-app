@@ -79,7 +79,7 @@ const LoginScreen = () => {
       const response: any = await db.getFirstAsync(
         `SELECT * FROM users WHERE userName="${userName}"`
       );
-      console.log(userName)
+      console.log(userName);
       console.log("Response OFFLINE LOGIN ********************", response);
       if (response) {
         const isLoggedIn = bcrypt.compareSync(password, response.password);

@@ -158,9 +158,10 @@ export const PSFieldValidator = (screeningItem: ScreeningModel) => {
   let valid = true;
   let item = { ...screeningItem };
 
+  console.log("SPECTACLE STATUS VISIBLE");
   if (item.usingSpectacle == "") {
     item = {
-      ...screeningItem,
+      ...item,
       usingSpecHasError: true,
       usingSpecErrorMessage: "* Please select an option !",
     };
@@ -169,7 +170,7 @@ export const PSFieldValidator = (screeningItem: ScreeningModel) => {
     if (item.usingSpectacle == "YES") {
       if (item.haveSpecNow == "") {
         item = {
-          ...screeningItem,
+          ...item,
           haveSpecNowHasError: true,
           haveSpecNowErrorMessage: "* Please select an option !",
         };
@@ -178,7 +179,7 @@ export const PSFieldValidator = (screeningItem: ScreeningModel) => {
         if (item.haveSpecNow == "YES") {
           if (item.specCondition == "") {
             item = {
-              ...screeningItem,
+              ...item,
               specConditionHasError: true,
               specConditionErrorMessage: "* Please select an option !",
             };
@@ -188,6 +189,58 @@ export const PSFieldValidator = (screeningItem: ScreeningModel) => {
       }
     }
   }
+  if (item.isVisionTestVisible) {
+    if (item.unableToPerformVisionTest == "NO") {
+      if (item.canReadLogmarLE.id == "0") {
+        item = {
+          ...item,
+          canReadLogmarLEHasError: true,
+          canReadLogmarLEErrorMessage: "* Please select an option !",
+        };
+        valid = false;
+      }
+      if (item.canReadLogmarRE.id == "0") {
+        item = {
+          ...item,
+          canReadLogmarREHasError: true,
+          canReadLogmarREErrorMessage: "* Please select an option !",
+        };
+        valid = false;
+      }
+    }
+  }
+
+  if (item.isOcularComplaintVisible) {
+    if (item.ocularComplaint == "") {
+      item = {
+        ...item,
+        ocularComplaintHasError: true,
+        ocularComplaintErrorMessage: "* Please select an option !",
+      };
+      valid = false;
+    }
+  }
+
+  if (item.isTorchlightVisible) {
+    if (item.torchlightCheckLE.id == "0") {
+      item = {
+        ...item,
+        torchLightLEHasError: true,
+        torchLightLEErrorMessage: "* Please select an option !",
+      };
+      valid = false;
+    }
+    if (item.torchlightCheckRE.id == "0") {
+      item = {
+        ...item,
+        torchLightREHasError: true,
+        torchLightREErrorMessage: "* Please select an option !",
+      };
+      valid = false;
+    }
+  }
+
+  //Return Status
   return { valid, item };
 };
 

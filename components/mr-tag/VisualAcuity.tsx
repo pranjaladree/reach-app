@@ -500,6 +500,7 @@ const VisualAcuity = ({ mrId, isMRTagDone, onNext }: Props) => {
           disabled={!isMRTagDone}
         />
       </View>
+      {/* Notifcation */}
       <CustomNotification
         visible={isNotification}
         onClose={closeNotificationHandler}

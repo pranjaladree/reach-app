@@ -340,6 +340,8 @@ const ScreeningDetails = () => {
             torchlightFindings: response.torchlightFindings,
             isOcularComplaintVisible: false,
             ocularComplaint: response.ocularComplaint,
+            ocularComplaintHasError: false,
+            ocularComplaintErrorMessage: "",
             ocularList: "",
             isBinucularTestVisible: false,
             isNpcTest: false,
@@ -367,6 +369,26 @@ const ScreeningDetails = () => {
             isQCDone: response.isQCDone,
             isPsDone: response.isPsDone,
             isNonEditable: response.isEditable,
+            torchLightLEHasError: false,
+            torchLightLEErrorMessage: "",
+            torchLightREHasError: false,
+            torchLightREErrorMessage: "",
+            visionAutorefLEHasError: false,
+            visionAutorefLEErrorMessage: "",
+            visionAutorefREHasError: false,
+            visionAutorefREErrorMessage: "",
+            plus2DLEHasError: false,
+            plus2DLEErrorMessage: "",
+            plus2DREHasError: false,
+            plus2DREErrorMessage: "",
+            npcHasHasError: false,
+            npcErrorMessage: "",
+            coverTestHasError: false,
+            coverTestErrorMessage: "",
+            colorVisionTestLEHasError: false,
+            colorVisonTestLEErrorMessage: "",
+            colorVisonTestREHasError: false,
+            colorVisonTestREErrorMessage: "",
           })
         )
       );
@@ -524,7 +546,7 @@ const ScreeningDetails = () => {
         <View style={styles.headerBox}>
           <View>
             <Text style={styles.title}>
-              Name:{" "}
+              Name:
               {`${studentData?.firstName}  ${
                 studentData?.middleName ? studentData?.middleName : ""
               }  ${studentData?.lastName ? studentData?.lastName : ""}`}

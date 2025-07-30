@@ -226,6 +226,7 @@ const VisionTest = () => {
                     onChange={canReadLogMARLEChangeHandler}
                     isError={screeningItem.canReadLogmarLEHasError}
                     errorMessage={screeningItem.canReadLogmarLEErrorMessage}
+                    required={true}
                   />
                 </View>
                 <View style={styles.rowItem}>
@@ -236,6 +237,7 @@ const VisionTest = () => {
                     onChange={canReadLogMARREChangeHandler}
                     isError={screeningItem.canReadLogmarREHasError}
                     errorMessage={screeningItem.canReadLogmarREErrorMessage}
+                    required={true}
                   />
                 </View>
               </View>

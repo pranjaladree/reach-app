@@ -48,5 +48,5 @@ export const Colors = {
   primary: "#004aad",
   secondary: "#f0f0f0",
   error: "#d66565",
-  success: "#5db374",
+  success: "#004aad",
 };

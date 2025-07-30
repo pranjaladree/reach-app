@@ -39,6 +39,8 @@ export class ScreeningModel {
   torchlightFindings: string;
   isOcularComplaintVisible: boolean;
   ocularComplaint: string;
+  ocularComplaintHasError: boolean;
+  ocularComplaintErrorMessage: string;
   ocularList: string;
   isBinucularTestVisible: boolean;
   isNpcTest: boolean;
@@ -66,6 +68,26 @@ export class ScreeningModel {
   isQCDone: boolean;
   isPsDone: boolean;
   isNonEditable: boolean;
+  torchLightLEHasError: boolean;
+  torchLightLEErrorMessage: string;
+  torchLightREHasError: boolean;
+  torchLightREErrorMessage: string;
+  visionAutorefLEHasError: boolean;
+  visionAutorefLEErrorMessage: string;
+  visionAutorefREHasError: boolean;
+  visionAutorefREErrorMessage: string;
+  plus2DLEHasError: boolean;
+  plus2DLEErrorMessage: string;
+  plus2DREHasError: boolean;
+  plus2DREErrorMessage: string;
+  npcHasHasError: boolean;
+  npcErrorMessage: string;
+  coverTestHasError: boolean;
+  coverTestErrorMessage: string;
+  colorVisionTestLEHasError: boolean;
+  colorVisonTestLEErrorMessage: string;
+  colorVisonTestREHasError: boolean;
+  colorVisonTestREErrorMessage: string;
 
   constructor({
     id,
@@ -105,6 +127,8 @@ export class ScreeningModel {
     torchlightFindings,
     isOcularComplaintVisible,
     ocularComplaint,
+    ocularComplaintHasError,
+    ocularComplaintErrorMessage,
     ocularList,
     isBinucularTestVisible,
     isNpcTest,
@@ -132,6 +156,26 @@ export class ScreeningModel {
     isQCDone,
     isPsDone,
     isNonEditable,
+    torchLightLEHasError,
+    torchLightLEErrorMessage,
+    torchLightREHasError,
+    torchLightREErrorMessage,
+    visionAutorefLEHasError,
+    visionAutorefLEErrorMessage,
+    visionAutorefREHasError,
+    visionAutorefREErrorMessage,
+    plus2DLEHasError,
+    plus2DLEErrorMessage,
+    plus2DREHasError,
+    plus2DREErrorMessage,
+    npcHasHasError,
+    npcErrorMessage,
+    coverTestHasError,
+    coverTestErrorMessage,
+    colorVisionTestLEHasError,
+    colorVisonTestLEErrorMessage,
+    colorVisonTestREHasError,
+    colorVisonTestREErrorMessage,
   }: {
     id: string;
     studentId: string;
@@ -170,6 +214,8 @@ export class ScreeningModel {
     torchlightFindings: string;
     isOcularComplaintVisible: boolean;
     ocularComplaint: string;
+    ocularComplaintHasError: boolean;
+    ocularComplaintErrorMessage: string;
     ocularList: string;
     isBinucularTestVisible: boolean;
     isNpcTest: boolean;
@@ -197,6 +243,26 @@ export class ScreeningModel {
     isQCDone: boolean;
     isPsDone: boolean;
     isNonEditable: boolean;
+    torchLightLEHasError: boolean;
+    torchLightLEErrorMessage: string;
+    torchLightREHasError: boolean;
+    torchLightREErrorMessage: string;
+    visionAutorefLEHasError: boolean;
+    visionAutorefLEErrorMessage: string;
+    visionAutorefREHasError: boolean;
+    visionAutorefREErrorMessage: string;
+    plus2DLEHasError: boolean;
+    plus2DLEErrorMessage: string;
+    plus2DREHasError: boolean;
+    plus2DREErrorMessage: string;
+    npcHasHasError: boolean;
+    npcErrorMessage: string;
+    coverTestHasError: boolean;
+    coverTestErrorMessage: string;
+    colorVisionTestLEHasError: boolean;
+    colorVisonTestLEErrorMessage: string;
+    colorVisonTestREHasError: boolean;
+    colorVisonTestREErrorMessage: string;
   }) {
     this.id = id;
     this.studentId = studentId;
@@ -235,6 +301,8 @@ export class ScreeningModel {
     this.torchlightFindings = torchlightFindings;
     this.isOcularComplaintVisible = isOcularComplaintVisible;
     this.ocularComplaint = ocularComplaint;
+    this.ocularComplaintHasError = ocularComplaintHasError;
+    this.ocularComplaintErrorMessage = ocularComplaintErrorMessage;
     this.ocularList = ocularList;
     this.isBinucularTestVisible = isBinucularTestVisible;
     this.isNpcTest = isNpcTest;
@@ -262,5 +330,25 @@ export class ScreeningModel {
     this.isQCDone = isQCDone;
     this.isPsDone = isPsDone;
     this.isNonEditable = isNonEditable;
+    this.torchLightLEHasError = torchLightLEHasError;
+    this.torchLightLEErrorMessage = torchLightLEErrorMessage;
+    this.torchLightREHasError = torchLightREHasError;
+    this.torchLightREErrorMessage = torchLightREErrorMessage;
+    this.visionAutorefLEHasError = visionAutorefLEHasError;
+    this.visionAutorefLEErrorMessage = visionAutorefLEErrorMessage;
+    this.visionAutorefREHasError = visionAutorefREHasError;
+    this.visionAutorefREErrorMessage = visionAutorefREErrorMessage;
+    this.plus2DLEHasError = plus2DLEHasError;
+    this.plus2DLEErrorMessage = plus2DLEErrorMessage;
+    this.plus2DREHasError = plus2DREHasError;
+    this.plus2DREErrorMessage = plus2DREErrorMessage;
+    this.npcHasHasError = npcHasHasError;
+    this.npcErrorMessage = npcErrorMessage;
+    this.coverTestHasError = coverTestHasError;
+    this.coverTestErrorMessage = coverTestErrorMessage;
+    this.colorVisionTestLEHasError = colorVisionTestLEHasError;
+    this.colorVisonTestLEErrorMessage = colorVisonTestLEErrorMessage;
+    this.colorVisonTestREHasError = colorVisonTestREHasError;
+    this.colorVisonTestREErrorMessage = colorVisonTestREErrorMessage;
   }
 }

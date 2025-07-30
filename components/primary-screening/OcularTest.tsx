@@ -47,6 +47,8 @@ const OcularTest = () => {
           ocularComplaint: val,
           isBinucularTestVisible: false,
           ocularList: "",
+          ocularComplaintHasError: false,
+          ocularComplaintErrorMessage: "",
         })
       );
       dispatch(uncheckAllOculars());
@@ -55,6 +57,8 @@ const OcularTest = () => {
         setScreeningItem({
           ...screeningItem,
           ocularComplaint: val,
+          ocularComplaintHasError: false,
+          ocularComplaintErrorMessage: "",
         })
       );
       openOcularModal();
@@ -176,6 +180,9 @@ const OcularTest = () => {
             items={YES_NO_RADIO_ITEMS}
             selectedOption={screeningItem.ocularComplaint}
             onChange={ocularComplaintChangeHandler}
+            isError={screeningItem.ocularComplaintHasError}
+            errorMessage={screeningItem.ocularComplaintErrorMessage}
+            required={true}
           />
         </View>
         {screeningItem.ocularList !== "" && (

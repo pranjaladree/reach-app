@@ -1448,7 +1448,7 @@ export const getSpecStudentsBySchoolId = async (
   appliedFilters: FilterModel
 ) => {
   console.log("APPLIED", appliedFilters);
-  let whereCondition = `s.schoolId="${schoolId}" AND rf.spectaclesPrescribed=true`;
+  let whereCondition = `s.schoolId="${schoolId}" AND rf.spectaclesPrescribed = 1`;
 
   if (appliedFilters.classId != "") {
     whereCondition += ` AND students.classId=${appliedFilters.classId}`;
