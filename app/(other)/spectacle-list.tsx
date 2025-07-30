@@ -75,11 +75,11 @@ const SpectacleList = () => {
   };
 
   const [isLoading, setIsLoading] = useState(false);
-
+// console.log("Selected Student Data",selectedStudent.studentId)
   const saveBookingHandler = async () => {
     setIsLoading(true);
-    const response = await saveSpecBooking(db, selectedStudent.id, frameName);
-    console.log(response);
+    const response = await saveSpecBooking(db, selectedStudent.id.toString(), frameName, selectedStudent.mrId);
+    // console.log("From Spectacle List",response);
     if (response) {
       setIsModalOpen(false);
       openNotificationHandler();
@@ -129,7 +129,7 @@ const SpectacleList = () => {
         <View style={{ marginTop: 10 }}>
           <CustomInput
             id="search"
-            label="Seach Student"
+            label="Search Student"
             value={searchTerm}
             onChangeText={searchTermChangeHandler}
           />

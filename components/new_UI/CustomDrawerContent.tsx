@@ -88,7 +88,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         try {
           const token = await AsyncStorage.getItem("token");
           if (token) {
-            const profileResponse = getProfile(token);
+            const profileResponse = await getProfile(token);
+            console.log(profileResponse)
             if (!(await profileResponse).isError) {
               const responseData = (await profileResponse).data;
               dispatch(
