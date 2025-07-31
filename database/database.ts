@@ -1423,10 +1423,10 @@ export const saveSpecBooking = async (
   db: SQLiteDatabase,
   studentId: string,
   frameName: string,
-  mrId: string,
+  mrId: string
 ) => {
   try {
-    console.log("studentId from Db", studentId)
+    console.log("studentId from Db", studentId);
     const response = db.runSync(
       "INSERT OR REPLACE INTO spectacleBooking (id,frameName,bookingDate,mrId) VALUES (?,?,?,?)",
       studentId,
@@ -1434,10 +1434,10 @@ export const saveSpecBooking = async (
       new Date().toISOString(),
       mrId
     );
-    console.log("Response from Db", response)
+    console.log("Response from Db", response);
     return response;
   } catch (err) {
-    console.log("Spectacle",err);
+    console.log("Spectacle", err);
   }
 };
 
@@ -1463,7 +1463,7 @@ export const getSpecStudentsBySchoolId = async (
   );
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.section,s.studentId,sb.bookingDate,cl.title, rf.mrId FROM students s JOIN classes cl ON s.classId = cl.id  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON rf.id = sb.mrId  WHERE ${whereCondition}`
+      `SELECT s.id, s.firstName,s.gender,s.age,s.classId,s.contactNo,s.section,s.studentId,sb.bookingDate,cl.title, rf.mrId FROM students s JOIN classes cl ON s.classId = cl.id  INNER JOIN  refraction rf ON s.id = rf.mrId  LEFT JOIN spectacleBooking sb ON rf.id = sb.mrId  WHERE ${whereCondition}`
     );
     return response;
   } catch (err) {

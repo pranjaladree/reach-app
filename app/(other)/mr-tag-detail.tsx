@@ -123,6 +123,25 @@ const MRTagDetail = () => {
     }, [studentId])
   );
 
+  //  useEffect(() => {
+  //     const backAction = () => {
+  //       router.replace({
+  //         pathname: "/screening-list",
+  //         params: {
+  //           schoolId: screeningItem.schoolId,
+  //         },
+  //       });
+  //       return true;
+  //     };
+
+  //     const backHandler = BackHandler.addEventListener(
+  //       "hardwareBackPress",
+  //       backAction
+  //     );
+
+  //     return () => backHandler.remove();
+  //   }, []);
+
   return (
     <ScrollView style={styles.screen}>
       <View style={styles.headerBox}>

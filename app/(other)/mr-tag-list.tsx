@@ -1,5 +1,6 @@
 import MRStudentItem from "@/components/list-items/MRStudentItem";
 import CustomInput from "@/components/utils/CustomInput";
+import SearchInput from "@/components/utils/SearchInput";
 import { getMRTagStudentsBySchoolId } from "@/database/mr-tag-db";
 import { RootState } from "@/store/store";
 import {
@@ -52,7 +53,7 @@ const MRTagList = () => {
 
   const navigationHandler = (item: any) => {
     setSearchTerm("");
-    router.replace({
+    router.push({
       pathname: "/mr-tag-detail",
       params: {
         studentId: item.id,
@@ -126,9 +127,9 @@ const MRTagList = () => {
           <Text>Not Done : {notDoneCount}</Text>
         </View>
         <View style={{ marginTop: 10 }}>
-          <CustomInput
+          <SearchInput
             id="search"
-            label="Seach Student"
+            placeholder="Seach Student"
             value={searchTerm}
             onChangeText={searchTermChangeHandler}
           />

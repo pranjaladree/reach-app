@@ -9,20 +9,13 @@ import CustomButton from "../utils/CustomButton";
 interface Props {
   studentId: string;
   onClose: () => void;
+  onQrPress: () => void;
 }
 
-const ViewQR = ({ studentId, onClose }: Props) => {
+const ViewQR = ({ studentId, onClose, onQrPress }: Props) => {
   const db = useSQLiteContext();
   const [studentData, setStudentData] = useState<any>();
   const [qrData, setQrData] = useState<any>();
-
-  // useEffect(() => {
-  //   setQrData({
-  //     id: studentData?.studentId,
-  //     tempId: studentData?.tempId,
-  //     firstName: studentData?.firstName,
-  //   });
-  // }, [studentData]);
 
   const getStudentDataHandler = async () => {
     console.log("GETING STUDENTS $$$$$$$$$$$$$$$");
@@ -85,7 +78,7 @@ const ViewQR = ({ studentId, onClose }: Props) => {
             <CustomButton title="Close" onPress={onClose} />
           </View>
           <View style={{ padding: 5 }}>
-            <CustomButton title="Print QR" onPress={() => {}} />
+            <CustomButton title="Print QR" onPress={onQrPress} />
           </View>
         </View>
       </View>

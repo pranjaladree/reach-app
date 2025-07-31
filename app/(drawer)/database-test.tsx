@@ -13,9 +13,9 @@ const DatabaseTest = () => {
   const db = useSQLiteContext();
   const userId = useSelector((state: RootState) => state.userSlice.userId);
 
-  const dropTablesHandler = () => {
+  const dropTablesHandler = async () => {
     try {
-      const response = db.getAllSync(`SELECT * FROM colorVisionConfigs`);
+      const response = await db.runAsync(`DROP TABLE spectacleBooking`);
       console.log("RESSSS *******", response);
     } catch (err) {
       console.log(err);
@@ -39,7 +39,7 @@ const DatabaseTest = () => {
     <View>
       <Text>Local Database Testing</Text>
       <View>
-        <Button title="Profile data" onPress={getSchoolData} />
+        <Button title="Profile data" onPress={dropTablesHandler} />
       </View>
     </View>
   );

@@ -1,9 +1,7 @@
 import SpecStudentItem from "@/components/list-items/SpecStudentItem";
 import BookSpectacle from "@/components/spectacle/BookSpectacle";
-import InputBox from "@/components/ui/InputBox";
-import CustomButton from "@/components/utils/CustomButton";
-import CustomInput from "@/components/utils/CustomInput";
 import CustomNotification from "@/components/utils/CustomNotification";
+import SearchInput from "@/components/utils/SearchInput";
 import {
   getSpecStudentsBySchoolId,
   saveSpecBooking,
@@ -75,10 +73,15 @@ const SpectacleList = () => {
   };
 
   const [isLoading, setIsLoading] = useState(false);
-// console.log("Selected Student Data",selectedStudent.studentId)
+  // console.log("Selected Student Data",selectedStudent.studentId)
   const saveBookingHandler = async () => {
     setIsLoading(true);
-    const response = await saveSpecBooking(db, selectedStudent.id.toString(), frameName, selectedStudent.mrId);
+    const response = await saveSpecBooking(
+      db,
+      selectedStudent.id.toString(),
+      frameName,
+      selectedStudent.mrId
+    );
     // console.log("From Spectacle List",response);
     if (response) {
       setIsModalOpen(false);
@@ -127,12 +130,18 @@ const SpectacleList = () => {
           <Text>Total Count: {studentList.length}</Text>
         </View>
         <View style={{ marginTop: 10 }}>
-          <CustomInput
+          <SearchInput
+            id="search"
+            placeholder="Search Student"
+            value={searchTerm}
+            onChangeText={searchTermChangeHandler}
+          />
+          {/* <CustomInput
             id="search"
             label="Search Student"
             value={searchTerm}
             onChangeText={searchTermChangeHandler}
-          />
+          /> */}
         </View>
       </View>
       <View

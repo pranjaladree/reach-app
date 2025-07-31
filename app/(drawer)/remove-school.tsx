@@ -1,5 +1,6 @@
 import StyledDropdown from "@/components/new_UI/StyledDropdown";
 import CustomButton from "@/components/utils/CustomButton";
+import CustomNotification from "@/components/utils/CustomNotification";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import {
   findSchoolDropdowns,
@@ -16,6 +17,18 @@ const RemoveSchool = () => {
   const db = useSQLiteContext();
   const [isLoading, setIsLoading] = useState(false);
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [variant, setVariant] = useState("success");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+  };
 
   const [diaglogMessage, setDialogMessage] = useState("");
 
@@ -41,8 +54,9 @@ const RemoveSchool = () => {
   const removeSchoolHandler = async () => {
     const response: any = await removeSchool(db, selectedSchool.id);
     if (response) {
-      showDialog();
-      setDialogMessage("School Removed !");
+      openNotificationHandler();
+      setNotificationMessage("School Removed Successfully !");
+      
     }
     console.log("Response", response);
   };
@@ -82,7 +96,15 @@ const RemoveSchool = () => {
           isLoading={isLoading}
         />
       </View>
-      <Portal>
+
+      {/* Notification */}
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant={variant}
+      />
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Title>REACHLite</Dialog.Title>
           <Dialog.Content>
@@ -94,7 +116,7 @@ const RemoveSchool = () => {
             </Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
     </View>
   );
 };

@@ -1,8 +1,6 @@
 import { RootState } from "@/store/store";
 import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
-import { Button, Dialog, Portal, TextInput } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import CustomDropdown from "../utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { FACILITY_TYPES_ITEMS } from "@/constants/Data";
 import { useCallback, useEffect, useState } from "react";
@@ -395,6 +393,7 @@ const ReasonForm = () => {
           isError={mobileNoHasError}
           errorMessage={mobileNoErrorMessage}
           required={screeningItem.psStatus == "REFER" ? true : false}
+          keyboardType="numeric"
         />
       </View>
       <View style={{ marginTop: 10 }}>
@@ -428,31 +427,6 @@ const ReasonForm = () => {
         />
       </Modal>
 
-      {/* <Portal>
-        <Dialog visible={visible} onDismiss={saveScreeningHandler}>
-          <Dialog.Title>REACHLite</Dialog.Title>
-          <Dialog.Content>
-            <Text>{diaglogMessage}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={() => {
-                // setIsQRCodeVisible(true);
-                router.replace({
-                  pathname: "/view-qr",
-                  params: {
-                    schoolId: screeningItem.studentId,
-                  },
-                });
-              }}
-            >
-              View QR Code
-            </Button>
-            <Button onPress={navigateHandler}>Done</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal> */}
-
       {/* Notification */}
       <CustomReasonNotification
         visible={isNotification}
@@ -461,16 +435,17 @@ const ReasonForm = () => {
         variant={variant}
         onViewQr={() => {
           // setIsQRCodeVisible(true);
+          console.log("PRRRR");
           router.replace({
             pathname: "/view-qr",
             params: {
-              schoolId: screeningItem.studentId,
+              studentId: screeningItem.studentId,
             },
           });
         }}
       />
 
-      <Modal visible={isQRCodeVisible}>
+      {/* <Modal visible={isQRCodeVisible}>
         <View
           style={{
             flex: 1,
@@ -479,15 +454,23 @@ const ReasonForm = () => {
             alignItems: "center",
           }}
         >
-          {/* <QRCode value={JSON.stringify(qrData)} size={200} /> */}
           <ViewQR
             studentId={screeningItem.studentId}
             onClose={() => {
               setIsQRCodeVisible(false);
             }}
+            onQrPress={() => {
+              console.log("PRRINTTTT QRRRRRRRR");
+              router.replace({
+                pathname: "/view-qr",
+                params: {
+                  schoolId: screeningItem.studentId,
+                },
+              });
+            }}
           />
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 };

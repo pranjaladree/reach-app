@@ -74,7 +74,7 @@ const QRList = () => {
   const openQRHandler = (studentId: string) => {
     console.log("SQ", studentId);
     console.log(studentId);
-    router.push({
+    router.replace({
       pathname: "/view-qr",
       params: {
         studentId: studentId,
@@ -132,7 +132,7 @@ const QRList = () => {
           />
         </View>
       </View>
-      <Modal
+      {/* <Modal
         visible={isModalOpen}
         onDismiss={closeModalHandler}
         style={{
@@ -148,7 +148,7 @@ const QRList = () => {
             setIsModalOpen(false);
           }}
         />
-      </Modal>
+      </Modal> */}
     </>
   );
 };

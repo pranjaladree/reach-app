@@ -22,13 +22,13 @@ const PSStudentItem = ({ item, onPress }: Props) => {
   return (
     <Pressable onPress={onPress} style={styles.item}>
       <View style={styles.card}>
-        <View>
+        <View style={styles.section}>
           <Text style={[itemStyle, styles.name]}>{`${item.firstName}  ${
             item.middleName ? item.middleName : ""
           }  ${item.lastName ? item.lastName : ""}`}</Text>
           <Text style={itemStyle}>{item.contactNo}</Text>
         </View>
-        <View>
+        <View style={styles.section}>
           <Text style={itemStyle}>
             {item.title} / {item.section}
           </Text>
@@ -36,7 +36,10 @@ const PSStudentItem = ({ item, onPress }: Props) => {
             {item.gender} / {item.age}
           </Text>
         </View>
-        <View>
+        <View style={styles.section}>
+          <Text style={itemStyle}>{item.tempId}</Text>
+        </View>
+        <View style={styles.sectionIcon}>
           {!item.psStatus ? (
             <Ionicons name="close-circle" size={40} style={itemStyle} />
           ) : (
@@ -46,9 +49,9 @@ const PSStudentItem = ({ item, onPress }: Props) => {
               style={itemStyle}
             />
           )}
-          <Text style={itemStyle}>
-            {item.isMarkedForQc && item.psStatus ? "QC" : ""}
-          </Text>
+          {item.isMarkedForQc && item.psStatus ? (
+            <Text style={itemStyle}>QC</Text>
+          ) : null}
         </View>
       </View>
     </Pressable>
@@ -67,6 +70,14 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  section: {
+    width: "30%",
+  },
+  sectionIcon: {
+    width: "10%",
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
   refer: {
     color: "red",
@@ -95,7 +106,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.primary,
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
 });
 

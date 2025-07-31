@@ -339,7 +339,7 @@ export const removeSchool = async (db: SQLiteDatabase, schoolId: string) => {
       db.runSync(`DELETE FROM schools WHERE id="${schoolId}"`);
     });
     console.log("Response", response);
-    return response;
+    return "Done";
   } catch (err) {
     console.log(err);
   }

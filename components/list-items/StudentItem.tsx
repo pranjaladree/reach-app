@@ -19,11 +19,11 @@ const StudentItem = ({ item, onPress }: Props) => {
   return (
     <Pressable onPress={onPress} style={styles.item}>
       <View style={styles.card}>
-        <View>
+        <View style={styles.section}>
           <Text>{item.firstName}</Text>
           <Text>{item.contactPersonMobileNo}</Text>
         </View>
-        <View>
+        <View style={styles.section}>
           <Text>
             {item.classTitle} / {item.section}
           </Text>
@@ -31,7 +31,10 @@ const StudentItem = ({ item, onPress }: Props) => {
             {item.gender} / {item.age}
           </Text>
         </View>
-        <View>
+        <View style={styles.section}>
+          <Text>{item.tempId}</Text>
+        </View>
+        <View style={styles.sectionIcon}>
           <Ionicons name="close-circle" size={32} color="grey" />
         </View>
       </View>
@@ -53,6 +56,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     elevation: 5,
     justifyContent: "space-between",
+  },
+  section: {
+    width: "30%",
+  },
+  sectionIcon: {
+    width: "10%",
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
 });
 

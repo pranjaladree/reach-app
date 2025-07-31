@@ -34,7 +34,7 @@ export const getStudentBySchoolId = async (token: string, schoolId: string) => {
         section: item.section,
         rollNo: item.rollNo,
         gender: item.gender,
-        age: "",
+        age: item.age,
         dob: "",
         relation: "",
         nextOfKin: "",

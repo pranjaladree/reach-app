@@ -1,50 +1,37 @@
+import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 interface Props {
   id?: string;
-  label: string;
+  placeholder: string;
   value: string;
   onChangeText: (val: string) => void;
   maxLength?: number;
   isError?: boolean;
   errorMessage?: string;
   required?: boolean;
-  keyboardType?: any;
 }
-const CustomInput = ({
+const SearchInput = ({
   id,
-  label,
+  placeholder,
   value,
   onChangeText,
   maxLength,
   isError,
   errorMessage,
   required,
-  keyboardType,
 }: Props) => {
   return (
     <View style={styles.container}>
-      {label && (
-        <Text style={styles.label}>
-          {label}
-          {required ? (
-            <Text style={{ color: "red", fontWeight: "bold" }}>*</Text>
-          ) : null}
-        </Text>
-      )}
+      <Ionicons name="search-outline" size={20} />
       <TextInput
         id={id}
-        // label={label}
-        placeholder={`Enter ${label}`}
+        placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
-        // mode="outlined"
         maxLength={maxLength}
         style={styles.input}
-        keyboardType={keyboardType ? keyboardType : "default"}
       />
-
-      {/* <TextInput style={styles.input} placeholder="Middle Name" /> */}
       {isError && (
         <View>
           <Text style={{ color: "red" }}>{errorMessage}</Text>
@@ -54,11 +41,20 @@ const CustomInput = ({
   );
 };
 
-export default CustomInput;
+export default SearchInput;
 
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    height: 48,
+    borderWidth: 1,
+    borderColor: "#004aad",
+    borderRadius: 6,
+    marginBottom: 15,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 10,
   },
   label: {
     marginBottom: 6,
@@ -72,13 +68,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   input: {
-    width: "100%",
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#004aad",
-    borderRadius: 6,
-    marginBottom: 15,
-    backgroundColor: "#fff",
-    // flex: 1,
+    paddingHorizontal: 10,
   },
 });

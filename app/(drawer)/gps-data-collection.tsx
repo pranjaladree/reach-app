@@ -169,11 +169,11 @@ const GPSDataCollection = () => {
           </Text>
         </Text>
       </View>
-      <View>
+      {/* <View>
         <Text style={styles.italicText}>
           % of accuracy : {location ? location.coords?.accuracy : ""}
         </Text>
-      </View>
+      </View> */}
       <Button
         mode="contained"
         style={[styles.button, { marginTop: 20 }]}

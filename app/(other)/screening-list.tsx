@@ -1,6 +1,7 @@
 import PSStudentItem from "@/components/list-items/PSStudentItem";
 import CustomInput from "@/components/utils/CustomInput";
 import CustomInput1 from "@/components/utils/CustomInput1";
+import SearchInput from "@/components/utils/SearchInput";
 import { Colors } from "@/constants/Colors";
 import { getPSStudentsBySchoolId } from "@/database/primary-screening-db";
 import { RootState } from "@/store/store";
@@ -94,7 +95,7 @@ const ScreeningList = () => {
   );
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <View
         style={{
           padding: 10,
@@ -109,10 +110,9 @@ const ScreeningList = () => {
           <Text style={styles.header}>Done: {doneCount}</Text>
           <Text style={styles.header}>Not Done : {notDoneCount}</Text>
         </View>
-        <View style={{ marginTop: 20,  }}>
-          <CustomInput1
+        <View style={{ marginTop: 20 }}>
+          <SearchInput
             id="search"
-            label=""
             value={searchTerm}
             placeholder="Search Student"
             onChangeText={searchTermChangeHandler}
@@ -121,7 +121,13 @@ const ScreeningList = () => {
       </View>
 
       <View
-        style={{ paddingHorizontal: 10, marginTop: 120,paddingTop: 10, paddingBottom: 10, backgroundColor: Colors.light.background }}
+        style={{
+          paddingHorizontal: 10,
+          marginTop: 120,
+          paddingTop: 10,
+          paddingBottom: 10,
+          backgroundColor: Colors.light.background,
+        }}
       >
         <FlatList
           data={filteredList}

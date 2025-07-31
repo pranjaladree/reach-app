@@ -37,6 +37,7 @@ import { GridDropdownModel } from "@/models/ui/GridDropdownModel";
 import { setNormalCheck, setScreeningItem } from "@/store/slices/student-slice";
 import { RootState } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
+import { HeaderBackButton } from "@react-navigation/elements";
 import {
   useFocusEffect,
   useLocalSearchParams,
@@ -52,6 +53,7 @@ import {
   ScrollView,
   Pressable,
   Modal,
+  BackHandler,
 } from "react-native";
 import { Button, Checkbox, Dialog, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -524,11 +526,7 @@ const ScreeningDetails = () => {
         headerRight: () => (
           <View>
             <Pressable onPress={openLastScreeningModal}>
-              <Ionicons
-                name="medkit-outline"
-                size={30}
-                color={Colors.primary}
-              />
+              <Ionicons name="medkit-outline" size={30} color="white" />
             </Pressable>
           </View>
         ),
@@ -539,6 +537,25 @@ const ScreeningDetails = () => {
       });
     }
   }, [navigation, visible, isLastScreeningResult]);
+
+  useEffect(() => {
+    const backAction = () => {
+      router.replace({
+        pathname: "/screening-list",
+        params: {
+          schoolId: screeningItem.schoolId,
+        },
+      });
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <>

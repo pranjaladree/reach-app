@@ -307,7 +307,7 @@ export const getMRTagStudentsBySchoolId = async (
   console.log("************ GETTING STUDENTS MR TAGS ****************");
   try {
     const response = await db.getAllAsync(
-      `SELECT s.id, s.firstName,s.tempId,s.middleName,s.lastName,s.gender,s.age,s.section,s.classId,scr.studentId,scr.psStatus, mt.mrNo,cl.title FROM students s JOIN classes cl ON s.classId = cl.id  INNER JOIN  screenings scr ON s.id = scr.studentId  LEFT JOIN mrTags mt ON s.id = mt.studentId  WHERE ${whereCondition}`
+      `SELECT s.id, s.firstName,s.tempId,s.middleName,s.lastName,s.gender,s.age,s.section,s.classId,s.contactNo,scr.studentId,scr.psStatus, mt.mrNo,cl.title FROM students s JOIN classes cl ON s.classId = cl.id  INNER JOIN  screenings scr ON s.id = scr.studentId  LEFT JOIN mrTags mt ON s.id = mt.studentId  WHERE ${whereCondition}`
     );
     return response;
   } catch (err) {

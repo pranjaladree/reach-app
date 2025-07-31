@@ -31,11 +31,11 @@ const QRItem = ({ item, onPress }: Props) => {
   return (
     <Pressable onPress={onPress} style={styles.item}>
       <View style={styles.card}>
-        <View>
+        <View style={styles.section}>
           <Text style={itemStyle}>{item.firstName}</Text>
           <Text>{item.contactPersonMobileNo}</Text>
         </View>
-        <View>
+        <View style={styles.section}>
           <Text style={itemStyle}>
             {item.title} / {item.section}
           </Text>
@@ -43,7 +43,10 @@ const QRItem = ({ item, onPress }: Props) => {
             {item.gender} / {item.age}
           </Text>
         </View>
-        <View>
+        <View style={styles.section}>
+          <Text style={itemStyle}>{item.tempId}</Text>
+        </View>
+        <View style={styles.sectionIcon}>
           <QRCode value={JSON.stringify(qrData)} size={80} />
         </View>
       </View>
@@ -77,6 +80,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     elevation: 5,
     justifyContent: "space-between",
+    alignItems: "center",
+  },
+  section: {
+    width: "30%",
+  },
+  sectionIcon: {
+    width: "10%",
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
 });
 
