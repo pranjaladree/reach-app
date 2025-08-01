@@ -8,7 +8,6 @@ import { View, Text, StyleSheet } from "react-native";
 const ViewQRStudent = () => {
   const { data } = useLocalSearchParams();
   const db = useSQLiteContext();
-  console.log("URL SAERRRRRRR", data);
   const router = useRouter();
 
   const [studentData, setStudentData] = useState<any>();
@@ -19,7 +18,7 @@ const ViewQRStudent = () => {
       router.push({
         pathname: "/mr-tag-detail",
         params: {
-          studentId: studentData?.studentId,
+          studentId: studentData?.id,
         },
       });
     }

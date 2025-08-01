@@ -26,6 +26,7 @@ import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import CustomNotification from "@/components/utils/CustomNotification";
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -35,6 +36,18 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isNotification, setIsNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [variant, setVariant] = useState("success");
+
+  const openNotificationHandler = () => {
+    setIsNotification(true);
+  };
+
+  const closeNotificationHandler = () => {
+    setIsNotification(false);
+  };
 
   const userNameChangeHandler = (val: string) => {
     setUserName(val);
@@ -80,10 +93,8 @@ const LoginScreen = () => {
         `SELECT * FROM users WHERE userName="${userName}"`
       );
       console.log(userName);
-      console.log("Response OFFLINE LOGIN ********************", response);
       if (response) {
         const isLoggedIn = bcrypt.compareSync(password, response.password);
-        console.log("IS Logged IN ***********", isLoggedIn);
         if (isLoggedIn) {
           dispatch(setLoggedIn("OFFLINE_TOKEN"));
           setLoggedInUser({
@@ -95,13 +106,25 @@ const LoginScreen = () => {
             isUserAgreement: response.isUserAgreement,
             isPartnerAgreement: response.isPartnerAgreement,
           });
+          let epochTime = new Date().getTime() + 86400000;
+          saveSessionData("OFFLINE_TOKEN", epochTime?.toString());
           router.navigate("/");
           //Login Success
         } else {
           // Login Failed
+          setIsNotification(true);
+          setNotificationMessage("Password Not Matched !");
+          setVariant("error");
         }
+      } else {
+        setIsNotification(true);
+        setNotificationMessage("User Not Found !");
+        setVariant("error");
       }
     } catch (err) {
+      setIsNotification(true);
+      setNotificationMessage("Failed to Login !");
+      setVariant("error");
       console.log(err);
     }
     setIsLoading(false);
@@ -126,20 +149,12 @@ const LoginScreen = () => {
         body: JSON.stringify(requestBody),
       });
       const resData = await res.json();
-      console.log(resData);
-      console.log("Status", res.status);
       if (res.status == 200) {
         const token = res.headers.get("Authorization");
         console.log("Token", token);
         if (!resData.isTotpRequired) {
           dispatch(setLoggedIn(token));
           if (token) {
-            // console.log("EXPIEEW", resData.tokenExpire);
-            // const fixedTime = resData.tokenExpire.replace("IST", "+0530");
-            // console.log("Fixed Time", fixedTime);
-            // const epochTime = new Date(fixedTime);
-            // console.log("EPOCH Time", epochTime.getTime());
-            // console.log(new Date("Tue Jul 22 16:05:58 +0530 2025").getTime());
             let epochTime = new Date().getTime() + 86400000;
             saveSessionData(token, epochTime?.toString());
             getProfileHandler(token);
@@ -160,7 +175,7 @@ const LoginScreen = () => {
         console.log("Failed to login");
       }
     } catch (err) {
-      console.log(err);
+      console.log("RESPONSE CATCH", err);
     }
     setIsLoading(false);
   };
@@ -254,6 +269,13 @@ const LoginScreen = () => {
           </View>
         </View>
       </View>
+      {/* Notification */}
+      <CustomNotification
+        visible={isNotification}
+        onClose={closeNotificationHandler}
+        message={notificationMessage}
+        variant={variant}
+      />
     </KeyboardAvoidingView>
   );
 };

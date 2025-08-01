@@ -1,6 +1,7 @@
 import QRItem from "@/components/list-items/QRItem";
 import ViewQR from "@/components/qr/ViewQR";
 import CustomInput from "@/components/utils/CustomInput";
+import SearchInput from "@/components/utils/SearchInput";
 import { getMRTagStudentsBySchoolId } from "@/database/mr-tag-db";
 import { RootState } from "@/store/store";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -109,9 +110,9 @@ const QRList = () => {
             <Text>Total Count: {studentList.length}</Text>
           </View>
           <View style={{ marginTop: 10 }}>
-            <CustomInput
+            <SearchInput
               id="search"
-              label="Seach Student"
+              placeholder="Seach Student"
               value={searchTerm}
               onChangeText={searchTermChangeHandler}
             />
@@ -132,23 +133,6 @@ const QRList = () => {
           />
         </View>
       </View>
-      {/* <Modal
-        visible={isModalOpen}
-        onDismiss={closeModalHandler}
-        style={{
-          width: "100%",
-          height: "100%",
-          backgroundColor: "white",
-          zIndex: 500,
-        }}
-      >
-        <ViewQR
-          studentId={selectedItem?.studentId}
-          onClose={() => {
-            setIsModalOpen(false);
-          }}
-        />
-      </Modal> */}
     </>
   );
 };

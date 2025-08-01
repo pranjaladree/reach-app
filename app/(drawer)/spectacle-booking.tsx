@@ -66,12 +66,6 @@ const SpectacleBooking = () => {
     }
   };
 
-  // const [section, setSection] = useState("");
-
-  // const sectionChangeHandler = (val: string) => {
-  //   setSection(val);
-  // };
-
   const getStudentsHandler = async () => {
     if (selectedSchool.id == "0") {
       return;
@@ -167,7 +161,7 @@ const SpectacleBooking = () => {
 
   return (
     <View style={{ padding: 20 }}>
-      <View>
+      <View style={{ padding: 5 }}>
         <StyledDropdown
           label="School"
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
@@ -194,7 +188,7 @@ const SpectacleBooking = () => {
           />
         </View>
       </View>
-      <View style={{ padding: 10 }}>
+      <View style={{ padding: 5 }}>
         <CustomButton title="Search" onPress={getStudentsHandler} />
       </View>
     </View>

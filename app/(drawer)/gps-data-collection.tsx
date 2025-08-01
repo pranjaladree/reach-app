@@ -21,6 +21,8 @@ const GPSDataCollection = () => {
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
   const [location, setLocation] = useState<any>();
+  const [schoolHasError, setSchoolHasError] = useState(false);
+  const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,11 +48,8 @@ const GPSDataCollection = () => {
   async function getCurrentLocation() {
     console.log(selectedSchool.value);
     if (selectedSchool.value == "SELECT") {
-      openNotificationHandler();
-      setNotificationMessage("Please Select School !");
-      setVariant("error");
-      // setDialogMessage("Please Select School !");
-      // showDialog();
+      setSchoolHasError(true);
+      setSchoolErrorMessage("Please select School !");
       return;
     }
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -84,11 +83,8 @@ const GPSDataCollection = () => {
 
   const saveLocationHandler = async () => {
     if (selectedSchool.value == "SELECT") {
-      // setDialogMessage("Please Select School !");
-      // showDialog();
-      openNotificationHandler();
-      setNotificationMessage("Please Select School !");
-      setVariant("error");
+      setSchoolHasError(true);
+      setSchoolErrorMessage("Please select School !");
       return;
     }
 
@@ -96,7 +92,7 @@ const GPSDataCollection = () => {
       // setDialogMessage("No Location Data found !");
       // showDialog();
       openNotificationHandler();
-      setNotificationMessage("Please Select School !");
+      setNotificationMessage("Location Data Not Found !");
       setVariant("error");
       return;
     }
@@ -111,7 +107,7 @@ const GPSDataCollection = () => {
       // setDialogMessage("Location Data Saved !");
       // showDialog();
       openNotificationHandler();
-      setNotificationMessage("Please Select School !");
+      setNotificationMessage("Location Data Saved !");
       setVariant("success");
     }
   };
@@ -142,14 +138,11 @@ const GPSDataCollection = () => {
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
           onChange={selectSchoolHandler}
+          required={true}
+          isError={schoolHasError}
+          errorMessage={schoolErrorMessage}
         />
       </View>
-      {/* <View>
-        <Button onPress={getCurrentLocation} mode="contained">
-          Get Geo Location
-        </Button>
-      </View> */}
-      {/* Get Location Button */}
       <Button
         mode="contained"
         onPress={getCurrentLocation}
@@ -169,11 +162,6 @@ const GPSDataCollection = () => {
           </Text>
         </Text>
       </View>
-      {/* <View>
-        <Text style={styles.italicText}>
-          % of accuracy : {location ? location.coords?.accuracy : ""}
-        </Text>
-      </View> */}
       <Button
         mode="contained"
         style={[styles.button, { marginTop: 20 }]}
@@ -190,19 +178,6 @@ const GPSDataCollection = () => {
         message={notificationMessage}
         variant={variant}
       />
-      {/* <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>REACHLite</Dialog.Title>
-          <Dialog.Content>
-            <Text>{diaglogMessage}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog} loading={isLoading}>
-              Done
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal> */}
     </View>
   );
 };

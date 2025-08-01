@@ -17,6 +17,8 @@ const RemoveSchool = () => {
   const db = useSQLiteContext();
   const [isLoading, setIsLoading] = useState(false);
   const [schoolItems, setSchoolItems] = useState<DropdownModel[]>([]);
+  const [schoolHasError, setSchoolHasError] = useState(false);
+  const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
 
   const [isNotification, setIsNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
@@ -30,14 +32,6 @@ const RemoveSchool = () => {
     setIsNotification(false);
   };
 
-  const [diaglogMessage, setDialogMessage] = useState("");
-
-  const [visible, setVisible] = useState(false);
-
-  const showDialog = () => setVisible(true);
-
-  const hideDialog = () => setVisible(false);
-
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
 
   const selectSchoolHandler = (val?: string) => {
@@ -49,16 +43,26 @@ const RemoveSchool = () => {
         setSelectedSchool(foundItem);
       }
     }
+    setSchoolHasError(false);
+    setSchoolErrorMessage("");
   };
 
   const removeSchoolHandler = async () => {
+    if (selectedSchool.id == "0") {
+      setSchoolHasError(true);
+      setSchoolErrorMessage("Please select School !");
+      return;
+    }
+
+    //Check If Screening Data Or MR TAG Data Present. If Yes Don't allow to delete
+
     const response: any = await removeSchool(db, selectedSchool.id);
     if (response) {
       openNotificationHandler();
       setNotificationMessage("School Removed Successfully !");
-      
+      setSelectedSchool(BLANK_DROPDOWN_MODEL);
+      getSchoolsHandler();
     }
-    console.log("Response", response);
   };
 
   const getSchoolsHandler = async () => {
@@ -73,9 +77,7 @@ const RemoveSchool = () => {
   useFocusEffect(
     useCallback(() => {
       getSchoolsHandler();
-      return () => {
-        console.log("Screen unfocused");
-      };
+      return () => {};
     }, [])
   );
 
@@ -87,6 +89,9 @@ const RemoveSchool = () => {
           items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
           selectedItem={selectedSchool}
           onChange={selectSchoolHandler}
+          required={true}
+          isError={schoolHasError}
+          errorMessage={schoolErrorMessage}
         />
       </View>
       <View>
@@ -104,19 +109,6 @@ const RemoveSchool = () => {
         message={notificationMessage}
         variant={variant}
       />
-      {/* <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>REACHLite</Dialog.Title>
-          <Dialog.Content>
-            <Text>School removed !</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog} loading={isLoading}>
-              Done
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal> */}
     </View>
   );
 };

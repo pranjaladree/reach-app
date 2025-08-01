@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2",
   },
   actionItem: {
-    width: 200,
+    width: 100,
     margin: 5,
   },
 });

@@ -142,11 +142,13 @@ const DevicePreparation = () => {
         items={[BLANK_DROPDOWN_MODEL, ...ACTIVITY_TYPE_ITEMS]}
         selectedItem={selectedActivityType}
         onChange={selectActivityTypeHandler}
+        required={true}
       />
 
       {/* Date + Get School Row */}
-      <View style={{ padding: 5 }}>
+      <View style={{ padding: 5, flexDirection: "row", alignItems: "center" }}>
         <Text>Activity Date</Text>
+        <Text style={{ color: "red" }}> *</Text>
       </View>
       <View style={styles.row}>
         <View style={styles.dateBox}>
@@ -181,6 +183,7 @@ const DevicePreparation = () => {
             items={[BLANK_DROPDOWN_MODEL, ...schoolItems]}
             selectedItem={selectedSchool}
             onChange={selectSchoolHandler}
+            required={true}
           />
           {/* Get Student Button */}
           <Button

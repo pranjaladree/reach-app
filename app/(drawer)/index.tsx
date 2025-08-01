@@ -2,12 +2,7 @@ import { findUserById } from "@/database/database";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View
-} from "react-native";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 import UnifiedStatCard from "@/components/new_UI/unifiedStatCard";
 import { Colors } from "@/constants/Colors";
@@ -31,18 +26,17 @@ const Home = () => {
 
   const userId = useSelector((state: RootState) => state.userSlice.userId);
 
-  const getUserHandler = async () => {
-    const response: any = await findUserById(db, userId);
-    console.log("RES********", response);
+  // const getUserHandler = async () => {
+  //   const response: any = await findUserById(db, userId);
 
-    if (response) {
-      if (response.isQualityCheck == 0) {
-        console.log("QC False");
-      } else {
-        console.log("QC True");
-      }
-    }
-  };
+  //   if (response) {
+  //     if (response.isQualityCheck == 0) {
+  //       console.log("QC False");
+  //     } else {
+  //       console.log("QC True");
+  //     }
+  //   }
+  // };
 
   const getStatistics = async () => {
     const response = await getSchoolCounts(db);
@@ -57,11 +51,9 @@ const Home = () => {
       });
       setTotalSchoolCount(response?.length);
     }
-    console.log("Counts", response);
 
     // Get Students Counts
     const studentResponse: any = await getStudentCounts(db);
-    console.log("Student", studentResponse);
     if (studentResponse) {
       setStudentCount(studentResponse[0]?.count);
     }
@@ -81,10 +73,8 @@ const Home = () => {
   useFocusEffect(
     useCallback(() => {
       getStatistics();
-      getUserHandler();
-      return () => {
-        console.log("Screen unfocused");
-      };
+      // getUserHandler();
+      return () => {};
     }, [])
   );
 
@@ -123,7 +113,7 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingHorizontal: 10,
     fontWeight: "bold",
-    color: Colors.primary
+    color: Colors.primary,
   },
   divider: {
     // marginTop: 15,

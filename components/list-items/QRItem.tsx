@@ -33,7 +33,7 @@ const QRItem = ({ item, onPress }: Props) => {
       <View style={styles.card}>
         <View style={styles.section}>
           <Text style={itemStyle}>{item.firstName}</Text>
-          <Text>{item.contactPersonMobileNo}</Text>
+          <Text style={itemStyle}>{item.tempId}</Text>
         </View>
         <View style={styles.section}>
           <Text style={itemStyle}>
@@ -42,9 +42,6 @@ const QRItem = ({ item, onPress }: Props) => {
           <Text style={itemStyle}>
             {item.gender} / {item.age}
           </Text>
-        </View>
-        <View style={styles.section}>
-          <Text style={itemStyle}>{item.tempId}</Text>
         </View>
         <View style={styles.sectionIcon}>
           <QRCode value={JSON.stringify(qrData)} size={80} />
