@@ -39,7 +39,9 @@ const ViewLastResult = ({ onClose, item }: Props) => {
           <Text>: {item.lastAnySurgeryDone}</Text>
         </View>
         <View style={styles.actions}>
-          <CustomNegativeButton title="Close" onPress={onClose} />
+          <View style={{ width: 120 }}>
+            <CustomNegativeButton title="Close" onPress={onClose} />
+          </View>
         </View>
       </View>
     </View>
@@ -57,6 +59,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   actions: {
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
     minWidth: 300,
   },

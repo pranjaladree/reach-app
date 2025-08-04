@@ -90,7 +90,7 @@ const LoginScreen = () => {
     setIsLoading(true);
     try {
       const response: any = await db.getFirstAsync(
-        `SELECT * FROM users WHERE userName="${userName}"`
+        `SELECT * FROM users WHERE userName="${userName}" COLLATE NOCASE`
       );
       console.log(userName);
       if (response) {
@@ -113,7 +113,7 @@ const LoginScreen = () => {
         } else {
           // Login Failed
           setIsNotification(true);
-          setNotificationMessage("Password Not Matched !");
+          setNotificationMessage("Invalid Password !");
           setVariant("error");
         }
       } else {
@@ -172,10 +172,21 @@ const LoginScreen = () => {
         }
         router.navigate("/");
       } else {
+        if (resData.error) {
+          setIsNotification(true);
+          setNotificationMessage("User Not Found !");
+          setVariant("error");
+        } else {
+          setIsNotification(true);
+          setNotificationMessage("Invalid Password !");
+          setVariant("error");
+        }
         console.log("Failed to login");
       }
     } catch (err) {
-      console.log("RESPONSE CATCH", err);
+      setIsNotification(true);
+      setNotificationMessage(`ERROR ! ${err}`);
+      setVariant("error");
     }
     setIsLoading(false);
   };

@@ -35,10 +35,7 @@ import {
 } from "@/database/database";
 import { getVisionCenters } from "@/http/vision-center-http";
 import { getAllHospitals } from "@/http/hospital-http";
-import {
-  getOtherFacilities,
-  searchOtherFacilities,
-} from "@/http/other-facility-http";
+import { searchOtherFacilities } from "@/http/other-facility-http";
 import { getAllOculars } from "@/http/ocular-complaints-http";
 import { getReachConfiguration } from "@/http/reach-configuration-http";
 import { getAllDistanceDvas } from "@/http/distance-dva-http";
@@ -474,11 +471,13 @@ const SystemUpdate = () => {
       {/* <Button onPress={systemUpdateHandler} mode="contained" loading={isLoading}>
         System Update
       </Button> */}
-      {visiable && (
-        <View style={{ marginTop: 10 }}>
-          <StatusStepper status={status} />
-        </View>
-      )}
+      <View style={{ paddingBottom: 100 }}>
+        {visiable && (
+          <View style={{ marginTop: 10 }}>
+            <StatusStepper status={status} />
+          </View>
+        )}
+      </View>
     </ScrollView>
   );
 };

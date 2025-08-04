@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     width: "30%",
   },
   sectionIcon: {
+    padding: 5,
     width: "10%",
     alignItems: "flex-end",
     justifyContent: "center",

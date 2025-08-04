@@ -44,27 +44,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const [loading, setLoading] = React.useState<any>(true);
 
   const db = useSQLiteContext();
-  // const [userData, setUserData] = React.useState<any>(null);
-  // console.log("User Data from API", userData);
-
-  // const getUsers = async () => {
-  //   try {
-  //     const response = await findUserById(db, userID);
-  //     setUserData(response);
-  //     setLoading(false);
-  //   } catch (e) {
-  //     console.error("Error", e);
-  //   }
-  // };
-  // const firstLetter = userData?.firstName?.charAt(0).toUpperCase();
-  // const lastLetter = userData?.lastName?.charAt(0).toUpperCase();
-
-  // useEffect(() => {
-  //   if (userID) {
-  //     getUsers();
-  //   }
-  // }, [userId]);
-
   const [isOnline, setIsOnline] = useState(false);
 
   const loginOfflineHandler = async () => {
@@ -336,20 +315,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             <View style={styles.icon}>
               <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
             </View>
-            <Text style={styles.label}>Version 1.1.2</Text>
+            <Text style={styles.label}>Version 1.1.5</Text>
           </View>
-          {/* <CustomButton title="Logout" onPress={handleLogout} /> */}
         </View>
       </ScrollView>
-      {/* Logout Button */}
-      {/* <View style={styles.versionContainer}>
-        <View style={styles.drawerItem}>
-          <View style={styles.icon}>
-            <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
-          </View>
-          <Text style={styles.label}>V 1.0.9</Text>
-        </View>
-      </View> */}
     </View>
   );
 };
