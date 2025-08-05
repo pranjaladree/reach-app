@@ -202,8 +202,8 @@ const LoginScreen = () => {
 
   const checkInternetHandler = async () => {
     NetInfo.fetch().then((state) => {
-      console.log("Is connected?", state.isConnected);
-      if (state.isConnected) {
+      console.log("Is connected?", state.isInternetReachable);
+      if (state.isInternetReachable) {
         setIsOnline(true);
       } else {
         setIsOnline(false);
@@ -241,6 +241,13 @@ const LoginScreen = () => {
           <Text style={styles.loginTitle}>LOGIN</Text>
         </View>
         <View style={styles.divider}></View>
+        {!isOnline && (
+          <View style={styles.noConnection}>
+            <Text style={styles.noConnectionText}>
+              No Internet Connection Available
+            </Text>
+          </View>
+        )}
         <View style={{ padding: 20 }}>
           <View style={styles.box}>
             <TextInput
@@ -320,6 +327,16 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginTop: 20,
+  },
+  noConnection: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginHorizontal: 10,
+  },
+  noConnectionText: {
+    color: Colors.error,
+    fontSize: 16,
   },
 });
 
