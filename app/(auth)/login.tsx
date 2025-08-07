@@ -92,14 +92,25 @@ const LoginScreen = () => {
       const response: any = await db.getFirstAsync(
         `SELECT * FROM users WHERE userName="${userName}" COLLATE NOCASE`
       );
-      console.log(userName);
+      console.log("OFFLINE RESPONSE", response);
       if (response) {
+        let fullName;
+        if (response.firstName) {
+          fullName = response.firstName;
+        }
+        if (response.middleName) {
+          fullName += " " + response.middleName;
+        }
+        if (response.lastName) {
+          fullName += " " + response.lastName;
+        }
+        console.log("fullName", fullName);
         const isLoggedIn = bcrypt.compareSync(password, response.password);
         if (isLoggedIn) {
           dispatch(setLoggedIn("OFFLINE_TOKEN"));
           setLoggedInUser({
             userId: response.id,
-            fullName: response.firstName,
+            fullName: fullName,
             partnerId: "",
             userType: "PARTNER_USER",
             partnerName: "",
@@ -200,23 +211,32 @@ const LoginScreen = () => {
     }
   };
 
-  const checkInternetHandler = async () => {
-    NetInfo.fetch().then((state) => {
-      console.log("Is connected?", state.isInternetReachable);
-      if (state.isInternetReachable) {
-        setIsOnline(true);
-      } else {
-        setIsOnline(false);
-      }
-    });
-  };
+  // const checkInternetHandler = async () => {
+  //   NetInfo.fetch().then((state) => {
+  //     console.log("Is connected?", state.isInternetReachable);
+  //     if (state.isInternetReachable) {
+  //       setIsOnline(true);
+  //     } else {
+  //       setIsOnline(false);
+  //     }
+  //   });
+  // };
 
   useFocusEffect(
     useCallback(() => {
-      checkInternetHandler();
-      return () => {
-        console.log("Screen unfocused");
-      };
+      // Subscribe to connection changes
+      const unsubscribe = NetInfo.addEventListener((state) => {
+        if (state.isInternetReachable) {
+          setIsOnline(true);
+        } else {
+          setIsOnline(false);
+        }
+        console.log("Connection type", state.type);
+        console.log("Is connected?", state.isConnected);
+      });
+
+      // Clean up on unmount
+      return () => unsubscribe();
     }, [])
   );
 

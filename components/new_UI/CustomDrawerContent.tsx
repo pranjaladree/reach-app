@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { findUserById } from "@/database/database";
-import { setLoggedOut, setUser } from "@/store/slices/user-slice";
+import { setLoggedOut, setUser, userSlice } from "@/store/slices/user-slice";
 import { RootState } from "@/store/store";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -31,89 +31,189 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   state,
 }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const userID = useSelector((state: RootState) => state.userSlice.userId);
-
-  const userDetails = useSelector((state: RootState) => state.userSlice);
-
-  const { designation, fullName, userId } = useSelector(
-    (state: RootState) => state.userSlice
+  const [firstLetter, setFirstLetter] = useState("");
+  const [secondLetter, setSecondLetter] = useState("");
+  const designation = useSelector(
+    (state: RootState) => state.userSlice.designation
   );
+  const fullName = useSelector((state: RootState) => state.userSlice.fullName);
+  const router = useRouter();
+  const userId = useSelector((state: RootState) => state.userSlice.userId);
 
-  const [offlineUserInfo, setOfflineUserInfo] = React.useState<any>(true);
-  const [loading, setLoading] = React.useState<any>(true);
+  // const userDetails = useSelector((state: RootState) => state.userSlice);
+  // console.log("USER DEATILS", userDetails);
+
+  // const { designation, fullName, userId } = useSelector(
+  //   (state: RootState) => state.userSlice
+  // );
+  // console.log("NAME", fullName);
+  // console.log("Designation", designation);
+  // console.log("userId", userId);
+
+  // const [offlineUserInfo, setOfflineUserInfo] = React.useState<any>(true);
+  // const [loading, setLoading] = React.useState<any>(true);
 
   const db = useSQLiteContext();
   const [isOnline, setIsOnline] = useState(false);
 
-  const loginOfflineHandler = async () => {
-    try {
-      const userInfo = await AsyncStorage.getItem("OfflineUserInfo");
-      console.log("Offline", userInfo);
-      if (userInfo) {
-        const parsedData = JSON.parse(userInfo);
-        console.log("parsedData", parsedData);
-        setOfflineUserInfo(parsedData);
-      }
-    } catch (e) {
-      console.log("Error from CDC offline handler", e);
-    }
-  };
+  // const loginOfflineHandler = async () => {
+  //   try {
+  //     const userInfo = await AsyncStorage.getItem("OfflineUserInfo");
+  //     console.log("Offline", userInfo);
+  //     if (userInfo) {
+  //       const parsedData = JSON.parse(userInfo);
+  //       console.log("parsedData", parsedData);
+  //       setOfflineUserInfo(parsedData);
+  //     }
+  //   } catch (e) {
+  //     console.log("Error from CDC offline handler", e);
+  //   }
+  // };
 
-  const checkInternetHandler = async () => {
-    NetInfo.fetch().then(async (state) => {
-      console.log("Is connected?", state.isConnected);
-      if (state.isConnected && userId) {
-        try {
-          const token = await AsyncStorage.getItem("token");
-          if (token) {
-            const profileResponse = await getProfile(token);
-            console.log(profileResponse);
-            if (!(await profileResponse).isError) {
-              const responseData = (await profileResponse).data;
-              dispatch(
-                setUser({
-                  userId: responseData.id,
-                  designation: responseData.designation,
-                  fullName: responseData.fullName,
-                })
-              );
-              await AsyncStorage.setItem(
-                "OfflineUserInfo",
-                JSON.stringify({
-                  userId: responseData.id,
-                  designation: responseData.designation,
-                  fullName: responseData.fullName,
-                })
-              );
-            }
-          }
-        } catch (e) {
-          console.log(e);
-        }
-        setIsOnline(true);
+  const getProfileHandler = async () => {
+    if (userId) {
+      if (!isOnline) {
       } else {
-        setIsOnline(false);
-        loginOfflineHandler();
-        console.log("This is running from offline");
+        const response: any = await db.getFirstAsync(
+          `SELECT * FROM users WHERE id="${userId}"`
+        );
+        console.log("res AAA", response);
+        if (response) {
+          let fullName;
+          if (response.firstName) {
+            fullName = response.firstName;
+          }
+          if (response.middleName) {
+            fullName += " " + response.middleName;
+          }
+          if (response.lastName) {
+            fullName += " " + response.lastName;
+          }
+
+          dispatch(
+            setUser({
+              fullName: fullName,
+              designation: response.designation,
+            })
+          );
+        }
       }
-    });
+    }
+    // if (isOnline && userId) {
+    //   try {
+    //     const token = await AsyncStorage.getItem("token");
+    //     if (token) {
+    //       const profileResponse = await getProfile(token);
+    //       console.log(profileResponse);
+    //       if (!(await profileResponse).isError) {
+    //         const responseData = (await profileResponse).data;
+    //         dispatch(
+    //           setUser({
+    //             userId: responseData.id,
+    //             designation: responseData.designation,
+    //             fullName: responseData.fullName,
+    //           })
+    //         );
+    //         await AsyncStorage.setItem(
+    //           "OfflineUserInfo",
+    //           JSON.stringify({
+    //             userId: responseData.id,
+    //             designation: responseData.designation,
+    //             fullName: responseData.fullName,
+    //           })
+    //         );
+    //       }
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    // }
   };
 
-  const displayName = fullName || offlineUserInfo.fullName || "";
-  const displayDesignation = designation || offlineUserInfo.designation || "";
+  // const checkInternetHandler = async () => {
+  //   NetInfo.fetch().then(async (state) => {
+  //     console.log("Is connected?", state.isConnected);
+  //     if (state.isConnected && userId) {
+  //       try {
+  //         const token = await AsyncStorage.getItem("token");
+  //         if (token) {
+  //           const profileResponse = await getProfile(token);
+  //           console.log(profileResponse);
+  //           if (!(await profileResponse).isError) {
+  //             const responseData = (await profileResponse).data;
+  //             dispatch(
+  //               setUser({
+  //                 userId: responseData.id,
+  //                 designation: responseData.designation,
+  //                 fullName: responseData.fullName,
+  //               })
+  //             );
+  //             await AsyncStorage.setItem(
+  //               "OfflineUserInfo",
+  //               JSON.stringify({
+  //                 userId: responseData.id,
+  //                 designation: responseData.designation,
+  //                 fullName: responseData.fullName,
+  //               })
+  //             );
+  //           }
+  //         }
+  //       } catch (e) {
+  //         console.log(e);
+  //       }
+  //       setIsOnline(true);
+  //     } else {
+  //       setIsOnline(false);
+  //       loginOfflineHandler();
+  //       console.log("This is running from offline");
+  //     }
+  //   });
+  // };
 
-  const data = displayName?.trim().split(" ");
-  const firstInitial = data[0]?.charAt(0).toUpperCase();
-  const secondInitial = data[2]?.charAt(0).toUpperCase();
+  // const displayName = fullName || offlineUserInfo.fullName || "";
+  // const displayDesignation = designation || offlineUserInfo.designation || "";
+
+  // const data = displayName?.trim().split(" ");
+  // const firstInitial = data[0]?.charAt(0).toUpperCase();
+  // const secondInitial = data[2]?.charAt(0).toUpperCase();
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     checkInternetHandler();
+  //     // getUsers();
+  //     return () => {
+  //       console.log("Screen unfocused");
+  //     };
+  //   }, [])
+  // );
+
+  useEffect(() => {
+    getProfileHandler();
+  }, [isOnline]);
+
+  useEffect(() => {
+    if (fullName) {
+      let arr = fullName.split(" ");
+      const firstInitial = arr[0]?.charAt(0).toUpperCase();
+      const secondInitial = arr[arr.length - 1]?.charAt(0).toUpperCase();
+      setFirstLetter(firstInitial);
+      setSecondLetter(secondInitial);
+    }
+  }, [fullName]);
 
   useFocusEffect(
     useCallback(() => {
-      checkInternetHandler();
-      // getUsers();
-      return () => {
-        console.log("Screen unfocused");
-      };
+      // Subscribe to connection changes
+      const unsubscribe = NetInfo.addEventListener((state) => {
+        if (state.isInternetReachable) {
+          setIsOnline(true);
+        } else {
+          setIsOnline(false);
+        }
+      });
+
+      // Clean up on unmount
+      return () => unsubscribe();
     }, [])
   );
 
@@ -236,12 +336,12 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
           <Text style={styles.avatar}>
             {/* {firstLetter}
             {lastLetter} */}
-            {firstInitial}
-            {secondInitial}
+            {firstLetter}
+            {secondLetter}
           </Text>
         </View>
-        <Text style={styles.name}>{displayName}</Text>
-        <Text style={styles.email}>{displayDesignation}</Text>
+        <Text style={styles.name}>{fullName}</Text>
+        <Text style={styles.email}>{designation}</Text>
       </View>
       {/* Drawer Items */}
       <ScrollView style={{ flex: 1 }}>
@@ -315,7 +415,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
             <View style={styles.icon}>
               <Ionicons name="git-branch-outline" size={20} color="#4F4F4F" />
             </View>
-            <Text style={styles.label}>Version 1.1.5</Text>
+            <Text style={styles.label}>Version 1.1.6</Text>
           </View>
         </View>
       </ScrollView>

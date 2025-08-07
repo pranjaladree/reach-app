@@ -88,7 +88,6 @@ export const userSlice = createSlice({
       state.isAdministrator = false;
     },
     setUser(state, action) {
-      state.userId = action.payload.userId;
       state.fullName = action.payload.fullName;
       state.designation = action.payload.designation;
     },
