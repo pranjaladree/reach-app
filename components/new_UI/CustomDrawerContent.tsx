@@ -72,7 +72,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
   const getProfileHandler = async () => {
     if (userId) {
-      if (!isOnline) {
+      if (isOnline) {
       } else {
         const response: any = await db.getFirstAsync(
           `SELECT * FROM users WHERE id="${userId}"`
