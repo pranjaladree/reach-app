@@ -32,8 +32,8 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const db = useSQLiteContext();
   const router = useRouter();
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("GEH@admin");
+  const [password, setPassword] = useState("Orbis@123");
   const [showPassword, setShowPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,14 +72,21 @@ const LoginScreen = () => {
         designation: response.data.designation,
       })
     );
+    let epochTime = new Date().getTime() + 86400000;
+    saveSessionData(token, epochTime?.toString(), response.data.id);
   };
 
   const [isOnline, setIsOnline] = useState(false);
 
-  const saveSessionData = async (token: string, expiry: string) => {
+  const saveSessionData = async (
+    token: string,
+    expiry: string,
+    userId: string
+  ) => {
     try {
       await AsyncStorage.setItem("token", token);
       await AsyncStorage.setItem("expiry", expiry);
+      await AsyncStorage.setItem("userId", userId?.toString());
     } catch (e) {
       console.log(e);
       // saving error
@@ -90,7 +97,7 @@ const LoginScreen = () => {
     setIsLoading(true);
     try {
       const response: any = await db.getFirstAsync(
-        `SELECT * FROM users WHERE userName="${userName}" COLLATE NOCASE`
+        `SELECT * FROM users WHERE userName="${userName?.trim()}" COLLATE NOCASE`
       );
       console.log("OFFLINE RESPONSE", response);
       if (response) {
@@ -105,7 +112,10 @@ const LoginScreen = () => {
           fullName += " " + response.lastName;
         }
         console.log("fullName", fullName);
-        const isLoggedIn = bcrypt.compareSync(password, response.password);
+        const isLoggedIn = bcrypt.compareSync(
+          password?.trim(),
+          response.password
+        );
         if (isLoggedIn) {
           dispatch(setLoggedIn("OFFLINE_TOKEN"));
           setLoggedInUser({
@@ -118,7 +128,7 @@ const LoginScreen = () => {
             isPartnerAgreement: response.isPartnerAgreement,
           });
           let epochTime = new Date().getTime() + 86400000;
-          saveSessionData("OFFLINE_TOKEN", epochTime?.toString());
+          saveSessionData("OFFLINE_TOKEN", epochTime?.toString(), response.id);
           router.navigate("/");
           //Login Success
         } else {
@@ -145,8 +155,8 @@ const LoginScreen = () => {
     setIsLoading(true);
     console.log("Login online ...");
     const requestBody = {
-      userId: userName,
-      password: password,
+      userId: userName?.trim(),
+      password: password?.trim(),
     };
     try {
       const res = await fetch(`${baseUrl}/auth/login`, {
@@ -166,8 +176,6 @@ const LoginScreen = () => {
         if (!resData.isTotpRequired) {
           dispatch(setLoggedIn(token));
           if (token) {
-            let epochTime = new Date().getTime() + 86400000;
-            saveSessionData(token, epochTime?.toString());
             getProfileHandler(token);
           }
         } else {

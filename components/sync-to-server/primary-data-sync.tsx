@@ -22,8 +22,13 @@ import {
   removeSchool,
 } from "@/database/school-student-db";
 import CustomNotification from "../utils/CustomNotification";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const PrimaryDataSync = () => {
+interface Props {
+  onLogout: () => void;
+}
+
+const PrimaryDataSync = ({ onLogout }: Props) => {
   const db = useSQLiteContext();
   const [isLoading, setIsLoading] = useState(false);
   const token = useSelector((state: RootState) => state.userSlice.token);
@@ -31,7 +36,7 @@ const PrimaryDataSync = () => {
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
   const [schoolHasError, setSchoolHasError] = useState(false);
   const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
-  const [diaglogMessage, setDialogMessage] = useState("");
+  const [isLogoutModal, setIsLogoutModal] = useState(false);
 
   const [isNotification, setIsNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
@@ -44,12 +49,6 @@ const PrimaryDataSync = () => {
   const closeNotificationHandler = () => {
     setIsNotification(false);
   };
-
-  const [visible, setVisible] = useState(false);
-
-  const showDialog = () => setVisible(true);
-
-  const hideDialog = () => setVisible(false);
 
   const selectSchoolHandler = (val?: string) => {
     if (val == "SELECT") {
@@ -65,14 +64,33 @@ const PrimaryDataSync = () => {
   };
 
   const syncPrimaryScreeningHandler = async () => {
+    setIsLoading(true);
     if (selectedSchool.id == "0") {
       setSchoolHasError(true);
       setSchoolErrorMessage("Please select a school !");
+      setIsLoading(false);
       return;
     }
-    setIsLoading(true);
+    if (token == "OFFLINE_TOKEN") {
+      setIsLogoutModal(true);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const expiry = await AsyncStorage.getItem("expiry");
+      if (expiry !== null) {
+        if (new Date().getTime() > +expiry) {
+          setIsLogoutModal(true);
+          setIsLoading(false);
+          return;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
     const response = await preparePSDataSync(db, selectedSchool.id);
-    console.log("PREPARED DATA******************", JSON.stringify(response));
     const syncResponse = await syncPSData(token, response);
     if (syncResponse.isError) {
       setNotificationMessage(syncResponse.data);
@@ -204,6 +222,16 @@ const PrimaryDataSync = () => {
         onClose={closeNotificationHandler}
         message={notificationMessage}
         variant={variant}
+      />
+
+      <CustomNotification
+        visible={isLogoutModal}
+        onClose={() => {
+          setIsLogoutModal(false);
+          onLogout();
+        }}
+        message="You Need to relogin online to complete this activity. Log out now"
+        variant="error"
       />
     </View>
   );

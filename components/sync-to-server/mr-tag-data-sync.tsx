@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet } from "react-native";
-import CustomDropdown from "../utils/CustomDropdown";
 import { BLANK_DROPDOWN_MODEL } from "@/constants/BlankModels";
 import { useCallback, useState } from "react";
 import { DropdownModel } from "@/models/ui/DropdownModel";
@@ -9,8 +8,6 @@ import { useFocusEffect } from "@react-navigation/native";
 import { syncMRTagData, syncPSData } from "@/http/data-sync-http";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { Dialog, Portal, PaperProvider } from "react-native-paper";
-import AppButton from "../new_UI/AppButton";
 import StyledDropdown from "../new_UI/StyledDropdown";
 import CustomButton from "../utils/CustomButton";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,8 +18,13 @@ import {
 } from "@/database/school-student-db";
 import { prepareMRDataSync } from "@/database/sync-to-server";
 import CustomNotification from "../utils/CustomNotification";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const MRTagDataSync = () => {
+interface Props {
+  onLogout: () => void;
+}
+
+const MRTagDataSync = ({ onLogout }: Props) => {
   const db = useSQLiteContext();
   const [isLoading, setIsLoading] = useState(false);
   const token = useSelector((state: RootState) => state.userSlice.token);
@@ -30,11 +32,11 @@ const MRTagDataSync = () => {
   const [selectedSchool, setSelectedSchool] = useState(BLANK_DROPDOWN_MODEL);
   const [schoolHasError, setSchoolHasError] = useState(false);
   const [schoolErrorMessage, setSchoolErrorMessage] = useState("");
-  const [diaglogMessage, setDialogMessage] = useState("");
 
   const [isNotification, setIsNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [variant, setVariant] = useState("success");
+  const [isLogoutModal, setIsLogoutModal] = useState(false);
 
   const openNotificationHandler = () => {
     setIsNotification(true);
@@ -43,12 +45,6 @@ const MRTagDataSync = () => {
   const closeNotificationHandler = () => {
     setIsNotification(false);
   };
-
-  const [visible, setVisible] = useState(false);
-
-  const showDialog = () => setVisible(true);
-
-  const hideDialog = () => setVisible(false);
 
   const selectSchoolHandler = (val?: string) => {
     if (val == "SELECT") {
@@ -64,12 +60,32 @@ const MRTagDataSync = () => {
   };
 
   const syncMrTagHandler = async () => {
+    setIsLoading(true);
     if (selectedSchool.id == "0") {
       setSchoolHasError(true);
       setSchoolErrorMessage("Please select a school !");
+      setIsLoading(false);
       return;
     }
-    setIsLoading(true);
+    if (token == "OFFLINE_TOKEN") {
+      setIsLogoutModal(true);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const expiry = await AsyncStorage.getItem("expiry");
+      if (expiry !== null) {
+        if (new Date().getTime() > +expiry) {
+          setIsLogoutModal(true);
+          setIsLoading(false);
+          return;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
     const response = await prepareMRDataSync(db, selectedSchool.id);
     const syncResponse = await syncMRTagData(token, response);
     if (syncResponse.isError) {
@@ -104,7 +120,6 @@ const MRTagDataSync = () => {
       const response1: any = await db.getFirstAsync(
         `SELECT COUNT(*) AS count FROM students WHERE schoolId="${selectedSchool.id}"`
       );
-      console.log("RESPONSE 1 &&&&&&&&&&&", response1);
       if (response1) {
         setTotalCount(response1.count);
       }
@@ -112,7 +127,6 @@ const MRTagDataSync = () => {
       const response2: any = await db.getFirstAsync(
         `SELECT COUNT(*) AS count FROM students JOIN mrTags ON mrTags.studentId = students.id WHERE schoolId="${selectedSchool.id}"`
       );
-      console.log("RESPONSE 2 &&&&&&&&&&&", response2);
       if (response2) {
         setMrDoneCount(response2.count);
       }
@@ -198,19 +212,16 @@ const MRTagDataSync = () => {
         message={notificationMessage}
         variant={variant}
       />
-      {/* <Portal>
-        <Dialog visible={visible} onDismiss={hideDialog}>
-          <Dialog.Title>Alert</Dialog.Title>
-          <Dialog.Content>
-            <Text>{diaglogMessage}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDialog} loading={isLoading}>
-              Done
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal> */}
+      {/* Logout Notification */}
+      <CustomNotification
+        visible={isLogoutModal}
+        onClose={() => {
+          setIsLogoutModal(false);
+          onLogout();
+        }}
+        message="You Need to relogin online to complete this activity. Log out now"
+        variant="error"
+      />
     </View>
   );
 };
