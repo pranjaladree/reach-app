@@ -73,6 +73,8 @@ const ReasonForm = () => {
     []
   );
   const [selected, setSelected] = useState<DateType>();
+  const [dateHasError, setDateHasError] = useState(false);
+  const [dateErrorMessage, setDateErrorMessage] = useState("");
   const [facilityItems, setFacilityItems] = useState<DropdownModel[]>([]);
   const [facilityLabel, setFacilityLabel] = useState("Vision Center");
   const [facilityType, setSelectedFaciliType] = useState(
@@ -92,7 +94,6 @@ const ReasonForm = () => {
   const [instructions, setInstructions] = useState("");
 
   const selectActivityTypeHandler = (val?: string) => {
-    console.log("*****************", val);
     if (val == "SELECT") {
       setSelectedFaciliType(BLANK_DROPDOWN_MODEL);
     } else {
@@ -121,6 +122,8 @@ const ReasonForm = () => {
   const selectDateHandler = ({ date }: any) => {
     setSelected(date);
     setIsModalOpen(false);
+    setDateHasError(false);
+    setDateErrorMessage("");
   };
 
   const mobileNoChangeHandler = (val: string) => {
@@ -156,6 +159,11 @@ const ReasonForm = () => {
         setMobileNoHasError(true);
         setMobileNoErrorMessage("Please enter a valid mobile No");
       }
+    }
+    if (!selected) {
+      isValid = false;
+      setDateHasError(true);
+      setDateErrorMessage("Please select a valid appointment date !");
     }
     return isValid;
   };
@@ -319,46 +327,33 @@ const ReasonForm = () => {
       </View>
       <View
         style={{
-          marginTop: 20,
+          marginTop: 10,
+          marginBottom: 10,
           flexDirection: "row",
-          padding: 10,
           alignItems: "center",
         }}
       >
-        <View>
-          <Text>Appointment Date </Text>
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+          <Text>Appointment Date</Text>
+          <Text style={{ color: "red" }}> *</Text>
         </View>
-        <View
-          style={{
-            borderRadius: 5,
-            borderWidth: 1,
-            padding: 10,
-            width: 200,
-            marginLeft: 20,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <View style={styles.dateBox}>
           <Pressable
-            onPress={() => {
-              setIsModalOpen(true);
-            }}
+            onPress={() => setIsModalOpen(true)}
+            style={styles.dateField}
           >
-            <Text>{dayjs(selected).format("DD-MM-YYYY")}</Text>
+            <Text style={styles.dateIcon}>📅</Text>
+            <Text style={styles.dateText}>
+              {selected ? dayjs(selected).format("DD-MM-YYYY") : "Select Date"}
+            </Text>
           </Pressable>
         </View>
       </View>
-      {/* <View style={{ marginTop: 10 }}>
-        <Pressable
-          onPress={() => {
-            setIsModalOpen(true);
-          }}
-        >
-          <View style={styles.date}>
-            <Text>{dayjs(selected).format("DD-MM-YYYY")}</Text>
-          </View>
-        </Pressable>
-      </View> */}
+      {dateHasError && (
+        <View style={{ paddingVertical: 10 }}>
+          <Text style={{ color: "red" }}>{dateErrorMessage}</Text>
+        </View>
+      )}
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={{ flexBasis: 1, flexGrow: 1, padding: 5 }}>
@@ -505,6 +500,25 @@ const styles = StyleSheet.create({
   },
   count: {
     fontSize: 20,
+  },
+  dateBox: {
+    flex: 1,
+  },
+  dateField: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: "#004aad",
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  dateIcon: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  dateText: {
+    fontSize: 16,
   },
 });
 

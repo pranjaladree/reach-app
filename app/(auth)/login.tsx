@@ -32,8 +32,8 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const db = useSQLiteContext();
   const router = useRouter();
-  const [userName, setUserName] = useState("GEH@admin");
-  const [password, setPassword] = useState("Orbis@123");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,7 +59,6 @@ const LoginScreen = () => {
 
   const getProfileHandler = async (token: string) => {
     const response = await getProfile(token);
-    console.log("PROFILE RESPONSE **************************", response);
     dispatch(
       setLoggedInUser({
         userId: response.data.id,
@@ -99,7 +98,6 @@ const LoginScreen = () => {
       const response: any = await db.getFirstAsync(
         `SELECT * FROM users WHERE userName="${userName?.trim()}" COLLATE NOCASE`
       );
-      console.log("OFFLINE RESPONSE", response);
       if (response) {
         let fullName;
         if (response.firstName) {

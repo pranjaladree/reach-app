@@ -45,9 +45,17 @@ export const syncMRTagData = async (token: string, requestBody: any) => {
     return new ResponseModel({
       data: "Data Synced Successfully",
     });
+  } else {
+    if (resData.error) {
+      return new ResponseModel({
+        isError: true,
+        data: resData.error,
+      });
+    } else {
+      return new ResponseModel({
+        isError: true,
+        data: "Failed to do sync data !",
+      });
+    }
   }
-  return new ResponseModel({
-    isError: true,
-    data: "Failed to Data Sync",
-  });
 };
